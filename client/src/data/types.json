@@ -1,0 +1,498 @@
+[
+  {
+    "id": "fast_broad_logic_solo",
+    "name": "織田信長",
+    "title": "革新の覇王",
+    "description": "素早い判断で新しい領域を開拓し、データと直感を駆使して独力で大きな成果を生み出すタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "broad",
+      "logic": "logic",
+      "style": "solo"
+    },
+    "strengths": [
+      "迅速な意思決定",
+      "新規事業開発",
+      "複数領域の統合",
+      "独立心の強さ"
+    ],
+    "weaknesses": [
+      "細部への配慮不足",
+      "チームワークの軽視",
+      "急進的すぎる判断",
+      "他者の意見を聞きにくい"
+    ],
+    "roles": [
+      "起業家",
+      "新規事業責任者",
+      "イノベーション推進者",
+      "経営者"
+    ],
+    "color": "#FF3B30"
+  },
+  {
+    "id": "fast_broad_logic_support",
+    "name": "豊臣秀吉",
+    "title": "統合の知将",
+    "description": "素早く多領域を統合し、論理的に組織全体を動かすことで、チーム全体の成果を最大化するタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "broad",
+      "logic": "logic",
+      "style": "support"
+    },
+    "strengths": [
+      "組織統合力",
+      "論理的な戦略立案",
+      "迅速な実行",
+      "チーム全体の成果最大化"
+    ],
+    "weaknesses": [
+      "細かいルール遵守",
+      "個人の深掘り不足",
+      "短期的な判断",
+      "長期的な計画性"
+    ],
+    "roles": [
+      "プロジェクトマネージャー",
+      "事業統括責任者",
+      "組織開発リーダー",
+      "営業統括"
+    ],
+    "color": "#FF9500"
+  },
+  {
+    "id": "fast_broad_intuition_solo",
+    "name": "上杉謙信",
+    "title": "直感の先駆者",
+    "description": "直感と感性で新しい領域に素早く飛び込み、独力で新しい価値を創造するタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "broad",
+      "logic": "intuition",
+      "style": "solo"
+    },
+    "strengths": [
+      "創造的思考",
+      "直感的判断",
+      "新しい価値創造",
+      "自立心の強さ"
+    ],
+    "weaknesses": [
+      "論理的説明不足",
+      "データ分析の軽視",
+      "チームとの意思疎通",
+      "実行の安定性"
+    ],
+    "roles": [
+      "クリエイティブディレクター",
+      "プロダクトデザイナー",
+      "ブランドプロデューサー",
+      "アーティスト"
+    ],
+    "color": "#5AC8FA"
+  },
+  {
+    "id": "fast_broad_intuition_support",
+    "name": "武田信玄",
+    "title": "感性の統率者",
+    "description": "感性で多領域を統合し、チームの心を動かしながら素早く新しい価値を実現するタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "broad",
+      "logic": "intuition",
+      "style": "support"
+    },
+    "strengths": [
+      "感性的なリーダーシップ",
+      "チーム意識の醸成",
+      "創造的な問題解決",
+      "迅速な実行"
+    ],
+    "weaknesses": [
+      "論理的根拠の不足",
+      "細部の管理",
+      "定量的な成果測定",
+      "長期計画の策定"
+    ],
+    "roles": [
+      "カルチャー構築リーダー",
+      "イベントプロデューサー",
+      "コミュニティマネージャー",
+      "人材育成責任者"
+    ],
+    "color": "#FF2D55"
+  },
+  {
+    "id": "fast_deep_logic_solo",
+    "name": "徳川家康",
+    "title": "堅実の大家",
+    "description": "論理的に専門領域を極め、独力で確実な成果を積み上げながらも、素早く判断・実行するタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "deep",
+      "logic": "logic",
+      "style": "solo"
+    },
+    "strengths": [
+      "専門知識の深さ",
+      "論理的思考",
+      "独立した判断",
+      "確実な実行"
+    ],
+    "weaknesses": [
+      "新領域への抵抗",
+      "チームワーク不足",
+      "視野の狭さ",
+      "変化への対応"
+    ],
+    "roles": [
+      "技術スペシャリスト",
+      "品質管理責任者",
+      "研究開発リーダー",
+      "システムアーキテクト"
+    ],
+    "color": "#34C759"
+  },
+  {
+    "id": "fast_deep_logic_support",
+    "name": "明智光秀",
+    "title": "知識の支援者",
+    "description": "論理的に専門領域を深掘りしながら、チーム全体の成功をサポートする素早い判断力を持つタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "deep",
+      "logic": "logic",
+      "style": "support"
+    },
+    "strengths": [
+      "専門的なサポート",
+      "論理的な問題解決",
+      "チーム内の信頼構築",
+      "効率的な実行"
+    ],
+    "weaknesses": [
+      "新領域への挑戦不足",
+      "個人の成果強調",
+      "視野の限定性",
+      "大局的判断"
+    ],
+    "roles": [
+      "テクニカルリード",
+      "品質保証マネージャー",
+      "データアナリスト",
+      "サポートエンジニア"
+    ],
+    "color": "#00C7BE"
+  },
+  {
+    "id": "fast_deep_intuition_solo",
+    "name": "真田幸村",
+    "title": "工夫の名手",
+    "description": "感性で専門領域を極め、独創的な工夫で素早く成果を生み出すタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "deep",
+      "logic": "intuition",
+      "style": "solo"
+    },
+    "strengths": [
+      "創造的な工夫",
+      "専門技能の高さ",
+      "直感的な判断",
+      "独立した行動"
+    ],
+    "weaknesses": [
+      "論理的説明不足",
+      "チーム内の共有",
+      "スケーラビリティ",
+      "定量的な成果測定"
+    ],
+    "roles": [
+      "職人エンジニア",
+      "UXデザイナー",
+      "クラフトマン",
+      "独立系コンサルタント"
+    ],
+    "color": "#FF6B6B"
+  },
+  {
+    "id": "fast_deep_intuition_support",
+    "name": "竹中半兵衛",
+    "title": "工夫の知恵者",
+    "description": "感性で専門領域を深掘りしながら、チームの成功を支援する創意工夫に満ちたタイプ。",
+    "traits": {
+      "speed": "fast",
+      "scope": "deep",
+      "logic": "intuition",
+      "style": "support"
+    },
+    "strengths": [
+      "創意工夫",
+      "専門的サポート",
+      "チーム内の信頼",
+      "効率的な実行"
+    ],
+    "weaknesses": [
+      "論理的根拠の不足",
+      "大規模プロジェクト",
+      "定量的分析",
+      "個人の成果強調"
+    ],
+    "roles": [
+      "プロダクトサポート",
+      "ユーザーサクセス",
+      "カスタマーサクセス",
+      "プロダクトマネージャー"
+    ],
+    "color": "#FFB347"
+  },
+  {
+    "id": "careful_broad_logic_solo",
+    "name": "伊達政宗",
+    "title": "戦略の大局者",
+    "description": "論理的に多領域を分析し、慎重に計画を立てた上で、独力で大きな目標を実現するタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "broad",
+      "logic": "logic",
+      "style": "solo"
+    },
+    "strengths": [
+      "戦略的思考",
+      "論理的分析",
+      "多領域の理解",
+      "独立した判断"
+    ],
+    "weaknesses": [
+      "実行の遅さ",
+      "チームワーク不足",
+      "柔軟性の欠如",
+      "機会損失"
+    ],
+    "roles": [
+      "経営戦略責任者",
+      "コンサルタント",
+      "ビジネスアナリスト",
+      "事業企画責任者"
+    ],
+    "color": "#007AFF"
+  },
+  {
+    "id": "careful_broad_logic_support",
+    "name": "石田三成",
+    "title": "統治の理論家",
+    "description": "論理的に多領域を統合し、慎重に計画を立てながら、チーム全体の成功を実現するタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "broad",
+      "logic": "logic",
+      "style": "support"
+    },
+    "strengths": [
+      "組織統治",
+      "論理的戦略",
+      "慎重な計画",
+      "チーム全体の成果"
+    ],
+    "weaknesses": [
+      "実行速度",
+      "個人の成果",
+      "変化への対応",
+      "リスク判断"
+    ],
+    "roles": [
+      "組織開発責任者",
+      "経営企画",
+      "事業統括",
+      "プロジェクト統括"
+    ],
+    "color": "#5856D6"
+  },
+  {
+    "id": "careful_broad_intuition_solo",
+    "name": "北条早雲",
+    "title": "洞察の開拓者",
+    "description": "感性で多領域の可能性を感じ取り、慎重に計画を立てた上で、独力で新しい領域を開拓するタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "broad",
+      "logic": "intuition",
+      "style": "solo"
+    },
+    "strengths": [
+      "感性的洞察",
+      "多領域の可能性感知",
+      "慎重な計画",
+      "独立した行動"
+    ],
+    "weaknesses": [
+      "論理的説明",
+      "実行速度",
+      "チーム内共有",
+      "定量的成果"
+    ],
+    "roles": [
+      "ビジョナリー",
+      "戦略デザイナー",
+      "イノベーション企画",
+      "新規事業企画"
+    ],
+    "color": "#AF52DE"
+  },
+  {
+    "id": "careful_broad_intuition_support",
+    "name": "毛利元就",
+    "title": "感性の統治者",
+    "description": "感性で多領域を統合し、慎重に計画を立てながら、チーム全体を感性的にまとめるタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "broad",
+      "logic": "intuition",
+      "style": "support"
+    },
+    "strengths": [
+      "感性的リーダーシップ",
+      "多領域統合",
+      "慎重な計画",
+      "チーム意識醸成"
+    ],
+    "weaknesses": [
+      "論理的根拠不足",
+      "実行速度",
+      "定量的成果測定",
+      "個人の成果"
+    ],
+    "roles": [
+      "カルチャー構築責任者",
+      "組織開発",
+      "人材育成",
+      "コミュニティ構築"
+    ],
+    "color": "#FF1744"
+  },
+  {
+    "id": "careful_deep_logic_solo",
+    "name": "福島正則",
+    "title": "堅実の職人",
+    "description": "論理的に専門領域を極め、慎重に完璧を目指しながら、独力で確実な成果を生み出すタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "deep",
+      "logic": "logic",
+      "style": "solo"
+    },
+    "strengths": [
+      "専門知識の深さ",
+      "論理的思考",
+      "完璧性への追求",
+      "独立した行動"
+    ],
+    "weaknesses": [
+      "新領域への抵抗",
+      "実行速度",
+      "チームワーク",
+      "視野の狭さ"
+    ],
+    "roles": [
+      "研究開発リーダー",
+      "品質管理責任者",
+      "システムアーキテクト",
+      "技術スペシャリスト"
+    ],
+    "color": "#00BCD4"
+  },
+  {
+    "id": "careful_deep_logic_support",
+    "name": "加藤清正",
+    "title": "堅実の支援者",
+    "description": "論理的に専門領域を極め、慎重に完璧を目指しながら、チーム全体をサポートするタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "deep",
+      "logic": "logic",
+      "style": "support"
+    },
+    "strengths": [
+      "専門的サポート",
+      "論理的思考",
+      "完璧性への追求",
+      "チーム信頼構築"
+    ],
+    "weaknesses": [
+      "新領域への抵抗",
+      "実行速度",
+      "大局的視点",
+      "個人の成果"
+    ],
+    "roles": [
+      "テクニカルリード",
+      "品質保証",
+      "データアナリスト",
+      "サポートエンジニア"
+    ],
+    "color": "#009688"
+  },
+  {
+    "id": "careful_deep_intuition_solo",
+    "name": "黒田官兵衛",
+    "title": "工夫の大家",
+    "description": "感性で専門領域を極め、慎重に工夫を重ねながら、独力で創造的な成果を生み出すタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "deep",
+      "logic": "intuition",
+      "style": "solo"
+    },
+    "strengths": [
+      "創造的工夫",
+      "専門知識の深さ",
+      "感性的思考",
+      "独立した行動"
+    ],
+    "weaknesses": [
+      "論理的説明",
+      "実行速度",
+      "チーム内共有",
+      "スケーラビリティ"
+    ],
+    "roles": [
+      "職人エンジニア",
+      "UXデザイナー",
+      "アーティスト",
+      "独立系コンサルタント"
+    ],
+    "color": "#E91E63"
+  },
+  {
+    "id": "careful_deep_intuition_support",
+    "name": "ねね（北政所）",
+    "title": "工夫の支援者",
+    "description": "感性で専門領域を深掘りし、慎重に工夫を重ねながら、チーム全体をサポートするタイプ。",
+    "traits": {
+      "speed": "careful",
+      "scope": "deep",
+      "logic": "intuition",
+      "style": "support"
+    },
+    "strengths": [
+      "創意工夫",
+      "専門的サポート",
+      "感性的理解",
+      "チーム信頼構築"
+    ],
+    "weaknesses": [
+      "論理的根拠",
+      "実行速度",
+      "大規模プロジェクト",
+      "個人の成果"
+    ],
+    "roles": [
+      "プロダクトサポート",
+      "ユーザーサクセス",
+      "カスタマーサクセス",
+      "プロダクトマネージャー"
+    ],
+    "color": "#FF6F00"
+  }
+]

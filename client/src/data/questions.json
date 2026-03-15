@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "text": "まずやってみて、走りながら改善していくほうが性に合っている。",
+    "axis": "speed",
+    "positive": "fast",
+    "negative": "careful"
+  },
+  {
+    "id": 2,
+    "text": "憧れるのは、圧倒的なスキルを持つ職人タイプより、何でもこなす多才なタイプだ。",
+    "axis": "scope",
+    "positive": "broad",
+    "negative": "deep"
+  },
+  {
+    "id": 3,
+    "text": "計画が完璧に固まる前に、動き出すことに抵抗がある。",
+    "axis": "speed",
+    "positive": "careful",
+    "negative": "fast"
+  },
+  {
+    "id": 4,
+    "text": "大きな決断を迫られたとき、客観的なデータや事実よりも、理想や直感を重視する。",
+    "axis": "logic",
+    "positive": "intuition",
+    "negative": "logic"
+  },
+  {
+    "id": 5,
+    "text": "『あなたのおかげで道が開けた』と言われるよりも、『あなたのおかげで頑張れた』と言われる方が嬉しい。",
+    "axis": "style",
+    "positive": "support",
+    "negative": "solo"
+  },
+  {
+    "id": 6,
+    "text": "会議では、他分野を掛け合わせたアイデアを出すより、自分の担当領域を深く話したい。",
+    "axis": "scope",
+    "positive": "deep",
+    "negative": "broad"
+  },
+  {
+    "id": 7,
+    "text": "未知の領域に取り組んでいる時、確実性のない中で決断を下すことは苦手だ。",
+    "axis": "speed",
+    "positive": "careful",
+    "negative": "fast"
+  },
+  {
+    "id": 8,
+    "text": "完璧を目指すよりも、とにかく一旦前に進めることのほうが大事だと思う。",
+    "axis": "speed",
+    "positive": "fast",
+    "negative": "careful"
+  },
+  {
+    "id": 9,
+    "text": "キャリア形成において、同じ部署に長く留まるより、多様な環境を経験したい。",
+    "axis": "scope",
+    "positive": "broad",
+    "negative": "deep"
+  },
+  {
+    "id": 10,
+    "text": "理想のチームとは、弱点を補い合うような集団よりも、強力な個が集まった集団であるべきだと思う。",
+    "axis": "style",
+    "positive": "solo",
+    "negative": "support"
+  },
+  {
+    "id": 11,
+    "text": "細かいミスや抜け漏れが続くと、次の新しいチャレンジに慎重になるタイプである。",
+    "axis": "speed",
+    "positive": "careful",
+    "negative": "fast"
+  },
+  {
+    "id": 12,
+    "text": "未経験だが視野が広がる業務と、自分の強みをさらに磨ける業務なら、後者を選ぶ。",
+    "axis": "scope",
+    "positive": "deep",
+    "negative": "broad"
+  },
+  {
+    "id": 13,
+    "text": "仕事をする上で、「誰と一緒にやるか」という周囲との繋がりでモチベーションよりも、「なぜこの仕事が必要か」という論理的な納得感に左右されやすい。",
+    "axis": "logic",
+    "positive": "logic",
+    "negative": "intuition"
+  },
+  {
+    "id": 14,
+    "text": "高い営業目標を追いかける際、自分が圧倒的な数字を作って「背中」でチームを引っ張るよりも、自分や他者の強みを組み合わせて、みんなで勝てる仕組みを整えたい。",
+    "axis": "style",
+    "positive": "support",
+    "negative": "solo"
+  },
+  {
+    "id": 15,
+    "text": "全社会議の表彰台で、自分の名前が呼ばれてスポットライトを浴びる瞬間よりも、自分が裏で支えた後輩やチームメンバーが表彰され、壇上でキラキラしている姿を見る方が泣ける。",
+    "axis": "style",
+    "positive": "support",
+    "negative": "solo"
+  },
+  {
+    "id": 16,
+    "text": "あなたが人事なら、抜擢の理由は「その人が持つ熱量や人間的魅力」より、「過去の定量的な実績」に理由の比重をおくべきだと思う。",
+    "axis": "logic",
+    "positive": "logic",
+    "negative": "intuition"
+  }
+]
