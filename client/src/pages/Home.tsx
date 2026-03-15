@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { CharacterCard } from '@/components/CharacterCard';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 
@@ -66,19 +67,26 @@ export default function Home() {
   }));
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+    <div className="min-h-screen bg-background paper-texture">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-              <span className="text-white font-bold text-sm">打</span>
-            </div>
-            <h1 className="text-lg font-bold text-foreground">打破宣言メーカー</h1>
-          </div>
+          <div className="ink-title text-lg font-bold text-foreground">打破宣言メーカー</div>
+          <Button
+            onClick={handleStartDiagnosis}
+            className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
+          >
+            診断する
+          </Button>
+          <ThemeToggle />
         </div>
       </nav>
 
       <section className="relative overflow-hidden py-12 md:py-20">
+        <div className="night-sky hidden dark:block">
+          <div className="night-clouds" />
+          <div className="night-castle" />
+          <div className="night-pines" />
+        </div>
         <div className="absolute inset-0 opacity-70">
           <div className="absolute left-[-4rem] top-16 h-56 w-56 rounded-full bg-primary/8 blur-3xl"></div>
           <div className="absolute right-[-3rem] top-8 h-56 w-56 rounded-full bg-accent/15 blur-3xl"></div>
@@ -87,11 +95,11 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 text-center">
             <div className="max-w-4xl space-y-6">
-              <div className="inline-flex rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+              <div className="slip-tag inline-flex items-center rounded-full px-5 py-1.5 pl-7 text-sm font-medium text-primary">
                 CYBERAGENT PURPOSE
               </div>
               <div className="space-y-5">
-                <h2 className="text-4xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
+                <h2 className="ink-title text-4xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
                   日本の閉塞感を打破する。
                   <span className="mt-2 block text-primary">新卒としての活躍宣言をつくろう！</span>
                 </h2>
@@ -105,7 +113,7 @@ export default function Home() {
             </div>
 
             <div className="mx-auto w-full max-w-xl">
-              <div className="overflow-hidden rounded-[2rem] border border-border bg-card p-3 shadow-[0_24px_60px_rgba(28,43,31,0.10)]">
+              <div className="frame-scroll overflow-hidden rounded-[2rem] p-4">
                 {!heroImageFailed ? (
                   <img
                     src="/daha-sengen-main-visual.png"
@@ -132,26 +140,26 @@ export default function Home() {
             </div>
 
             <div className="grid w-full max-w-5xl gap-6 md:grid-cols-2 md:text-left">
-              <div className="rounded-3xl border border-border bg-card p-6 text-left shadow-[0_16px_40px_rgba(28,43,31,0.06)]">
-                <h3 className="mb-3 text-base font-semibold text-foreground">※注意事項</h3>
+              <div className="historical-panel rounded-3xl p-6 text-left">
+                <h3 className="ink-title mb-3 text-base font-semibold text-foreground">※注意事項</h3>
                 <p className="text-sm leading-7 text-muted-foreground">
                   これは適正診断ではなく、あくまで「どんな活躍をしていきたいか？」の活躍宣言をつくるヒントにしていただきたいものです！
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-border bg-card p-6 space-y-3 text-left shadow-[0_16px_40px_rgba(28,43,31,0.06)]">
-                <h3 className="font-semibold text-foreground">診断について</h3>
+              <div className="historical-panel rounded-3xl p-6 space-y-3 text-left">
+                <h3 className="ink-title font-semibold text-foreground">診断について</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-3">
-                    <span className="font-bold text-primary">•</span>
+                    <span className="font-bold text-[var(--gold)]">•</span>
                     <span>計16問の質問に答えていただきます</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="font-bold text-primary">•</span>
+                    <span className="font-bold text-[var(--gold)]">•</span>
                     <span>所要時間は約1分です</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="font-bold text-primary">•</span>
+                    <span className="font-bold text-[var(--gold)]">•</span>
                     <span>結果は16種類の戦国武将タイプで表示されます</span>
                   </li>
                 </ul>
@@ -160,7 +168,7 @@ export default function Home() {
 
             <Button
               onClick={handleStartDiagnosis}
-              className="h-14 px-10 text-lg font-semibold shadow-lg shadow-primary/20"
+              className="slip-tag h-14 px-10 pl-12 text-lg font-semibold text-foreground shadow-lg shadow-primary/10 hover:bg-[rgba(255,255,255,0.96)]"
             >
               診断を開始する
             </Button>
@@ -171,7 +179,7 @@ export default function Home() {
       <section className="border-t border-border py-16 md:py-24">
         <div className="container">
           <div className="mx-auto max-w-5xl text-center">
-            <h3 className="text-3xl font-bold text-foreground">
+            <h3 className="ink-title text-3xl font-bold text-foreground">
               16タイプの登場人物
             </h3>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
@@ -183,13 +191,17 @@ export default function Home() {
             {groupedTypes.map((group) => (
               <section
                 key={group.era}
-                className="rounded-[2rem] border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8"
+                className="historical-panel rounded-[2rem] p-6 md:p-8"
               >
                 <div className="text-center">
-                  <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-                    {group.label}
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="crest-mark" aria-hidden="true" />
+                    <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
+                      {group.label}
+                    </div>
+                    <span className="crest-mark" aria-hidden="true" />
                   </div>
-                  <h4 className="mt-4 text-2xl font-bold text-foreground">
+                  <h4 className="ink-title mt-4 text-2xl font-bold text-foreground">
                     #{group.theme}
                   </h4>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -217,7 +229,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border bg-card/60 py-8">
+      <footer className="border-t border-border bg-[rgba(251,248,241,0.72)] py-8 dark:bg-[rgba(8,14,24,0.72)]">
         <div className="container text-center text-sm text-muted-foreground">
           <p>打破宣言メーカー © 2026 | 戦国武将モチーフの診断サイト</p>
         </div>

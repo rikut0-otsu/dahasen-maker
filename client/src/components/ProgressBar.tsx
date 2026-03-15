@@ -17,15 +17,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         <span className="text-sm font-medium text-muted-foreground">
           Page {currentPage} / {totalPages}
         </span>
-        <span className="text-sm font-medium text-muted-foreground">
+        <span className="text-sm font-medium text-[var(--gold)]">
           {Math.round(progress)}%
         </span>
       </div>
 
-      <div className="w-full h-2 rounded-full overflow-hidden bg-muted">
+      <div className="w-full h-3 rounded-full overflow-hidden bg-[var(--meter-bg)]">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ease-out"
-          style={{ width: `${progress}%` }}
+          className="h-full rounded-full transition-all duration-500 ease-out"
+          style={{ width: `${progress}%`, background: 'var(--meter-fill)' }}
         />
       </div>
     </div>

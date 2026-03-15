@@ -39,8 +39,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       onClick: handleYesStrong,
       sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
-        'border-primary bg-primary/18 shadow-[0_0_0_6px_rgba(45,140,60,0.18)]',
-      idleClass: 'border-primary/85 hover:border-primary hover:bg-primary/8',
+        'border-primary bg-primary shadow-[0_0_0_7px_rgba(45,140,60,0.22)]',
+      idleClass: 'border-primary/90 bg-white hover:border-primary hover:bg-primary/12',
     },
     {
       key: 'agree-weak',
@@ -50,8 +50,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       onClick: handleYesWeak,
       sizeClass: 'h-9 w-9 md:h-[3.4rem] md:w-[3.4rem]',
       activeClass:
-        'border-primary bg-primary/14 shadow-[0_0_0_5px_rgba(45,140,60,0.14)]',
-      idleClass: 'border-primary/70 hover:border-primary hover:bg-primary/8',
+        'border-primary bg-primary/80 shadow-[0_0_0_6px_rgba(45,140,60,0.18)]',
+      idleClass: 'border-primary/75 bg-white hover:border-primary hover:bg-primary/12',
     },
     {
       key: 'disagree-weak',
@@ -61,8 +61,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       onClick: handleNoWeak,
       sizeClass: 'h-9 w-9 md:h-[3.4rem] md:w-[3.4rem]',
       activeClass:
-        'border-accent bg-accent/18 shadow-[0_0_0_5px_rgba(130,190,40,0.18)]',
-      idleClass: 'border-accent/70 hover:border-accent hover:bg-accent/10',
+        'border-accent bg-accent/85 shadow-[0_0_0_6px_rgba(130,190,40,0.2)]',
+      idleClass: 'border-accent/75 bg-white hover:border-accent hover:bg-accent/14',
     },
     {
       key: 'disagree-strong',
@@ -72,20 +72,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       onClick: handleNoStrong,
       sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
-        'border-accent bg-accent/22 shadow-[0_0_0_6px_rgba(130,190,40,0.22)]',
-      idleClass: 'border-accent/85 hover:border-accent hover:bg-accent/10',
+        'border-accent bg-accent shadow-[0_0_0_7px_rgba(130,190,40,0.24)]',
+      idleClass: 'border-accent/90 bg-white hover:border-accent hover:bg-accent/14',
     },
   ];
 
   return (
-    <div className="w-full rounded-[1.75rem] border border-border bg-card p-6 md:p-8 shadow-[0_18px_50px_rgba(28,43,31,0.08)]">
-      <h3 className="mb-8 text-lg font-semibold leading-relaxed text-foreground md:text-xl">
+    <div className="historical-panel w-full rounded-[1.75rem] p-6 md:p-8">
+      <h3 className="ink-title mb-8 text-lg font-semibold leading-relaxed text-foreground md:text-2xl">
         {text}
       </h3>
 
-      <div className="rounded-2xl border border-border bg-white px-4 py-5 md:px-6 md:py-6">
+      <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
         <div className="flex items-center justify-between gap-4 md:gap-8">
-          <span className="text-sm font-medium tracking-[0.04em] text-primary md:w-24 md:text-base">
+          <span className="ink-title text-sm font-medium tracking-[0.08em] text-primary md:w-24 md:text-base">
             そう思う
           </span>
 
@@ -103,7 +103,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   aria-pressed={isSelected}
                   aria-label={option.label}
                   className={cn(
-                    'flex shrink-0 items-center justify-center rounded-full border-[3px] bg-transparent transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30',
+                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
                     option.sizeClass,
                     isSelected ? option.activeClass : option.idleClass,
                     isSelected && 'scale-105'
@@ -113,7 +113,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             })}
           </div>
 
-          <span className="text-right text-sm font-medium tracking-[0.04em] text-accent md:w-24 md:text-base">
+          <span className="ink-title text-right text-sm font-medium tracking-[0.08em] text-accent md:w-24 md:text-base">
             そう思わない
           </span>
         </div>
