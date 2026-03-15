@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 import { Copy, Download, RotateCcw, Share2 } from 'lucide-react';
@@ -131,8 +132,8 @@ export default function TypeDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+    <div className="min-h-screen bg-background paper-texture">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex items-center justify-between py-4">
           <Button
             onClick={() => setLocation('/')}
@@ -141,16 +142,25 @@ export default function TypeDetail() {
           >
             ← トップへ戻る
           </Button>
-          <h1 className="text-lg font-bold text-foreground">16タイプ詳細</h1>
-          <div className="w-24" />
+          <Button
+            onClick={() => setLocation('/diagnosis')}
+            className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
+          >
+            診断する
+          </Button>
+          <ThemeToggle />
         </div>
       </nav>
 
       <div className="container py-10 md:py-14">
         <div className="mx-auto max-w-6xl space-y-8">
-          <div className="rounded-[2.2rem] border border-border bg-card p-6 shadow-[0_18px_60px_rgba(28,43,31,0.08)] md:p-8">
+          <div className="historical-panel relative rounded-[2.2rem] p-6 md:p-8">
+            <div className="night-sky hidden dark:block">
+              <div className="night-clouds !bottom-10 opacity-55" />
+              <div className="night-castle !bottom-6 !h-28 !w-[30rem] opacity-28" />
+            </div>
             <div className="grid gap-8 lg:grid-cols-[360px_1fr] lg:items-center">
-              <div className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] border border-border bg-[radial-gradient(circle_at_top,_rgba(130,190,40,0.12),_transparent_55%),linear-gradient(180deg,#ffffff_0%,#f4f8ef_100%)] p-4 shadow-[0_18px_40px_rgba(28,43,31,0.10)]">
+              <div className="frame-scroll mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] p-4">
                 <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white">
                 {!imageFailed ? (
                   <img
@@ -172,23 +182,23 @@ export default function TypeDetail() {
 
               <div className="space-y-5 text-center lg:text-left">
                 <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
-                  <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                  <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                     {type.eraLabel}
                   </div>
-                  <div className="inline-flex rounded-full border border-border bg-muted px-4 py-1.5 text-sm font-medium text-foreground">
+                  <div className="slip-tag inline-flex rounded-full px-4 py-1.5 pl-7 text-sm font-medium text-foreground">
                     #{type.eraTheme}
                   </div>
                   {type.fullTypeLabel && (
-                    <div className="inline-flex rounded-full border border-primary/15 bg-white px-4 py-1.5 text-sm font-medium text-foreground">
+                    <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-foreground">
                       {type.fullTypeLabel}
                     </div>
                   )}
-                  <div className="inline-flex rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent-foreground">
+                  <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-accent-foreground">
                     {type.combinationLabel}
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-5xl font-bold text-foreground md:text-6xl">{type.name}</h2>
+                  <h2 className="ink-title text-5xl font-bold text-foreground md:text-6xl">{type.name}</h2>
                   <p className="mt-2 text-xl font-semibold text-primary">{type.title}</p>
                 </div>
                 {hasTypeImage ? (
@@ -196,7 +206,7 @@ export default function TypeDetail() {
                     <a
                       href={typeImagePath}
                       download
-                      className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+                      className="slip-tag inline-flex items-center gap-2 rounded-full px-4 py-2 pl-7 text-sm font-medium text-primary transition-colors hover:bg-[rgba(255,255,255,0.96)]"
                     >
                       <Download className="h-4 w-4" />
                       画像を保存
@@ -212,8 +222,8 @@ export default function TypeDetail() {
           </div>
 
           {!hasDetailedContent && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">詳細説明</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">詳細説明</h3>
               <p className="mt-4 text-base leading-8 text-muted-foreground">
                 このタイプの詳細説明はまだ反映前です。今後追加された内容のみをここに表示します。
               </p>
@@ -221,11 +231,11 @@ export default function TypeDetail() {
           )}
 
           {shouldShowScoreboard && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                 診断スコア
               </div>
-              <h3 className="mt-4 text-2xl font-bold text-foreground">
+              <h3 className="ink-title mt-4 text-2xl font-bold text-foreground">
                 あなたはこの結果になりました
               </h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -234,7 +244,7 @@ export default function TypeDetail() {
 
               <div className="mt-6 grid gap-4">
                 {scoreRows.map((row) => (
-                  <div key={row.title} className="rounded-[1.75rem] border border-border bg-muted/30 p-5">
+                  <div key={row.title} className="wash-paper rounded-[1.75rem] p-5">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm font-semibold tracking-[0.08em] text-muted-foreground">
                         {row.title}
@@ -263,11 +273,11 @@ export default function TypeDetail() {
           )}
 
           {type.detailHeading && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                 詳細説明
               </div>
-              <h3 className="mt-4 text-2xl font-bold leading-relaxed text-foreground">
+              <h3 className="ink-title mt-4 text-2xl font-bold leading-relaxed text-foreground">
                 {type.detailHeading}
               </h3>
               <div className="mt-5 space-y-4">
@@ -281,11 +291,11 @@ export default function TypeDetail() {
           )}
 
           {type.detailStrengths && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">強み｜仕事の中で出やすい特徴</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">強み｜仕事の中で出やすい特徴</h3>
               <div className="mt-5 space-y-4">
                 {type.detailStrengths.map((item) => (
-                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                  <div key={item.title} className="wash-paper rounded-2xl p-4">
                     <p className="font-semibold text-foreground">{item.title}</p>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
                   </div>
@@ -295,11 +305,11 @@ export default function TypeDetail() {
           )}
 
           {type.detailCautions && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">注意点｜陥りやすいパターン</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">注意点｜陥りやすいパターン</h3>
               <div className="mt-5 space-y-4">
                 {type.detailCautions.map((item) => (
-                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                  <div key={item.title} className="wash-paper rounded-2xl p-4">
                     <p className="font-semibold text-foreground">{item.title}</p>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
                   </div>
@@ -309,11 +319,11 @@ export default function TypeDetail() {
           )}
 
           {type.detailScenes && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">活躍しやすい場面</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">活躍しやすい場面</h3>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 {type.detailScenes.map((item) => (
-                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                  <div key={item.title} className="wash-paper rounded-2xl p-4">
                     <p className="font-semibold text-foreground">{item.title}</p>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
                   </div>
@@ -323,8 +333,8 @@ export default function TypeDetail() {
           )}
 
           {type.detailStyle && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">このタイプの打破スタイル</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">このタイプの打破スタイル</h3>
               <div className="mt-5 space-y-4">
                 {type.detailStyle.map((paragraph) => (
                   <p key={paragraph} className="text-base leading-8 text-muted-foreground">
@@ -336,8 +346,8 @@ export default function TypeDetail() {
           )}
 
           {type.detailWhy && (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
-              <h3 className="text-xl font-bold text-foreground">なぜ{type.name}？</h3>
+            <section className="historical-panel rounded-3xl p-6 md:p-8">
+              <h3 className="ink-title text-xl font-bold text-foreground">なぜ{type.name}？</h3>
               <div className="mt-5 space-y-4">
                 {type.detailWhy.map((paragraph) => (
                   <p key={paragraph} className="text-base leading-8 text-muted-foreground">
@@ -352,7 +362,7 @@ export default function TypeDetail() {
             <Button
               onClick={handleShare}
               variant="outline"
-              className="h-12 flex-1 border-primary/20 bg-card text-primary hover:bg-primary/5"
+              className="slip-tag h-12 flex-1 pl-8 text-primary hover:bg-[rgba(255,255,255,0.96)]"
             >
               <Share2 className="mr-2 h-4 w-4" />
               結果をシェア
@@ -360,7 +370,7 @@ export default function TypeDetail() {
             <Button
               onClick={handleCopyUrl}
               variant="outline"
-              className="h-12 flex-1 border-border bg-card text-foreground hover:bg-muted/50"
+              className="seal-tag h-12 flex-1 text-foreground hover:bg-muted/50"
             >
               <Copy className="mr-2 h-4 w-4" />
               URLをコピー
@@ -368,7 +378,7 @@ export default function TypeDetail() {
             {shouldShowScoreboard && (
               <Button
                 onClick={handleRetry}
-                className="h-12 flex-1"
+                className="slip-tag h-12 flex-1 pl-8 text-foreground hover:bg-[rgba(255,255,255,0.96)]"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 もう一度診断する

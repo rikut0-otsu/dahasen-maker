@@ -26,19 +26,19 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
 
   if (compact) {
     const content = (
-      <div className="overflow-hidden rounded-[1.6rem] border border-border bg-card text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_rgba(45,140,60,0.12)]">
-        <div className="bg-[radial-gradient(circle_at_top,_rgba(130,190,40,0.14),_transparent_55%),linear-gradient(180deg,#ffffff_0%,#f5f8f2_100%)] p-3">
-          <div className="mx-auto aspect-[3/4] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] border border-border/70 bg-white">
+      <div className="historical-panel overflow-hidden rounded-[1.6rem] text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_rgba(45,140,60,0.12)]">
+        <div className="wash-paper p-3">
+          <div className="frame-scroll mx-auto aspect-[3/4] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
             {imagePath && !imageFailed ? (
               <img
                 src={imagePath}
                 alt={`${name}の画像`}
-                className="h-full w-full object-contain"
+                className="h-full w-full rounded-[1rem] object-contain bg-white"
                 onError={() => setImageFailed(true)}
               />
             ) : (
               <div
-                className="flex h-full w-full items-center justify-center text-4xl font-bold text-white"
+                className="flex h-full w-full items-center justify-center rounded-[1rem] text-4xl font-bold text-white"
                 style={{ backgroundColor: color }}
               >
                 {name.charAt(0)}
@@ -48,10 +48,10 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
         </div>
 
         <div className="space-y-1 px-4 pb-5 pt-3">
-          <h4 className="text-sm font-semibold text-foreground">{name}</h4>
+          <h4 className="ink-title text-base font-semibold text-foreground">{name}</h4>
           <p className="text-xs text-muted-foreground">{title}</p>
           {typeCode && (
-            <p className="pt-1 text-[11px] font-semibold tracking-[0.08em] text-primary/80">
+            <p className="pt-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--gold)]">
               【{typeCode}】
             </p>
           )}

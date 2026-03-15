@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { QuestionCard } from '@/components/QuestionCard';
 import { ProgressBar } from '@/components/ProgressBar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -38,8 +39,8 @@ export default function Diagnosis() {
   }, [state.currentPage]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+    <div className="min-h-screen bg-background paper-texture">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container py-4 flex items-center justify-between">
           <Button
             onClick={() => setLocation('/')}
@@ -48,14 +49,19 @@ export default function Diagnosis() {
           >
             ← 戻る
           </Button>
-          <h1 className="text-lg font-bold text-foreground">打破宣言メーカー</h1>
-          <div className="w-16"></div>
+          <Button
+            onClick={() => setLocation('/diagnosis')}
+            className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
+          >
+            診断する
+          </Button>
+          <ThemeToggle />
         </div>
       </nav>
 
       <div className="container py-8 md:py-12">
         <div className="max-w-2xl mx-auto">
-          <div className="mb-12 rounded-3xl border border-border bg-card p-6 shadow-[0_18px_50px_rgba(28,43,31,0.06)]">
+          <div className="historical-panel mb-12 rounded-3xl p-6">
             <ProgressBar currentPage={state.currentPage} totalPages={4} />
           </div>
 
@@ -63,8 +69,8 @@ export default function Diagnosis() {
             {currentQuestions.map((question, index) => (
               <div key={question.id} className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-                    <span className="text-sm font-bold text-white">
+                  <div className="seal-tag flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full">
+                    <span className="text-sm font-bold text-primary">
                       {(state.currentPage - 1) * 4 + index + 1}
                     </span>
                   </div>
@@ -82,7 +88,7 @@ export default function Diagnosis() {
               onClick={prevPage}
               disabled={state.currentPage === 1}
               variant="outline"
-              className="h-12 flex-1 border-border bg-card text-muted-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-12 flex-1 border-[rgba(184,155,87,0.65)] bg-white text-foreground hover:bg-[rgba(242,238,226,0.95)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
               前へ
@@ -90,7 +96,7 @@ export default function Diagnosis() {
             <Button
               onClick={handleNext}
               disabled={!canProceed}
-              className="h-12 flex-1 bg-primary text-white font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-12 flex-1 bg-primary text-white font-semibold shadow-[0_12px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLastPage ? '結果を見る' : '次へ'}
               <ChevronRight className="w-4 h-4 ml-2" />
@@ -98,7 +104,7 @@ export default function Diagnosis() {
           </div>
 
           {!canProceed && (
-            <div className="mt-6 rounded-lg border border-accent/50 bg-accent/10 p-4 text-sm text-foreground">
+            <div className="historical-panel mt-6 rounded-2xl p-4 text-sm text-foreground">
               このページの全ての質問に答えてください
             </div>
           )}
