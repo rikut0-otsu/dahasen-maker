@@ -105,5 +105,7 @@ temp/
 *.sqlite
 *.sqlite3
 
-# Webdev artifacts (checkpoint zips, migrations, etc.)
+# Local tooling artifacts
 .webdev/
+dev-server.log
+.local-logs/

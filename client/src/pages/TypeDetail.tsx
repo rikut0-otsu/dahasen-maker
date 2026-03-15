@@ -1,0 +1,382 @@
+import { Button } from '@/components/ui/button';
+import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
+import typesData from '@/data/types.json';
+import { Copy, Download, RotateCcw, Share2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useLocation, useRoute } from 'wouter';
+
+const axisMeta = {
+  decision: {
+    title: '意思決定',
+    leftLabel: '論理',
+    rightLabel: '感性',
+    leftKey: 'logic',
+    rightKey: 'emotion',
+    barClassName: 'bg-[linear-gradient(90deg,#2d8c3c_0%,#82be28_100%)]',
+  },
+  role: {
+    title: '役割',
+    leftLabel: '自走',
+    rightLabel: '伴走',
+    leftKey: 'drive',
+    rightKey: 'support',
+    barClassName: 'bg-[linear-gradient(90deg,#1f6f31_0%,#88c425_100%)]',
+  },
+  domain: {
+    title: '領域',
+    leftLabel: '越境',
+    rightLabel: '専門',
+    leftKey: 'expansion',
+    rightKey: 'mastery',
+    barClassName: 'bg-[linear-gradient(90deg,#82be28_0%,#2d8c3c_100%)]',
+  },
+  execution: {
+    title: '実行',
+    leftLabel: '爆速',
+    rightLabel: '緻密',
+    leftKey: 'agile',
+    rightKey: 'precision',
+    barClassName: 'bg-[linear-gradient(90deg,#9ed448_0%,#2d8c3c_100%)]',
+  },
+} as const;
+
+type AxisMetaKey = keyof typeof axisMeta;
+
+export default function TypeDetail() {
+  const [, setLocation] = useLocation();
+  const [match, params] = useRoute('/types/:typeId');
+  const [imageFailed, setImageFailed] = useState(false);
+  const { reset, state, calculateIndicatorScores, calculateResult } = useDiagnosisContext();
+
+  const type = useMemo(() => {
+    if (!match || !params?.typeId) {
+      return null;
+    }
+
+    return typesData.find((item) => item.id === params.typeId) ?? null;
+  }, [match, params]);
+
+  if (!type) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="max-w-lg rounded-3xl border border-border bg-card p-8 text-center shadow-[0_18px_50px_rgba(28,43,31,0.08)]">
+          <h1 className="text-2xl font-bold text-foreground">タイプが見つかりません</h1>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            指定されたタイプ情報を読み込めませんでした。トップページからもう一度選択してください。
+          </p>
+          <Button className="mt-6" onClick={() => setLocation('/')}>
+            トップに戻る
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const hasDetailedContent =
+    Boolean(type.detailHeading) ||
+    Boolean(type.detailIntro?.length) ||
+    Boolean(type.detailStrengths?.length) ||
+    Boolean(type.detailCautions?.length) ||
+    Boolean(type.detailScenes?.length) ||
+    Boolean(type.detailStyle?.length) ||
+    Boolean(type.detailWhy?.length);
+  const typeImagePath = type.imagePath ?? `/type-images/${type.id}.png`;
+  const hasTypeImage = !imageFailed;
+  const indicatorScores = calculateIndicatorScores();
+  const axisResult = calculateResult();
+  const shouldShowScoreboard = state.result?.id === type.id && state.answers.length > 0;
+  const scoreRows = [
+    { axis: 'decision' as AxisMetaKey, winner: axisResult.decision },
+    { axis: 'role' as AxisMetaKey, winner: axisResult.role },
+    { axis: 'domain' as AxisMetaKey, winner: axisResult.domain },
+    { axis: 'execution' as AxisMetaKey, winner: axisResult.execution },
+  ].map((row) => {
+    const meta = axisMeta[row.axis];
+    const leftScore = indicatorScores[meta.leftKey];
+    const rightScore = indicatorScores[meta.rightKey];
+    const total = leftScore + rightScore || 1;
+    const leftRatio = leftScore / total;
+
+    return {
+      ...meta,
+      winningLabel: row.winner === meta.leftKey ? meta.leftLabel : meta.rightLabel,
+      winningPercent: Math.round(Math.max(leftRatio, 1 - leftRatio) * 100),
+      markerPosition: `${(1 - leftRatio) * 100}%`,
+    };
+  });
+
+  const handleShare = () => {
+    const text = `私の打破タイプは「${type.name}」です！\n\n${type.title}\n\n打破宣言メーカーで診断してみてください！`;
+    if (navigator.share) {
+      navigator.share({
+        title: '打破宣言メーカー',
+        text,
+        url: window.location.href,
+      });
+      return;
+    }
+
+    navigator.clipboard.writeText(text);
+    alert('結果をコピーしました');
+  };
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert('URLをコピーしました');
+  };
+
+  const handleRetry = () => {
+    reset();
+    setLocation('/diagnosis');
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+        <div className="container flex items-center justify-between py-4">
+          <Button
+            onClick={() => setLocation('/')}
+            variant="ghost"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            ← トップへ戻る
+          </Button>
+          <h1 className="text-lg font-bold text-foreground">16タイプ詳細</h1>
+          <div className="w-24" />
+        </div>
+      </nav>
+
+      <div className="container py-10 md:py-14">
+        <div className="mx-auto max-w-6xl space-y-8">
+          <div className="rounded-[2.2rem] border border-border bg-card p-6 shadow-[0_18px_60px_rgba(28,43,31,0.08)] md:p-8">
+            <div className="grid gap-8 lg:grid-cols-[360px_1fr] lg:items-center">
+              <div className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] border border-border bg-[radial-gradient(circle_at_top,_rgba(130,190,40,0.12),_transparent_55%),linear-gradient(180deg,#ffffff_0%,#f4f8ef_100%)] p-4 shadow-[0_18px_40px_rgba(28,43,31,0.10)]">
+                <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white">
+                {!imageFailed ? (
+                  <img
+                    src={typeImagePath}
+                    alt={`${type.name}のメイン画像`}
+                    className="h-full w-full object-contain"
+                    onError={() => setImageFailed(true)}
+                  />
+                ) : (
+                  <div
+                    className="flex h-full w-full items-center justify-center text-7xl font-bold text-white"
+                    style={{ backgroundColor: type.color }}
+                  >
+                    {type.name.charAt(0)}
+                  </div>
+                )}
+                </div>
+              </div>
+
+              <div className="space-y-5 text-center lg:text-left">
+                <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
+                  <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                    {type.eraLabel}
+                  </div>
+                  <div className="inline-flex rounded-full border border-border bg-muted px-4 py-1.5 text-sm font-medium text-foreground">
+                    #{type.eraTheme}
+                  </div>
+                  {type.fullTypeLabel && (
+                    <div className="inline-flex rounded-full border border-primary/15 bg-white px-4 py-1.5 text-sm font-medium text-foreground">
+                      {type.fullTypeLabel}
+                    </div>
+                  )}
+                  <div className="inline-flex rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent-foreground">
+                    {type.combinationLabel}
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-5xl font-bold text-foreground md:text-6xl">{type.name}</h2>
+                  <p className="mt-2 text-xl font-semibold text-primary">{type.title}</p>
+                </div>
+                {hasTypeImage ? (
+                  <div className="flex justify-center lg:justify-start">
+                    <a
+                      href={typeImagePath}
+                      download
+                      className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+                    >
+                      <Download className="h-4 w-4" />
+                      画像を保存
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    この人物画像はまだ未設定です。`{typeImagePath}` に追加すると反映されます。
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {!hasDetailedContent && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">詳細説明</h3>
+              <p className="mt-4 text-base leading-8 text-muted-foreground">
+                このタイプの詳細説明はまだ反映前です。今後追加された内容のみをここに表示します。
+              </p>
+            </section>
+          )}
+
+          {shouldShowScoreboard && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                診断スコア
+              </div>
+              <h3 className="mt-4 text-2xl font-bold text-foreground">
+                あなたはこの結果になりました
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                実際の点数ではなく、各軸がどちらに寄っていたかだけを見やすくまとめています。
+              </p>
+
+              <div className="mt-6 grid gap-4">
+                {scoreRows.map((row) => (
+                  <div key={row.title} className="rounded-[1.75rem] border border-border bg-muted/30 p-5">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-sm font-semibold tracking-[0.08em] text-muted-foreground">
+                        {row.title}
+                      </p>
+                      <p className="text-xl font-bold text-foreground">
+                        {row.winningPercent}% {row.winningLabel}寄り
+                      </p>
+                    </div>
+
+                    <div className="mt-4 rounded-[1.4rem] bg-white px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                      <div className={`relative h-3 rounded-full ${row.barClassName}`}>
+                        <div
+                          className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-foreground shadow-[0_10px_22px_rgba(28,43,31,0.16)]"
+                          style={{ left: row.markerPosition }}
+                        />
+                      </div>
+                      <div className="mt-3 flex items-center justify-between text-sm font-medium text-muted-foreground">
+                        <span>{row.leftLabel}</span>
+                        <span>{row.rightLabel}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailHeading && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <div className="inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                詳細説明
+              </div>
+              <h3 className="mt-4 text-2xl font-bold leading-relaxed text-foreground">
+                {type.detailHeading}
+              </h3>
+              <div className="mt-5 space-y-4">
+                {type.detailIntro?.map((paragraph) => (
+                  <p key={paragraph} className="text-base leading-8 text-muted-foreground">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailStrengths && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">強み｜仕事の中で出やすい特徴</h3>
+              <div className="mt-5 space-y-4">
+                {type.detailStrengths.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                    <p className="font-semibold text-foreground">{item.title}</p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailCautions && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">注意点｜陥りやすいパターン</h3>
+              <div className="mt-5 space-y-4">
+                {type.detailCautions.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                    <p className="font-semibold text-foreground">{item.title}</p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailScenes && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">活躍しやすい場面</h3>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {type.detailScenes.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-border bg-muted/40 p-4">
+                    <p className="font-semibold text-foreground">{item.title}</p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailStyle && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">このタイプの打破スタイル</h3>
+              <div className="mt-5 space-y-4">
+                {type.detailStyle.map((paragraph) => (
+                  <p key={paragraph} className="text-base leading-8 text-muted-foreground">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {type.detailWhy && (
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_16px_40px_rgba(28,43,31,0.06)] md:p-8">
+              <h3 className="text-xl font-bold text-foreground">なぜ{type.name}？</h3>
+              <div className="mt-5 space-y-4">
+                {type.detailWhy.map((paragraph) => (
+                  <p key={paragraph} className="text-base leading-8 text-muted-foreground">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="flex flex-col gap-4 md:flex-row">
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              className="h-12 flex-1 border-primary/20 bg-card text-primary hover:bg-primary/5"
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              結果をシェア
+            </Button>
+            <Button
+              onClick={handleCopyUrl}
+              variant="outline"
+              className="h-12 flex-1 border-border bg-card text-foreground hover:bg-muted/50"
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              URLをコピー
+            </Button>
+            {shouldShowScoreboard && (
+              <Button
+                onClick={handleRetry}
+                className="h-12 flex-1"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                もう一度診断する
+              </Button>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}

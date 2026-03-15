@@ -14,19 +14,42 @@ export interface DiagnosisState {
   result: (typeof typesData)[0] | null;
 }
 
-export interface AxisScores {
-  speed: number;
-  scope: number;
+export interface IndicatorScores {
   logic: number;
-  style: number;
+  emotion: number;
+  drive: number;
+  support: number;
+  expansion: number;
+  mastery: number;
+  agile: number;
+  precision: number;
 }
 
 export interface AxisResult {
-  speed: 'fast' | 'careful';
-  scope: 'broad' | 'deep';
-  logic: 'logic' | 'intuition';
-  style: 'solo' | 'support';
+  decision: 'logic' | 'emotion';
+  role: 'drive' | 'support';
+  domain: 'expansion' | 'mastery';
+  execution: 'agile' | 'precision';
 }
+
+const typeIdByDefinition: Record<string, string> = {
+  'logic_drive_expansion_agile': 'fast_broad_logic_solo',
+  'logic_drive_expansion_precision': 'careful_broad_logic_solo',
+  'logic_drive_mastery_agile': 'fast_deep_logic_solo',
+  'logic_drive_mastery_precision': 'careful_deep_logic_solo',
+  'logic_support_expansion_agile': 'fast_broad_logic_support',
+  'logic_support_expansion_precision': 'careful_broad_logic_support',
+  'logic_support_mastery_agile': 'fast_deep_logic_support',
+  'logic_support_mastery_precision': 'careful_deep_logic_support',
+  'emotion_drive_expansion_agile': 'fast_broad_intuition_solo',
+  'emotion_drive_expansion_precision': 'careful_broad_intuition_solo',
+  'emotion_drive_mastery_agile': 'fast_deep_intuition_solo',
+  'emotion_drive_mastery_precision': 'careful_deep_intuition_solo',
+  'emotion_support_expansion_agile': 'fast_broad_intuition_support',
+  'emotion_support_expansion_precision': 'careful_broad_intuition_support',
+  'emotion_support_mastery_agile': 'fast_deep_intuition_support',
+  'emotion_support_mastery_precision': 'careful_deep_intuition_support',
+};
 
 export const useDiagnosis = () => {
   const [state, setState] = useState<DiagnosisState>({
@@ -75,41 +98,50 @@ export const useDiagnosis = () => {
     }));
   }, []);
 
-  const calculateResult = useCallback((): AxisResult => {
-    const scores: AxisScores = {
-      speed: 0,
-      scope: 0,
+  const calculateIndicatorScores = useCallback((): IndicatorScores => {
+    const scores: IndicatorScores = {
       logic: 0,
-      style: 0,
+      emotion: 0,
+      drive: 0,
+      support: 0,
+      expansion: 0,
+      mastery: 0,
+      agile: 0,
+      precision: 0,
     };
 
-    // スコアを集計
     state.answers.forEach((answer) => {
       const question = questionsData.find((q) => q.id === answer.questionId);
       if (!question) return;
 
-      const axis = question.axis as keyof AxisScores;
+      const selectedIndicator = (answer.isPositive
+        ? question.positive
+        : question.negative) as keyof IndicatorScores;
+      const weightedScore = answer.score * (question.weight ?? 1);
 
-      // positiveな回答の場合、そのスコアを加算
-      // negativeな回答の場合も、スコアを加算（軸の反対側に投票）
-      scores[axis] += answer.score;
+      scores[selectedIndicator] += weightedScore;
     });
 
-    // 各軸でスコアが高い方を採用
-    // スコアの中央値は 16 (8問 × 平均2点)
+    return scores;
+  }, [state.answers]);
+
+  const calculateResult = useCallback((): AxisResult => {
+    const scores = calculateIndicatorScores();
+
     const result: AxisResult = {
-      speed: scores.speed >= 8 ? 'fast' : 'careful',
-      scope: scores.scope >= 8 ? 'broad' : 'deep',
-      logic: scores.logic >= 8 ? 'logic' : 'intuition',
-      style: scores.style >= 8 ? 'solo' : 'support',
+      decision: scores.logic >= scores.emotion ? 'logic' : 'emotion',
+      role: scores.drive >= scores.support ? 'drive' : 'support',
+      domain: scores.expansion >= scores.mastery ? 'expansion' : 'mastery',
+      execution: scores.agile >= scores.precision ? 'agile' : 'precision',
     };
 
     return result;
-  }, [state.answers]);
+  }, [calculateIndicatorScores]);
 
   const submitDiagnosis = useCallback(() => {
     const axisResult = calculateResult();
-    const typeId = `${axisResult.speed}_${axisResult.scope}_${axisResult.logic}_${axisResult.style}`;
+    const typeKey = `${axisResult.decision}_${axisResult.role}_${axisResult.domain}_${axisResult.execution}`;
+    const typeId = typeIdByDefinition[typeKey];
     const resultType = typesData.find((t) => t.id === typeId);
 
     if (resultType) {
@@ -118,6 +150,8 @@ export const useDiagnosis = () => {
         result: resultType,
       }));
     }
+
+    return resultType ?? null;
   }, [calculateResult]);
 
   const reset = useCallback(() => {
@@ -144,6 +178,7 @@ export const useDiagnosis = () => {
     submitDiagnosis,
     reset,
     getAnswerForQuestion,
+    calculateIndicatorScores,
     calculateResult,
   };
 };
