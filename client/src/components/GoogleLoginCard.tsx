@@ -2,19 +2,52 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  loadGoogleIdentityScript,
-  parseGoogleCredential,
-} from "@/lib/googleIdentity";
+import { loadGoogleIdentityScript } from "@/lib/googleIdentity";
 import { Button } from "@/components/ui/button";
 
+type GoogleIdentityWindow = Window & {
+  google?: {
+    accounts?: {
+      id?: {
+        initialize: (options: {
+          client_id: string;
+          callback: (response: { credential: string }) => void;
+          cancel_on_tap_outside?: boolean;
+        }) => void;
+        renderButton: (
+          parent: HTMLElement,
+          options: {
+            theme?: "outline" | "filled_blue" | "filled_black";
+            size?: "large" | "medium" | "small";
+            text?:
+              | "signin_with"
+              | "signup_with"
+              | "continue_with"
+              | "signin";
+            shape?: "rectangular" | "pill" | "circle" | "square";
+            width?: string | number;
+          }
+        ) => void;
+        disableAutoSelect: () => void;
+      };
+    };
+  };
+};
+
 export function GoogleLoginCard() {
-  const { user, signIn, signOut, googleClientId, isGoogleConfigured } =
-    useAuth();
+  const {
+    user,
+    signOut,
+    googleClientId,
+    isGoogleConfigured,
+    signInWithGoogleCredential,
+    isLoading,
+  } = useAuth();
   const buttonRef = useRef<HTMLDivElement>(null);
+  const identityWindow = window as GoogleIdentityWindow;
 
   useEffect(() => {
-    if (user || !isGoogleConfigured || !buttonRef.current) {
+    if (user || !isGoogleConfigured || !buttonRef.current || isLoading) {
       return;
     }
 
@@ -22,17 +55,19 @@ export function GoogleLoginCard() {
 
     loadGoogleIdentityScript()
       .then(() => {
-        if (!isMounted || !buttonRef.current || !window.google?.accounts?.id) {
+        const googleIdentity = identityWindow.google?.accounts?.id;
+        if (!isMounted || !buttonRef.current || !googleIdentity) {
           return;
         }
 
         buttonRef.current.innerHTML = "";
-        window.google.accounts.id.initialize({
+        googleIdentity.initialize({
           client_id: googleClientId,
-          callback: response => {
+          callback: async response => {
             try {
-              const nextUser = parseGoogleCredential(response.credential);
-              signIn(nextUser);
+              const nextUser = await signInWithGoogleCredential(
+                response.credential
+              );
               toast.success(`Googleでログインしました: ${nextUser.name}`);
             } catch (error) {
               console.error(error);
@@ -42,7 +77,7 @@ export function GoogleLoginCard() {
           cancel_on_tap_outside: true,
         });
 
-        window.google.accounts.id.renderButton(buttonRef.current, {
+        googleIdentity.renderButton(buttonRef.current, {
           theme: "outline",
           size: "large",
           text: "signin_with",
@@ -58,7 +93,13 @@ export function GoogleLoginCard() {
     return () => {
       isMounted = false;
     };
-  }, [googleClientId, isGoogleConfigured, signIn, user]);
+  }, [
+    googleClientId,
+    isGoogleConfigured,
+    isLoading,
+    signInWithGoogleCredential,
+    user,
+  ]);
 
   if (user) {
     return (
@@ -87,9 +128,10 @@ export function GoogleLoginCard() {
           variant="ghost"
           className="rounded-full"
           onClick={() => {
-            window.google?.accounts?.id?.disableAutoSelect?.();
-            signOut();
-            toast.success("ログアウトしました");
+            identityWindow.google?.accounts?.id?.disableAutoSelect?.();
+            void signOut().then(() => {
+              toast.success("ログアウトしました");
+            });
           }}
           aria-label="ログアウト"
         >
@@ -108,6 +150,14 @@ export function GoogleLoginCard() {
         <p className="mt-1 text-xs leading-6 text-muted-foreground">
           `VITE_GOOGLE_CLIENT_ID` を設定すると有効になります。
         </p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl border border-border bg-background/75 px-4 py-3 text-sm text-muted-foreground shadow-sm">
+        ログイン状態を確認しています...
       </div>
     );
   }

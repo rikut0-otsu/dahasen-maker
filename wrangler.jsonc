@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dahasen-maker",
+  "pages_build_output_dir": "dist/public",
+  "compatibility_date": "2026-03-17",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dahasen-maker",
+      "database_id": "REPLACE_WITH_PRODUCTION_DATABASE_ID",
+      "preview_database_id": "REPLACE_WITH_PREVIEW_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

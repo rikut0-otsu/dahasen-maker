@@ -5,67 +5,60 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-const STORAGE_KEY = "dahasen-maker.google-user";
+import { getCurrentUser, logout, loginWithGoogleCredential } from "@/lib/api";
 
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  picture?: string;
+  picture?: string | null;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
   googleClientId: string;
   isGoogleConfigured: boolean;
-  signIn: (nextUser: AuthUser) => void;
-  signOut: () => void;
+  isLoading: boolean;
+  signInWithGoogleCredential: (credential: string) => Promise<AuthUser>;
+  signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function readStoredUser() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw) as AuthUser;
-  } catch {
-    window.localStorage.removeItem(STORAGE_KEY);
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
+  const refreshUser = async () => {
+    try {
+      const nextUser = await getCurrentUser();
+      setUser(nextUser);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (!user) {
-      window.localStorage.removeItem(STORAGE_KEY);
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  }, [user]);
+    void refreshUser();
+  }, []);
 
   const value: AuthContextValue = {
     user,
     googleClientId,
     isGoogleConfigured: googleClientId.length > 0,
-    signIn: nextUser => setUser(nextUser),
-    signOut: () => setUser(null),
+    isLoading,
+    signInWithGoogleCredential: async credential => {
+      const nextUser = await loginWithGoogleCredential(credential);
+      setUser(nextUser);
+      return nextUser;
+    },
+    signOut: async () => {
+      await logout();
+      setUser(null);
+    },
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
