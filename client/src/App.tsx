@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { DiagnosisProvider } from "./contexts/DiagnosisContext";
 import Home from "./pages/Home";
@@ -32,12 +33,14 @@ function App() {
         defaultTheme="light"
         switchable={true}
       >
-        <DiagnosisProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </DiagnosisProvider>
+        <AuthProvider>
+          <DiagnosisProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </DiagnosisProvider>
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
