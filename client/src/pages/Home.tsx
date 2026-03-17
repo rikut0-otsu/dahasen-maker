@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { CharacterCard } from '@/components/CharacterCard';
+import { GoogleLoginCard } from '@/components/GoogleLoginCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 
@@ -53,6 +55,7 @@ const typeCodeById: Record<string, string> = {
 export default function Home() {
   const [, setLocation] = useLocation();
   const { reset } = useDiagnosisContext();
+  const { user } = useAuth();
   const [heroImageFailed, setHeroImageFailed] = useState(false);
 
   const handleStartDiagnosis = () => {
@@ -69,15 +72,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
-        <div className="container py-4 flex items-center justify-between">
+        <div className="container flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
           <div className="ink-title text-lg font-bold text-foreground">打破宣言メーカー</div>
-          <Button
-            onClick={handleStartDiagnosis}
-            className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
-          >
-            診断する
-          </Button>
-          <ThemeToggle />
+          <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
+            <GoogleLoginCard />
+            <Button
+              onClick={handleStartDiagnosis}
+              className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
+            >
+              診断する
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
@@ -98,6 +104,16 @@ export default function Home() {
               <div className="slip-tag inline-flex items-center rounded-full px-5 py-1.5 pl-7 text-sm font-medium text-primary">
                 CYBERAGENT PURPOSE
               </div>
+              {user ? (
+                <div className="mx-auto inline-flex max-w-full items-center gap-3 rounded-full border border-primary/15 bg-white/80 px-4 py-2 text-sm shadow-sm dark:bg-[rgba(8,14,24,0.62)]">
+                  <span className="font-semibold text-foreground">
+                    {user.name}さん、ログイン中
+                  </span>
+                  <span className="truncate text-muted-foreground">
+                    {user.email}
+                  </span>
+                </div>
+              ) : null}
               <div className="space-y-5">
                 <h2 className="ink-title text-4xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
                   日本の閉塞感を打破する。
