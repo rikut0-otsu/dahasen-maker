@@ -1,6 +1,12 @@
-interface GoogleJwtHeader {
-  alg?: string;
-  kid?: string;
+interface GoogleTokenResponse {
+  access_token?: string;
+  expires_in?: number;
+  id_token?: string;
+  refresh_token?: string;
+  scope?: string;
+  token_type?: string;
+  error?: string;
+  error_description?: string;
 }
 
 interface GoogleIdTokenPayload {
@@ -10,20 +16,18 @@ interface GoogleIdTokenPayload {
   exp?: number;
   iss?: string;
   name?: string;
+  nonce?: string;
   picture?: string;
   sub?: string;
 }
 
-interface GoogleJwkSet {
-  keys: Array<JsonWebKey & { kid?: string }>;
+interface GoogleUserInfo {
+  sub?: string;
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+  picture?: string;
 }
-
-let googleKeyCache:
-  | {
-      expiresAt: number;
-      keys: Array<JsonWebKey & { kid?: string }>;
-    }
-  | undefined;
 
 function decodeBase64Url(value: string) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -35,83 +39,56 @@ function decodeBase64Url(value: string) {
   return Uint8Array.from(binary, char => char.charCodeAt(0));
 }
 
-function decodeJson<T>(value: string) {
-  const bytes = decodeBase64Url(value);
-  return JSON.parse(new TextDecoder().decode(bytes)) as T;
-}
-
-async function getGoogleKeys() {
-  if (googleKeyCache && googleKeyCache.expiresAt > Date.now()) {
-    return googleKeyCache.keys;
-  }
-
-  const response = await fetch("https://www.googleapis.com/oauth2/v3/certs");
-  if (!response.ok) {
-    throw new Error("Failed to load Google public keys");
-  }
-
-  const cacheControl = response.headers.get("cache-control") ?? "";
-  const maxAgeMatch = cacheControl.match(/max-age=(\d+)/);
-  const maxAgeSeconds = maxAgeMatch ? Number(maxAgeMatch[1]) : 300;
-  const payload = (await response.json()) as GoogleJwkSet;
-
-  googleKeyCache = {
-    keys: payload.keys,
-    expiresAt: Date.now() + maxAgeSeconds * 1000,
-  };
-
-  return payload.keys;
-}
-
-export async function verifyGoogleIdToken(
-  credential: string,
-  expectedAudience: string
-) {
-  const parts = credential.split(".");
+function parseIdTokenPayload(idToken: string) {
+  const parts = idToken.split(".");
   if (parts.length !== 3) {
     throw new Error("Malformed Google ID token");
   }
 
-  const [encodedHeader, encodedPayload, encodedSignature] = parts;
-  const header = decodeJson<GoogleJwtHeader>(encodedHeader);
-  const payload = decodeJson<GoogleIdTokenPayload>(encodedPayload);
+  const bytes = decodeBase64Url(parts[1]);
+  return JSON.parse(new TextDecoder().decode(bytes)) as GoogleIdTokenPayload;
+}
 
-  if (header.alg !== "RS256" || !header.kid) {
-    throw new Error("Unsupported Google token algorithm");
-  }
+export async function exchangeGoogleAuthorizationCode(input: {
+  code: string;
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+  codeVerifier: string;
+}) {
+  const body = new URLSearchParams({
+    code: input.code,
+    client_id: input.clientId,
+    client_secret: input.clientSecret,
+    redirect_uri: input.redirectUri,
+    grant_type: "authorization_code",
+    code_verifier: input.codeVerifier,
+  });
 
-  const keys = await getGoogleKeys();
-  const jwk = keys.find(key => key.kid === header.kid);
-  if (!jwk) {
-    throw new Error("Google signing key not found");
-  }
-
-  const cryptoKey = await crypto.subtle.importKey(
-    "jwk",
-    jwk,
-    {
-      name: "RSASSA-PKCS1-v1_5",
-      hash: "SHA-256",
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
     },
-    false,
-    ["verify"]
-  );
+    body,
+  });
 
-  const signingInput = new TextEncoder().encode(
-    `${encodedHeader}.${encodedPayload}`
-  );
-  const signature = decodeBase64Url(encodedSignature);
-  const isValid = await crypto.subtle.verify(
-    "RSASSA-PKCS1-v1_5",
-    cryptoKey,
-    signature,
-    signingInput
-  );
-
-  if (!isValid) {
-    throw new Error("Invalid Google token signature");
+  const payload = (await response.json()) as GoogleTokenResponse;
+  if (!response.ok || payload.error || !payload.access_token || !payload.id_token) {
+    throw new Error(
+      payload.error_description ?? payload.error ?? "Failed to exchange code"
+    );
   }
 
+  return payload;
+}
+
+export function validateGoogleIdToken(input: {
+  idToken: string;
+  clientId: string;
+  nonce: string;
+}) {
+  const payload = parseIdTokenPayload(input.idToken);
   const validIssuer =
     payload.iss === "https://accounts.google.com" ||
     payload.iss === "accounts.google.com";
@@ -120,24 +97,32 @@ export async function verifyGoogleIdToken(
   }
 
   const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
-  if (!audiences.includes(expectedAudience)) {
+  if (!audiences.includes(input.clientId)) {
     throw new Error("Google token audience mismatch");
+  }
+
+  if (payload.nonce !== input.nonce) {
+    throw new Error("Google token nonce mismatch");
   }
 
   if (!payload.exp || payload.exp * 1000 <= Date.now()) {
     throw new Error("Google token expired");
   }
 
-  if (!payload.sub || !payload.email || !payload.name) {
-    throw new Error("Google token payload is incomplete");
+  return payload;
+}
+
+export async function fetchGoogleUserInfo(accessToken: string) {
+  const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const payload = (await response.json()) as GoogleUserInfo;
+  if (!response.ok || !payload.sub || !payload.email || !payload.name) {
+    throw new Error("Failed to fetch Google user info");
   }
 
-  return {
-    googleSub: payload.sub,
-    email: payload.email,
-    emailVerified:
-      payload.email_verified === true || payload.email_verified === "true",
-    name: payload.name,
-    picture: payload.picture ?? null,
-  };
+  return payload;
 }
