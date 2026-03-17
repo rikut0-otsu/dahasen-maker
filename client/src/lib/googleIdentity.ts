@@ -1,48 +1,21 @@
-import type { AuthUser } from "@/contexts/AuthContext";
-
 let googleScriptPromise: Promise<void> | null = null;
 
-function decodeBase64Url(value: string) {
-  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalized.padEnd(
-    normalized.length + ((4 - (normalized.length % 4)) % 4),
-    "="
-  );
-
-  return window.atob(padded);
-}
-
-export function parseGoogleCredential(credential: string): AuthUser {
-  const [, payload] = credential.split(".");
-  if (!payload) {
-    throw new Error("Invalid Google credential payload");
-  }
-
-  const parsed = JSON.parse(decodeBase64Url(payload)) as {
-    sub?: string;
-    name?: string;
-    email?: string;
-    picture?: string;
+type GoogleIdentityWindow = Window & {
+  google?: {
+    accounts?: {
+      id?: unknown;
+    };
   };
-
-  if (!parsed.sub || !parsed.name || !parsed.email) {
-    throw new Error("Incomplete Google profile");
-  }
-
-  return {
-    id: parsed.sub,
-    name: parsed.name,
-    email: parsed.email,
-    picture: parsed.picture,
-  };
-}
+};
 
 export function loadGoogleIdentityScript() {
   if (typeof window === "undefined") {
     return Promise.resolve();
   }
 
-  if (window.google?.accounts?.id) {
+  const identityWindow = window as GoogleIdentityWindow;
+
+  if (identityWindow.google?.accounts?.id) {
     return Promise.resolve();
   }
 
@@ -54,6 +27,7 @@ export function loadGoogleIdentityScript() {
     const existing = document.querySelector<HTMLScriptElement>(
       'script[src="https://accounts.google.com/gsi/client"]'
     );
+
     if (existing) {
       existing.addEventListener("load", () => resolve(), { once: true });
       existing.addEventListener(

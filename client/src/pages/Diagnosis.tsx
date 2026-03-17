@@ -1,20 +1,25 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import { QuestionCard } from '@/components/QuestionCard';
 import { ProgressBar } from '@/components/ProgressBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
+import { saveDiagnosisResult } from '@/lib/api';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Diagnosis() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const {
     state,
     getQuestionsForPage,
     nextPage,
     prevPage,
     submitDiagnosis,
+    calculateIndicatorScores,
+    calculateResult,
   } = useDiagnosisContext();
 
   const currentQuestions = getQuestionsForPage(state.currentPage);
@@ -27,6 +32,16 @@ export default function Diagnosis() {
     if (isLastPage && canProceed) {
       const resultType = submitDiagnosis();
       if (resultType) {
+        if (user) {
+          void saveDiagnosisResult({
+            typeId: resultType.id,
+            answers: state.answers,
+            indicatorScores: calculateIndicatorScores(),
+            axisResult: calculateResult(),
+          }).catch((error: unknown) => {
+            console.error('Failed to save diagnosis result', error);
+          });
+        }
         setLocation(`/types/${resultType.id}`);
       }
     } else if (canProceed) {
