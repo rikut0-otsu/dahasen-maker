@@ -9,11 +9,10 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "dahasen-maker",
+      "database_name": "dahasen-maker-db",
       "database_id": "30318e12-6a90-43f3-a9b5-224dc5af4dfd",
       "preview_database_id": "REPLACE_WITH_PREVIEW_DATABASE_ID",
       "migrations_dir": "migrations"
     }
   ]
 }
-
