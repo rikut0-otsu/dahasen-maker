@@ -158,3 +158,58 @@ export async function insertDiagnosisResult(
     )
     .run();
 }
+
+export async function createOAuthState(
+  db: D1Database,
+  input: {
+    state: string;
+    nonce: string;
+    codeVerifier: string;
+    returnTo: string;
+    expiresAt: number;
+    now: number;
+  }
+) {
+  await db
+    .prepare(
+      `INSERT INTO oauth_states (
+        state,
+        nonce,
+        code_verifier,
+        return_to,
+        expires_at,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      input.state,
+      input.nonce,
+      input.codeVerifier,
+      input.returnTo,
+      input.expiresAt,
+      input.now
+    )
+    .run();
+}
+
+export async function getOAuthState(db: D1Database, state: string) {
+  return db
+    .prepare(
+      `SELECT state, nonce, code_verifier, return_to, expires_at
+       FROM oauth_states
+       WHERE state = ?
+         AND expires_at > ?`
+    )
+    .bind(state, Date.now())
+    .first<{
+      state: string;
+      nonce: string;
+      code_verifier: string;
+      return_to: string;
+      expires_at: number;
+    }>();
+}
+
+export async function deleteOAuthState(db: D1Database, state: string) {
+  await db.prepare("DELETE FROM oauth_states WHERE state = ?").bind(state).run();
+}

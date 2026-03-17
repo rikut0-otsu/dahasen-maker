@@ -1,105 +1,16 @@
-import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { LogOut } from "lucide-react";
+import { Chrome, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { loadGoogleIdentityScript } from "@/lib/googleIdentity";
 import { Button } from "@/components/ui/button";
-
-type GoogleIdentityWindow = Window & {
-  google?: {
-    accounts?: {
-      id?: {
-        initialize: (options: {
-          client_id: string;
-          callback: (response: { credential: string }) => void;
-          cancel_on_tap_outside?: boolean;
-        }) => void;
-        renderButton: (
-          parent: HTMLElement,
-          options: {
-            theme?: "outline" | "filled_blue" | "filled_black";
-            size?: "large" | "medium" | "small";
-            text?:
-              | "signin_with"
-              | "signup_with"
-              | "continue_with"
-              | "signin";
-            shape?: "rectangular" | "pill" | "circle" | "square";
-            width?: string | number;
-          }
-        ) => void;
-        disableAutoSelect: () => void;
-      };
-    };
-  };
-};
 
 export function GoogleLoginCard() {
   const {
     user,
     signOut,
-    googleClientId,
     isGoogleConfigured,
-    signInWithGoogleCredential,
+    signInWithGoogle,
     isLoading,
   } = useAuth();
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const identityWindow = window as GoogleIdentityWindow;
-
-  useEffect(() => {
-    if (user || !isGoogleConfigured || !buttonRef.current || isLoading) {
-      return;
-    }
-
-    let isMounted = true;
-
-    loadGoogleIdentityScript()
-      .then(() => {
-        const googleIdentity = identityWindow.google?.accounts?.id;
-        if (!isMounted || !buttonRef.current || !googleIdentity) {
-          return;
-        }
-
-        buttonRef.current.innerHTML = "";
-        googleIdentity.initialize({
-          client_id: googleClientId,
-          callback: async response => {
-            try {
-              const nextUser = await signInWithGoogleCredential(
-                response.credential
-              );
-              toast.success(`Googleでログインしました: ${nextUser.name}`);
-            } catch (error) {
-              console.error(error);
-              toast.error("Googleログインに失敗しました");
-            }
-          },
-          cancel_on_tap_outside: true,
-        });
-
-        googleIdentity.renderButton(buttonRef.current, {
-          theme: "outline",
-          size: "large",
-          text: "signin_with",
-          shape: "pill",
-          width: 260,
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        toast.error("Googleログイン用スクリプトを読み込めませんでした");
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    googleClientId,
-    isGoogleConfigured,
-    isLoading,
-    signInWithGoogleCredential,
-    user,
-  ]);
 
   if (user) {
     return (
@@ -128,7 +39,6 @@ export function GoogleLoginCard() {
           variant="ghost"
           className="rounded-full"
           onClick={() => {
-            identityWindow.google?.accounts?.id?.disableAutoSelect?.();
             void signOut().then(() => {
               toast.success("ログアウトしました");
             });
@@ -148,7 +58,7 @@ export function GoogleLoginCard() {
           Googleログインは未設定です
         </p>
         <p className="mt-1 text-xs leading-6 text-muted-foreground">
-          `VITE_GOOGLE_CLIENT_ID` を設定すると有効になります。
+          `VITE_GOOGLE_AUTH_ENABLED=true` とサーバー側の Google OAuth 設定で有効になります。
         </p>
       </div>
     );
@@ -162,5 +72,15 @@ export function GoogleLoginCard() {
     );
   }
 
-  return <div ref={buttonRef} className="min-h-11" />;
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      className="h-11 rounded-full border-border/80 bg-background/90 px-5 shadow-sm"
+      onClick={() => signInWithGoogle(window.location.pathname + window.location.search)}
+    >
+      <Chrome className="size-4" />
+      Googleでログイン
+    </Button>
+  );
 }

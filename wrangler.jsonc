@@ -3,6 +3,9 @@
   "name": "dahasen-maker",
   "pages_build_output_dir": "dist/public",
   "compatibility_date": "2026-03-17",
+  "vars": {
+    "VITE_GOOGLE_AUTH_ENABLED": "true"
+  },
   "d1_databases": [
     {
       "binding": "DB",

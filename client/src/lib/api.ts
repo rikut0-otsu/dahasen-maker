@@ -22,18 +22,12 @@ export async function getCurrentUser() {
   return payload.user;
 }
 
-export async function loginWithGoogleCredential(credential: string) {
-  const response = await fetch("/api/auth/google", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify({ credential }),
-  });
-
-  const payload = await readJson<{ user: AuthUser }>(response);
-  return payload.user;
+export function startGoogleLogin(returnTo?: string) {
+  const nextPath =
+    returnTo && returnTo.startsWith("/") ? returnTo : window.location.pathname;
+  const url = new URL("/api/auth/google/start", window.location.origin);
+  url.searchParams.set("returnTo", nextPath);
+  window.location.assign(url.toString());
 }
 
 export async function logout() {

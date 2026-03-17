@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS diagnosis_results (
 
 CREATE INDEX IF NOT EXISTS diagnosis_results_user_id_idx
   ON diagnosis_results(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS oauth_states (
+  state TEXT PRIMARY KEY,
+  nonce TEXT NOT NULL,
+  code_verifier TEXT NOT NULL,
+  return_to TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS oauth_states_expires_at_idx
+  ON oauth_states(expires_at);

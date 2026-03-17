@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getCurrentUser, logout, loginWithGoogleCredential } from "@/lib/api";
+import { getCurrentUser, logout, startGoogleLogin } from "@/lib/api";
 
 export interface AuthUser {
   id: string;
@@ -16,10 +16,9 @@ export interface AuthUser {
 
 interface AuthContextValue {
   user: AuthUser | null;
-  googleClientId: string;
   isGoogleConfigured: boolean;
   isLoading: boolean;
-  signInWithGoogleCredential: (credential: string) => Promise<AuthUser>;
+  signInWithGoogle: (returnTo?: string) => void;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -29,7 +28,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+  const googleAuthEnabled =
+    (import.meta.env.VITE_GOOGLE_AUTH_ENABLED ?? "true") !== "false";
 
   const refreshUser = async () => {
     try {
@@ -46,13 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthContextValue = {
     user,
-    googleClientId,
-    isGoogleConfigured: googleClientId.length > 0,
+    isGoogleConfigured: googleAuthEnabled,
     isLoading,
-    signInWithGoogleCredential: async credential => {
-      const nextUser = await loginWithGoogleCredential(credential);
-      setUser(nextUser);
-      return nextUser;
+    signInWithGoogle: returnTo => {
+      startGoogleLogin(returnTo);
     },
     signOut: async () => {
       await logout();
