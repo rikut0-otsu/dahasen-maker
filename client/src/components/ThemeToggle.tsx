@@ -24,16 +24,19 @@ export function ThemeToggle() {
             : "left-1 bg-[linear-gradient(180deg,#2b5cff_0%,#2148d7_100%)] shadow-[0_10px_20px_rgba(33,72,215,0.28)]"
         }`}
       />
-      <span className={`relative z-10 flex w-1/2 items-center justify-center ${!isDark ? "text-white" : "text-muted-foreground"}`}>
+      <span className={`relative z-20 flex w-1/2 items-center justify-center ${!isDark ? "text-white" : "text-muted-foreground"}`}>
         <Sun className="h-5 w-5" />
       </span>
-      <span className={`relative z-10 flex w-1/2 items-center justify-center ${isDark ? "text-white" : "text-muted-foreground"}`}>
+      <span className={`relative z-20 flex w-1/2 items-center justify-center ${isDark ? "text-white" : "text-muted-foreground"}`}>
         <Moon className="h-5 w-5" />
       </span>
       <span
-        className={`pointer-events-none absolute top-1.5 h-9 w-9 rounded-full bg-white shadow-[0_6px_14px_rgba(0,0,0,0.18)] transition-all duration-300 ${
-          isDark ? "left-[5.55rem]" : "left-[2.85rem]"
+        className={`pointer-events-none absolute top-1.5 h-9 w-9 rounded-full transition-all duration-300 ${
+          isDark
+            ? "left-[5.55rem] bg-slate-900/70"
+            : "left-[2.85rem] bg-white/80"
         }`}
+        style={{ boxShadow: "0 6px 14px rgba(0,0,0,0.18)" }}
       />
     </button>
   );

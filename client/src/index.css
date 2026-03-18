@@ -424,6 +424,9 @@
     line-break: strict;
     word-break: keep-all;
     text-wrap: balance;
+    /* allow long titles to wrap on narrow screens */
+    overflow-wrap: break-word;
+    white-space: normal;
   }
 
   .dark .ink-title {

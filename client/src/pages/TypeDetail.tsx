@@ -142,12 +142,6 @@ export default function TypeDetail() {
           >
             ← トップへ戻る
           </Button>
-          <Button
-            onClick={() => setLocation('/diagnosis')}
-            className="h-10 bg-primary px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90"
-          >
-            診断する
-          </Button>
           <ThemeToggle />
         </div>
       </nav>
