@@ -98,16 +98,6 @@ export default function Home() {
               <div className="slip-tag inline-flex items-center rounded-full px-5 py-1.5 pl-7 text-sm font-medium text-primary">
                 CYBERAGENT PURPOSE
               </div>
-              {user ? (
-                <div className="mx-auto inline-flex max-w-full items-center gap-3 rounded-full border border-primary/15 bg-white/80 px-4 py-2 text-sm shadow-sm dark:bg-[rgba(8,14,24,0.62)]">
-                  <span className="font-semibold text-foreground">
-                    {user.name}さん、ログイン中
-                  </span>
-                  <span className="truncate text-muted-foreground">
-                    {user.email}
-                  </span>
-                </div>
-              ) : null}
               <div className="space-y-5">
                 <h2 className="ink-title text-4xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
                   日本の閉塞感を打破する。
