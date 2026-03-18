@@ -145,6 +145,17 @@
     background-attachment: fixed;
   }
 
+  /* Improve scrolling and rendering on mobile devices */
+  @media (max-width: 768px) {
+    body {
+      background-attachment: scroll;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(184, 155, 87, 0.06), transparent 40%),
+        radial-gradient(circle at 80% 10%, rgba(130, 190, 40, 0.05), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+    }
+  }
+
   .dark body {
     background-image:
       radial-gradient(circle at 76% 10%, rgba(232, 224, 192, 0.18), transparent 12%),
