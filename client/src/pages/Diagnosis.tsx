@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -48,10 +48,6 @@ export default function Diagnosis() {
       nextPage();
     }
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [state.currentPage]);
 
   return (
     <div className="min-h-screen bg-background paper-texture">

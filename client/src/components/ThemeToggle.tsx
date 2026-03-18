@@ -1,7 +1,8 @@
 import { useTheme } from "@/contexts/ThemeContext";
 import { Moon, Sun } from "lucide-react";
+import { memo } from "react";
 
-export function ThemeToggle() {
+const ThemeToggleComponent = () => {
   const { theme, toggleTheme, switchable } = useTheme();
 
   if (!switchable || !toggleTheme) {
@@ -40,4 +41,6 @@ export function ThemeToggle() {
       />
     </button>
   );
-}
+};
+
+export const ThemeToggle = memo(ThemeToggleComponent);

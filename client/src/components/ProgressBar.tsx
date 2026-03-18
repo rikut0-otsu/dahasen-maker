@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface ProgressBarProps {
   currentPage: number;
   totalPages: number;
 }
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({
+const ProgressBarComponent: React.FC<ProgressBarProps> = ({
   currentPage,
   totalPages,
 }) => {
@@ -31,3 +31,5 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     </div>
   );
 };
+
+export const ProgressBar = memo(ProgressBarComponent);

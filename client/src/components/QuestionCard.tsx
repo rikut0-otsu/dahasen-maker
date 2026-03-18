@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import { cn } from '@/lib/utils';
 
@@ -7,28 +7,28 @@ interface QuestionCardProps {
   text: string;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({
+const QuestionCardComponent: React.FC<QuestionCardProps> = ({
   questionId,
   text,
 }) => {
   const { answerQuestion, getAnswerForQuestion } = useDiagnosisContext();
   const currentAnswer = getAnswerForQuestion(questionId);
 
-  const handleYesStrong = () => {
+  const handleYesStrong = useCallback(() => {
     answerQuestion(questionId, 2, true); // YES ◎
-  };
+  }, [questionId, answerQuestion]);
 
-  const handleYesWeak = () => {
+  const handleYesWeak = useCallback(() => {
     answerQuestion(questionId, 1, true); // YES ○
-  };
+  }, [questionId, answerQuestion]);
 
-  const handleNoWeak = () => {
+  const handleNoWeak = useCallback(() => {
     answerQuestion(questionId, 1, false); // NO ○
-  };
+  }, [questionId, answerQuestion]);
 
-  const handleNoStrong = () => {
+  const handleNoStrong = useCallback(() => {
     answerQuestion(questionId, 2, false); // NO ◎
-  };
+  }, [questionId, answerQuestion]);
 
   const options = [
     {
@@ -103,7 +103,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   aria-pressed={isSelected}
                   aria-label={option.label}
                   className={cn(
-                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
                     option.sizeClass,
                     isSelected ? option.activeClass : option.idleClass,
                     isSelected && 'scale-105'
@@ -121,3 +121,5 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     </div>
   );
 };
+
+export const QuestionCard = memo(QuestionCardComponent);
