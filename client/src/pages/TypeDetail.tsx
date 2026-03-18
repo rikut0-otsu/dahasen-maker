@@ -133,7 +133,7 @@ export default function TypeDetail() {
 
   return (
     <div className="min-h-screen bg-background paper-texture">
-      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex items-center justify-between py-4">
           <Button
             onClick={() => setLocation('/')}
@@ -155,7 +155,7 @@ export default function TypeDetail() {
       <div className="container py-10 md:py-14">
         <div className="mx-auto max-w-6xl space-y-8">
           <div className="historical-panel relative rounded-[2.2rem] p-6 md:p-8">
-            <div className="night-sky hidden dark:block">
+            <div className="night-sky hidden dark:md:block">
               <div className="night-clouds !bottom-10 opacity-55" />
               <div className="night-castle !bottom-6 !h-28 !w-[30rem] opacity-28" />
             </div>

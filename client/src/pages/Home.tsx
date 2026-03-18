@@ -71,7 +71,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background paper-texture">
-      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
           <div className="ink-title text-lg font-bold text-foreground">打破宣言メーカー</div>
           <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
@@ -88,7 +88,7 @@ export default function Home() {
       </nav>
 
       <section className="relative overflow-hidden py-12 md:py-20">
-        <div className="night-sky hidden dark:block">
+        <div className="night-sky hidden dark:md:block">
           <div className="night-clouds" />
           <div className="night-castle" />
           <div className="night-pines" />
