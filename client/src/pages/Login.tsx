@@ -27,6 +27,7 @@ export default function Login() {
         <div className="absolute inset-0 opacity-70">
           <div className="absolute left-[-6rem] top-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute right-[-5rem] top-32 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute inset-0 bg-[url('/daha-sengen-main-visual.png')] bg-cover bg-center opacity-10" />
         </div>
 
         <div className="relative w-full">
@@ -35,23 +36,25 @@ export default function Login() {
               CYBERAGENT PURPOSE
             </div>
             <h1 className="ink-title text-4xl font-bold text-foreground md:text-5xl">
-              打破宣言をつくるには
+              戦国を打破する宣言を
               <br />
-              まずはログインから
+              ここから刻もう
             </h1>
             <p className="max-w-[28rem] text-sm leading-7 text-muted-foreground">
-              あなたの「打破タイプ」を診断し、活躍宣言を生成します。
+              Googleログインすると、診断結果を保存していつでも見返せるようになります。
               <br />
-              ログインすると結果を保存していつでも見返せます。さあ、</p>
+              自分だけの「打破宣言」をつくりましょう。
+            </p>
           </div>
 
           <div className="mt-10">
-            <div className="historical-panel rounded-[2.2rem] border border-border p-8 shadow-[0_18px_50px_rgba(28,43,31,0.08)]">
+            <div className="historical-panel rounded-[2.2rem] border border-border p-8 shadow-[0_18px_50px_rgba(28,43,31,0.08)] bg-[url('/daha-sengen-main-visual.png')] bg-cover bg-center bg-blend-soft-light">
               <div className="wash-paper rounded-[1.8rem] border border-border/70 p-6">
                 <p className="text-sm leading-7 text-muted-foreground">
-                  「打破」を象徴する和のテイストを取り入れたログイン画面です。
+                  ここからあなたの「打破宣言」がはじまります。
                   <br />
-                  Google アカウントで安全にログインして、あなたの戦国タイプを明らかにしましょう。
+                  戦国時代の風景を思い浮かべながら、
+                  自分の強みを見つけてみましょう。
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3">
@@ -68,7 +71,7 @@ export default function Login() {
         </div>
 
         <div className="text-center text-xs text-muted-foreground">
-          <span className="font-semibold">※</span> 初回ログイン後はページ遷移先にリダイレクトされます。
+          <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
         </div>
       </div>
     </div>
