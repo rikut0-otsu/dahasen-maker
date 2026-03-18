@@ -24,7 +24,7 @@ export function ThemeToggle() {
             : "left-1 bg-[linear-gradient(180deg,#2b5cff_0%,#2148d7_100%)] shadow-[0_10px_20px_rgba(33,72,215,0.28)]"
         }`}
       />
-      <span className={`relative z-20 flex w-1/2 items-center justify-center ${!isDark ? "text-white" : "text-muted-foreground"}`}>
+      <span className={`relative z-20 flex w-1/2 items-center justify-center ${!isDark ? "text-foreground" : "text-muted-foreground"}`}>
         <Sun className="h-5 w-5" />
       </span>
       <span className={`relative z-20 flex w-1/2 items-center justify-center ${isDark ? "text-white" : "text-muted-foreground"}`}>
