@@ -422,9 +422,9 @@
     letter-spacing: 0.03em;
     color: var(--ink);
     line-break: strict;
-    word-break: keep-all;
+    /* allow line breaks in Japanese on narrow screens */
+    word-break: break-word;
     text-wrap: balance;
-    /* allow long titles to wrap on narrow screens */
     overflow-wrap: break-word;
     white-space: normal;
   }
