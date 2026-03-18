@@ -36,7 +36,7 @@ export default function Login() {
               CYBERAGENT PURPOSE
             </div>
             <h1 className="ink-title text-4xl font-bold text-foreground md:text-5xl">
-              戦国を打破する宣言を
+              閉塞感を打破する宣言を
               <br />
               ここから刻もう
             </h1>
