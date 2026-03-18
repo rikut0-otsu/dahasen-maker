@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Link } from 'wouter';
 
 interface CharacterCardProps {
@@ -12,7 +12,7 @@ interface CharacterCardProps {
   compact?: boolean;
 }
 
-export const CharacterCard: React.FC<CharacterCardProps> = ({
+const CharacterCardComponent: React.FC<CharacterCardProps> = ({
   id,
   name,
   title,
@@ -96,3 +96,5 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
     </div>
   );
 };
+
+export const CharacterCard = memo(CharacterCardComponent);
