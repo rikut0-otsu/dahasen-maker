@@ -55,7 +55,7 @@ export default function Diagnosis() {
 
   return (
     <div className="min-h-screen bg-background paper-texture">
-      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
+      <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container py-4 flex items-center justify-between">
           <Button
             onClick={() => setLocation('/')}
