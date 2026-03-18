@@ -73,7 +73,10 @@ export default function Home() {
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
-          <div className="ink-title text-lg font-bold text-foreground">打破宣言メーカー</div>
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-primary" />
+            <div className="text-sm font-semibold text-foreground">打破宣言</div>
+          </div>
           <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
             <GoogleLoginCard />
             <ThemeToggle />
