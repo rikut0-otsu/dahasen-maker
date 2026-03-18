@@ -3,7 +3,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 import { Copy, Download, RotateCcw, Share2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { useLocation, useRoute } from 'wouter';
 
 const axisMeta = {
@@ -56,6 +56,11 @@ export default function TypeDetail() {
 
     return typesData.find((item) => item.id === params.typeId) ?? null;
   }, [match, params]);
+
+  useLayoutEffect(() => {
+    // ページ遷移直後に必ずトップに移動する
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [type?.id]);
 
   if (!type) {
     return (
