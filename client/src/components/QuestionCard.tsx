@@ -37,7 +37,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 2,
       isPositive: true,
       onClick: handleYesStrong,
-      sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
+      sizeClass: 'h-10 w-10 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
         'border-primary bg-primary shadow-[0_0_0_7px_rgba(45,140,60,0.22)]',
       idleClass: 'border-primary/90 bg-white hover:border-primary hover:bg-primary/12',
@@ -48,7 +48,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 1,
       isPositive: true,
       onClick: handleYesWeak,
-      sizeClass: 'h-9 w-9 md:h-[3.4rem] md:w-[3.4rem]',
+      sizeClass: 'h-10 w-10 md:h-[3.4rem] md:w-[3.4rem]',
       activeClass:
         'border-primary bg-primary/80 shadow-[0_0_0_6px_rgba(45,140,60,0.18)]',
       idleClass: 'border-primary/75 bg-white hover:border-primary hover:bg-primary/12',
@@ -59,7 +59,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 1,
       isPositive: false,
       onClick: handleNoWeak,
-      sizeClass: 'h-9 w-9 md:h-[3.4rem] md:w-[3.4rem]',
+      sizeClass: 'h-10 w-10 md:h-[3.4rem] md:w-[3.4rem]',
       activeClass:
         'border-accent bg-accent/85 shadow-[0_0_0_6px_rgba(130,190,40,0.2)]',
       idleClass: 'border-accent/75 bg-white hover:border-accent hover:bg-accent/14',
@@ -70,7 +70,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 2,
       isPositive: false,
       onClick: handleNoStrong,
-      sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
+      sizeClass: 'h-10 w-10 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
         'border-accent bg-accent shadow-[0_0_0_7px_rgba(130,190,40,0.24)]',
       idleClass: 'border-accent/90 bg-white hover:border-accent hover:bg-accent/14',
@@ -84,12 +84,15 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       </h3>
 
       <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
-        <div className="flex items-center justify-between gap-4 md:gap-8">
-          <span className="ink-title text-sm font-medium tracking-[0.08em] text-primary md:w-24 md:text-base">
+        {/* スマホ版：上下配置 / PC版：左右配置 */}
+        <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
+          {/* テキスト左側（PC版） */}
+          <span className="hidden ink-title font-medium tracking-[0.08em] text-primary md:block md:w-24 md:text-base">
             そう思う
           </span>
 
-          <div className="flex flex-1 items-center justify-center gap-4 md:gap-7">
+          {/* ボタン群 */}
+          <div className="flex w-full items-center justify-center gap-2 md:flex-1 md:gap-7 md:px-0">
             {options.map((option) => {
               const isSelected =
                 currentAnswer?.score === option.score &&
@@ -113,7 +116,19 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
             })}
           </div>
 
-          <span className="ink-title text-right text-sm font-medium tracking-[0.08em] text-accent md:w-24 md:text-base">
+          {/* テキスト右側（PC版） */}
+          <span className="hidden ink-title text-right font-medium tracking-[0.08em] text-accent md:block md:w-24 md:text-base">
+            そう思わない
+          </span>
+        </div>
+
+        {/* スマホ版テキスト */}
+        <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
+          <span className="ink-title text-sm font-medium text-primary">
+            そう思う
+          </span>
+          <span className="text-xs text-muted-foreground">←→</span>
+          <span className="ink-title text-sm font-medium text-accent">
             そう思わない
           </span>
         </div>
