@@ -86,38 +86,48 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
         {/* スマホ版 */}
         <div className="md:hidden">
-          <div className="mb-6 flex items-center justify-center gap-3">
-            <span className="ink-title text-sm font-medium text-primary">
-              そう思う
-            </span>
-            <span className="text-xs text-muted-foreground">←→</span>
-            <span className="ink-title text-sm font-medium text-accent">
-              そう思わない
-            </span>
-          </div>
+          <div className="mb-6 flex flex-col items-center gap-3 text-center">
+            <div className="flex items-center justify-center gap-3">
+              <span className="ink-title text-sm font-medium text-primary">
+                そう思う
+              </span>
+              <span className="text-xs text-muted-foreground">←</span>
+              <span className="text-xs text-muted-foreground">→</span>
+              <span className="ink-title text-sm font-medium text-accent">
+                そう思わない
+              </span>
+            </div>
 
-          <div className="flex items-center justify-center gap-3">
-            {options.map((option) => {
-              const isSelected =
-                currentAnswer?.score === option.score &&
-                currentAnswer?.isPositive === option.isPositive;
+            <div className="flex items-center justify-center gap-3">
+              {options.map((option) => {
+                const isSelected =
+                  currentAnswer?.score === option.score &&
+                  currentAnswer?.isPositive === option.isPositive;
 
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={option.onClick}
-                  aria-pressed={isSelected}
-                  aria-label={option.label}
-                  className={cn(
-                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
-                    'h-10 w-10',
-                    isSelected ? option.activeClass : option.idleClass,
-                    isSelected && 'scale-105'
-                  )}
-                />
-              );
-            })}
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={option.onClick}
+                    aria-pressed={isSelected}
+                    aria-label={option.label}
+                    className={cn(
+                      'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                      'h-10 w-10',
+                      isSelected ? option.activeClass : option.idleClass,
+                      isSelected && 'scale-105'
+                    )}
+                  />
+                );
+              })}
+            </div>
+
+            <div className="mt-2 flex w-full items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium text-primary">とても</span>
+              <span className="font-medium">やや</span>
+              <span className="font-medium">やや</span>
+              <span className="font-medium text-accent">まったく</span>
+            </div>
           </div>
         </div>
 

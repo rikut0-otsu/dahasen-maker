@@ -24,17 +24,21 @@ export default function Diagnosis() {
 
   // ページ遷移時にスクロール位置をリセット
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [state.currentPage]);
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
 
-  // ブラウザの自動スクロール復元を防ぐ
-  useLayoutEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
+    scrollToTop();
+    const rafId = window.requestAnimationFrame(scrollToTop);
+    const timeoutId = window.setTimeout(scrollToTop, 0);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [state.currentPage]);
 
   const currentQuestions = getQuestionsForPage(state.currentPage);
   const isLastPage = state.currentPage === 4;
