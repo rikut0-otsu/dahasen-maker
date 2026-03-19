@@ -84,15 +84,50 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       </h3>
 
       <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
-        {/* スマホ版：上下配置 / PC版：左右配置 */}
-        <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
-          {/* テキスト左側（PC版） */}
-          <span className="hidden ink-title font-medium tracking-[0.08em] text-primary md:block md:w-24 md:text-base">
+        {/* スマホ版 */}
+        <div className="md:hidden">
+          <div className="mb-6 flex items-center justify-center gap-3">
+            <span className="ink-title text-sm font-medium text-primary">
+              そう思う
+            </span>
+            <span className="text-xs text-muted-foreground">←→</span>
+            <span className="ink-title text-sm font-medium text-accent">
+              そう思わない
+            </span>
+          </div>
+
+          <div className="flex items-center justify-center gap-3">
+            {options.map((option) => {
+              const isSelected =
+                currentAnswer?.score === option.score &&
+                currentAnswer?.isPositive === option.isPositive;
+
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  onClick={option.onClick}
+                  aria-pressed={isSelected}
+                  aria-label={option.label}
+                  className={cn(
+                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                    'h-10 w-10',
+                    isSelected ? option.activeClass : option.idleClass,
+                    isSelected && 'scale-105'
+                  )}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* PC版 */}
+        <div className="hidden md:flex items-center justify-between gap-8">
+          <span className="ink-title font-medium tracking-[0.08em] text-primary w-24 text-base">
             そう思う
           </span>
 
-          {/* ボタン群 */}
-          <div className="flex w-full items-center justify-center gap-2 md:flex-1 md:gap-7 md:px-0">
+          <div className="flex flex-1 items-center justify-center gap-7">
             {options.map((option) => {
               const isSelected =
                 currentAnswer?.score === option.score &&
@@ -116,19 +151,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
             })}
           </div>
 
-          {/* テキスト右側（PC版） */}
-          <span className="hidden ink-title text-right font-medium tracking-[0.08em] text-accent md:block md:w-24 md:text-base">
-            そう思わない
-          </span>
-        </div>
-
-        {/* スマホ版テキスト */}
-        <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
-          <span className="ink-title text-sm font-medium text-primary">
-            そう思う
-          </span>
-          <span className="text-xs text-muted-foreground">←→</span>
-          <span className="ink-title text-sm font-medium text-accent">
+          <span className="ink-title text-right font-medium tracking-[0.08em] text-accent w-24 text-base">
             そう思わない
           </span>
         </div>
