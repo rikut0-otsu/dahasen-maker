@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
@@ -47,6 +48,7 @@ export default function TypeDetail() {
   const [, setLocation] = useLocation();
   const [match, params] = useRoute('/types/:typeId');
   const [imageFailed, setImageFailed] = useState(false);
+  const { user } = useAuth();
   const { reset, state, calculateIndicatorScores, calculateResult } = useDiagnosisContext();
 
   const type = useMemo(() => {
@@ -111,23 +113,36 @@ export default function TypeDetail() {
     };
   });
 
+  const shareUrl = useMemo(() => {
+    const url = new URL(window.location.href);
+
+    if (user?.name) {
+      url.searchParams.set('shareName', user.name);
+    } else {
+      url.searchParams.delete('shareName');
+    }
+
+    return url.toString();
+  }, [user?.name]);
+
   const handleShare = () => {
-    const text = `私の打破タイプは「${type.name}」です！\n\n${type.title}\n\n打破宣言メーカーで診断してみてください！`;
+    const sharerLabel = user?.name ? `${user.name}さんが` : 'だれかが';
+    const text = `${sharerLabel}打破宣言しました！\n\n診断結果は「${type.name}」です。\n${type.title}\n\nログインして結果を見てみよう！`;
     if (navigator.share) {
       navigator.share({
-        title: '打破宣言メーカー',
+        title: `${sharerLabel}打破宣言しました！`,
         text,
-        url: window.location.href,
+        url: shareUrl,
       });
       return;
     }
 
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(`${text}\n${shareUrl}`);
     alert('結果をコピーしました');
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText(shareUrl);
     alert('URLをコピーしました');
   };
 
