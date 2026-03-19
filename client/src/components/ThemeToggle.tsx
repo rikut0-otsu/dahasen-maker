@@ -1,45 +1,52 @@
 import { useTheme } from "@/contexts/ThemeContext";
 import { Moon, Sun } from "lucide-react";
 import { memo } from "react";
+import { cn } from "@/lib/utils";
 
 const ThemeToggleComponent = () => {
-  const { theme, toggleTheme, switchable } = useTheme();
+  const { theme, setTheme, switchable } = useTheme();
 
-  if (!switchable || !toggleTheme) {
+  if (!switchable || !setTheme) {
     return null;
   }
 
   const isDark = theme === "dark";
 
   return (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      className="relative inline-flex h-10 w-28 items-center rounded-full border border-[rgba(184,155,87,0.28)] bg-[rgba(255,255,255,0.86)] p-1 shadow-[0_10px_24px_rgba(31,42,35,0.08)] transition-colors dark:border-[rgba(255,255,255,0.12)] dark:bg-[rgba(18,22,31,0.92)]"
-      aria-label={isDark ? "ライトモードに切り替える" : "ダークモードに切り替える"}
+    <div
+      className="inline-grid h-9 grid-cols-2 gap-1 rounded-full border border-[rgba(184,155,87,0.24)] bg-[rgba(255,255,255,0.9)] p-1 shadow-[0_8px_20px_rgba(31,42,35,0.08)] dark:border-[rgba(255,255,255,0.1)] dark:bg-[rgba(12,18,28,0.92)]"
+      role="group"
+      aria-label="テーマ切り替え"
     >
-      <span
-        className={`absolute top-1 h-8 w-[3.4rem] rounded-full transition-all duration-300 ${
+      <button
+        type="button"
+        onClick={() => setTheme("light")}
+        aria-pressed={!isDark}
+        aria-label="ライトモードに切り替える"
+        className={cn(
+          "flex h-7 w-8 items-center justify-center rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40",
+          !isDark
+            ? "bg-[linear-gradient(180deg,#fffdf8_0%,#f2ead8_100%)] text-[rgba(120,96,45,0.96)] shadow-[0_8px_16px_rgba(140,116,62,0.18)]"
+            : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+        )}
+      >
+        <Sun className="h-3.5 w-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => setTheme("dark")}
+        aria-pressed={isDark}
+        aria-label="ダークモードに切り替える"
+        className={cn(
+          "flex h-7 w-8 items-center justify-center rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40",
           isDark
-            ? "left-[4.1rem] bg-[linear-gradient(180deg,#2b5cff_0%,#2148d7_100%)] shadow-[0_10px_20px_rgba(33,72,215,0.32)]"
-            : "left-1 bg-[linear-gradient(180deg,#2b5cff_0%,#2148d7_100%)] shadow-[0_10px_20px_rgba(33,72,215,0.28)]"
-        }`}
-      />
-      <span className={`relative z-20 flex w-1/2 items-center justify-center ${!isDark ? "text-foreground" : "text-muted-foreground"}`}>
-        <Sun className="h-4 w-4" />
-      </span>
-      <span className={`relative z-20 flex w-1/2 items-center justify-center ${isDark ? "text-white" : "text-muted-foreground"}`}>
-        <Moon className="h-4 w-4" />
-      </span>
-      <span
-        className={`pointer-events-none absolute top-1.5 h-8 w-8 rounded-full transition-all duration-300 ${
-          isDark
-            ? "left-[4.25rem] bg-slate-900/70"
-            : "left-[2.25rem] bg-white/80"
-        }`}
-        style={{ boxShadow: "0 6px 14px rgba(0,0,0,0.18)" }}
-      />
-    </button>
+            ? "bg-[linear-gradient(180deg,#365cff_0%,#2148d7_100%)] text-white shadow-[0_10px_20px_rgba(33,72,215,0.34)]"
+            : "text-slate-400 hover:bg-black/5 hover:text-slate-600 dark:hover:bg-white/5 dark:hover:text-slate-200"
+        )}
+      >
+        <Moon className="h-3.5 w-3.5" />
+      </button>
+    </div>
   );
 };
 

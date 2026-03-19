@@ -96,6 +96,39 @@ export default function Home() {
           <div className="absolute left-[-4rem] top-16 h-56 w-56 rounded-full bg-primary/8 blur-3xl"></div>
           <div className="absolute right-[-3rem] top-8 h-56 w-56 rounded-full bg-accent/15 blur-3xl"></div>
         </div>
+        <div className="pointer-events-none absolute inset-x-[8%] top-0 h-40 opacity-70 md:inset-x-[12%] md:h-52 lg:inset-x-[16%]">
+          <Sparkles
+            count={10}
+            minSize={4}
+            maxSize={10}
+            topOffset={-12}
+            direction="down"
+            minDuration={3.1}
+            maxDuration={4.8}
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[18vw] min-w-[9rem] max-w-[15rem] opacity-50 lg:block">
+          <Sparkles
+            count={8}
+            minSize={4}
+            maxSize={10}
+            topOffset={-18}
+            direction="down"
+            minDuration={3.4}
+            maxDuration={5.1}
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[18vw] min-w-[9rem] max-w-[15rem] opacity-45 lg:block">
+          <Sparkles
+            count={7}
+            minSize={4}
+            maxSize={9}
+            topOffset={-22}
+            direction="down"
+            minDuration={3.5}
+            maxDuration={5.3}
+          />
+        </div>
 
         <div className="container relative z-10">
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 text-center">
@@ -144,7 +177,15 @@ export default function Home() {
                 )}
               </div>
               <div className="pointer-events-none absolute inset-0">
-                <Sparkles />
+                <Sparkles
+                  count={12}
+                  minSize={5}
+                  maxSize={12}
+                  bottomOffset={-14}
+                  direction="up"
+                  minDuration={2.9}
+                  maxDuration={4.4}
+                />
               </div>
             </div>
 
