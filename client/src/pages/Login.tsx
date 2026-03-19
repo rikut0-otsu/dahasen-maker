@@ -35,11 +35,11 @@ export default function Login() {
           <div className="absolute inset-x-[18%] bottom-[-4rem] h-44 rounded-full bg-primary/10 blur-3xl md:h-56" />
         </div>
 
-        <div className="pointer-events-none absolute inset-x-[8%] bottom-0 top-[16%] opacity-95 md:inset-x-[14%] md:top-[14%]">
+        <div className="pointer-events-none absolute inset-x-[12%] bottom-0 top-[20%] opacity-95 md:inset-x-[22%] md:top-[18%]">
           <Sparkles
-            count={16}
-            minSize={6}
-            maxSize={16}
+            count={14}
+            minSize={5}
+            maxSize={14}
             topOffset={-14}
             direction="down"
             minDuration={3.2}
@@ -47,26 +47,26 @@ export default function Login() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center">
-          <div className="grid w-full items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-            <div className="mx-auto flex max-w-[38rem] flex-col items-center gap-5 text-center lg:items-start lg:text-left">
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-4xl items-center justify-center">
+          <div className="flex w-full flex-col items-center gap-8 text-center md:gap-10">
+            <div className="flex max-w-[42rem] flex-col items-center gap-5">
               <div className="seal-tag inline-flex rounded-full px-4 py-2 text-sm font-semibold text-primary">
                 CYBERAGENT PURPOSE
               </div>
-              <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground md:text-5xl lg:text-[4.6rem]">
+              <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground md:text-5xl lg:text-6xl">
                 閉塞感を打破する宣言を
                 <br />
                 ここから刻もう
               </h1>
-              <p className="max-w-[32rem] text-sm leading-8 text-muted-foreground md:text-base">
+              <p className="max-w-[34rem] text-sm leading-8 text-muted-foreground md:text-base">
                 Googleログインすると、診断結果を保存していつでも見返せるようになります。
                 <br />
                 自分だけの「打破宣言」をつくりましょう。
               </p>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[30rem] lg:max-w-[32rem]">
-              <div className="absolute inset-x-10 bottom-10 top-8 rounded-full bg-[radial-gradient(circle,_rgba(255,176,64,0.28),_rgba(255,176,64,0.0)_72%)] blur-2xl" />
+            <div className="relative w-full max-w-[32rem]">
+              <div className="absolute inset-x-10 bottom-8 top-6 rounded-full bg-[radial-gradient(circle,_rgba(255,176,64,0.24),_rgba(255,176,64,0.0)_72%)] blur-2xl" />
               <div className="historical-panel rounded-[2.2rem] border border-border p-5 shadow-[0_18px_50px_rgba(28,43,31,0.08)] md:p-7">
                 <div className="wash-paper rounded-[1.8rem] border border-border/70 p-6 md:p-7">
                   <p className="text-sm leading-7 text-muted-foreground">
