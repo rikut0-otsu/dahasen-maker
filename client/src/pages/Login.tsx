@@ -26,7 +26,9 @@ export default function Login() {
     <div className="min-h-screen overflow-hidden bg-background paper-texture">
       <div className="relative isolate min-h-screen px-4 py-8 md:px-6 md:py-10">
         <div className="absolute inset-0 opacity-90">
-          <div className="absolute inset-0 bg-[url('/daha-sengen-main-visual.png')] bg-cover bg-center opacity-[0.16] md:opacity-[0.2]" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.16] md:h-[88vh] md:opacity-[0.22]" />
+          </div>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.9),rgba(255,250,240,0.86))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.82),rgba(10,18,32,0.9))]" />
           <div className="absolute left-[6%] top-[14%] h-72 w-72 rounded-full bg-primary/10 blur-3xl md:h-96 md:w-96" />
           <div className="absolute right-[8%] top-[20%] h-72 w-72 rounded-full bg-accent/10 blur-3xl md:h-[30rem] md:w-[30rem]" />
@@ -65,7 +67,7 @@ export default function Login() {
 
             <div className="relative mx-auto w-full max-w-[30rem] lg:max-w-[32rem]">
               <div className="absolute inset-x-10 bottom-10 top-8 rounded-full bg-[radial-gradient(circle,_rgba(255,176,64,0.28),_rgba(255,176,64,0.0)_72%)] blur-2xl" />
-              <div className="historical-panel rounded-[2.2rem] border border-border p-5 shadow-[0_18px_50px_rgba(28,43,31,0.08)] md:p-7 bg-[url('/daha-sengen-main-visual.png')] bg-cover bg-center bg-blend-soft-light">
+              <div className="historical-panel rounded-[2.2rem] border border-border p-5 shadow-[0_18px_50px_rgba(28,43,31,0.08)] md:p-7">
                 <div className="wash-paper rounded-[1.8rem] border border-border/70 p-6 md:p-7">
                   <p className="text-sm leading-7 text-muted-foreground">
                     ここからあなたの「打破宣言」がはじまります。
