@@ -27,9 +27,9 @@ export default function Login() {
       <div className="relative isolate min-h-screen px-4 py-8 md:px-6 md:py-10">
         <div className="absolute inset-0 opacity-90">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.24] md:h-[88vh] md:opacity-[0.32]" />
+            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.3] md:h-[88vh] md:opacity-[0.42]" />
           </div>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.84),rgba(255,250,240,0.78))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.74),rgba(10,18,32,0.84))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.76),rgba(255,250,240,0.68))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.66),rgba(10,18,32,0.78))]" />
           <div className="absolute left-[6%] top-[14%] h-72 w-72 rounded-full bg-primary/10 blur-3xl md:h-96 md:w-96" />
           <div className="absolute right-[8%] top-[20%] h-72 w-72 rounded-full bg-accent/10 blur-3xl md:h-[30rem] md:w-[30rem]" />
           <div className="absolute inset-x-[18%] bottom-[-4rem] h-44 rounded-full bg-primary/10 blur-3xl md:h-56" />
@@ -37,13 +37,13 @@ export default function Login() {
 
         <div className="pointer-events-none absolute inset-x-[12%] bottom-0 top-[20%] opacity-95 md:inset-x-[22%] md:top-[18%]">
           <Sparkles
-            count={14}
-            minSize={5}
-            maxSize={14}
+            count={12}
+            minSize={4}
+            maxSize={10}
             topOffset={-14}
             direction="down"
-            minDuration={3.2}
-            maxDuration={5.2}
+            minDuration={3.4}
+            maxDuration={5.4}
           />
         </div>
 
