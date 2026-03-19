@@ -103,13 +103,31 @@ export default function Home() {
             maxSize={10}
             topOffset={-12}
             direction="down"
+            minDuration={3.1}
+            maxDuration={4.8}
           />
         </div>
         <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[18vw] min-w-[9rem] max-w-[15rem] opacity-50 lg:block">
-          <Sparkles count={8} minSize={4} maxSize={10} bottomOffset={-20} />
+          <Sparkles
+            count={8}
+            minSize={4}
+            maxSize={10}
+            topOffset={-18}
+            direction="down"
+            minDuration={3.4}
+            maxDuration={5.1}
+          />
         </div>
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[18vw] min-w-[9rem] max-w-[15rem] opacity-45 lg:block">
-          <Sparkles count={7} minSize={4} maxSize={9} bottomOffset={-24} />
+          <Sparkles
+            count={7}
+            minSize={4}
+            maxSize={9}
+            topOffset={-22}
+            direction="down"
+            minDuration={3.5}
+            maxDuration={5.3}
+          />
         </div>
 
         <div className="container relative z-10">
@@ -159,7 +177,15 @@ export default function Home() {
                 )}
               </div>
               <div className="pointer-events-none absolute inset-0">
-                <Sparkles count={12} minSize={5} maxSize={12} bottomOffset={-14} />
+                <Sparkles
+                  count={12}
+                  minSize={5}
+                  maxSize={12}
+                  bottomOffset={-14}
+                  direction="up"
+                  minDuration={2.9}
+                  maxDuration={4.4}
+                />
               </div>
             </div>
 

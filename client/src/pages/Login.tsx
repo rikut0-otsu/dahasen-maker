@@ -34,7 +34,15 @@ export default function Login() {
         </div>
 
         <div className="pointer-events-none absolute inset-x-[8%] bottom-0 top-[24%] opacity-95 md:inset-x-[18%] md:top-[18%]">
-          <Sparkles count={16} minSize={6} maxSize={16} bottomOffset={-16} />
+          <Sparkles
+            count={16}
+            minSize={6}
+            maxSize={16}
+            topOffset={-14}
+            direction="down"
+            minDuration={3.2}
+            maxDuration={5.2}
+          />
         </div>
 
         <div className="relative z-10 grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
