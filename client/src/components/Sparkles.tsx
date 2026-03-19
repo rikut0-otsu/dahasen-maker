@@ -5,6 +5,8 @@ type SparklesProps = {
   minSize?: number;
   maxSize?: number;
   bottomOffset?: number;
+  topOffset?: number;
+  direction?: "up" | "down";
 };
 
 export function Sparkles({
@@ -12,6 +14,8 @@ export function Sparkles({
   minSize = 4,
   maxSize = 9,
   bottomOffset = -10,
+  topOffset,
+  direction = "up",
 }: SparklesProps) {
   const sparks = useMemo(() => {
     const span = Math.max(maxSize - minSize, 0);
@@ -32,11 +36,16 @@ export function Sparkles({
         duration,
         size: `${size}px`,
         drift,
-        rise,
+        translateY: `${direction === "down" ? 1 : -1}${rise}`,
         scale,
       };
     });
-  }, [bottomOffset, count, maxSize, minSize]);
+  }, [count, direction, maxSize, minSize]);
+
+  const anchorStyle =
+    topOffset !== undefined
+      ? { top: `${topOffset}px` }
+      : { bottom: `${bottomOffset}px` };
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -46,13 +55,13 @@ export function Sparkles({
           className="sparkle"
           style={{
             left: spark.left,
-            bottom: `${bottomOffset}px`,
+            ...anchorStyle,
             width: spark.size,
             height: spark.size,
             animationDelay: spark.delay,
             animationDuration: spark.duration,
             ["--sparkle-drift" as string]: spark.drift,
-            ["--sparkle-rise" as string]: spark.rise,
+            ["--sparkle-translate-y" as string]: spark.translateY,
             ["--sparkle-scale" as string]: spark.scale,
           }}
         />
