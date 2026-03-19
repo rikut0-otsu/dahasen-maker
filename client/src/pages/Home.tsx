@@ -60,6 +60,7 @@ export default function Home() {
 
   const handleStartDiagnosis = () => {
     reset();
+    window.scrollTo(0, 0);
     setLocation('/diagnosis');
   };
 

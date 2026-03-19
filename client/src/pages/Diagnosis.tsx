@@ -25,7 +25,16 @@ export default function Diagnosis() {
   // ページ遷移時にスクロール位置をリセット
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [state.currentPage]);
+
+  // ブラウザの自動スクロール復元を防ぐ
+  useLayoutEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
 
   const currentQuestions = getQuestionsForPage(state.currentPage);
   const isLastPage = state.currentPage === 4;
