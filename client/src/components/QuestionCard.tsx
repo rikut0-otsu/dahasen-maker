@@ -81,7 +81,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
   return (
     <div className="historical-panel w-full rounded-[1.75rem] p-6 md:p-8">
       <div className="mx-auto w-full max-w-[38rem]">
-        <h3 className="ink-title mx-auto mb-6 w-full max-w-[34rem] text-lg font-semibold leading-relaxed text-foreground text-balance md:mb-8 md:text-2xl md:leading-[1.8]">
+        <h3 className="ink-title mx-auto mb-6 w-full max-w-[34rem] text-center text-lg font-semibold leading-relaxed text-foreground text-balance md:mb-8 md:text-2xl md:leading-[1.8]">
           {text}
         </h3>
 
