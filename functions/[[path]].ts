@@ -19,10 +19,10 @@ type TypeSummary = {
 };
 
 const defaultMetadata = {
-  title: "打破宣言メーカー | 活躍宣言をつくろう",
+  title: "打破宣言しよう！ | 打破宣言メーカー",
   description:
-    "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくる診断サイトです。",
-  imagePath: "/daha-sengen-main-visual.png",
+    "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくろう。",
+  imagePath: "/og/default.svg",
 };
 
 const allTypes = typesData as TypeSummary[];
@@ -98,6 +98,7 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta property="og:description" content="${description}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${imageUrl}" />
+    <meta property="og:image:alt" content="打破宣言メーカーの共有画像" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
