@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "include": [
+    "/types/*"
+  ],
+  "exclude": [
+    "/assets/*",
+    "/type-images/*",
+    "/api/*",
+    "/og/*",
+    "/og-default.png",
+    "/daha-sengen-main-visual.png",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml"
+  ]
+}
