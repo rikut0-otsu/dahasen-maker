@@ -22,6 +22,11 @@ export default function Diagnosis() {
     calculateResult,
   } = useDiagnosisContext();
 
+  // ページ遷移時にスクロール位置をリセット
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [state.currentPage]);
+
   const currentQuestions = getQuestionsForPage(state.currentPage);
   const isLastPage = state.currentPage === 4;
   const canProceed = currentQuestions.every((q) =>
