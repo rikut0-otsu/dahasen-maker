@@ -35,6 +35,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const nextUser = await getCurrentUser();
       setUser(nextUser);
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      // エラーが出た場合は null で処理を続行
+      setUser(null);
     } finally {
       setIsLoading(false);
     }

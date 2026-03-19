@@ -14,6 +14,19 @@
 
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+        <p>JavaScript が有効になっていません。ブラウザの設定を確認してください。</p>
+      </div>
+    </noscript>
+    <script>
+      // 初期化ログ（デバッグ用）
+      console.log('[Init] Page loaded at', new Date().toISOString());
+      console.log('[Init] User Agent:', navigator.userAgent);
+      window.addEventListener('error', (event) => {
+        console.error('[Error]', event.error?.message || event.message);
+      });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
     <script
       defer
