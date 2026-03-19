@@ -80,12 +80,12 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
 
   return (
     <div className="historical-panel w-full rounded-[1.75rem] p-6 md:p-8">
-      <div className="mx-auto w-full max-w-[42rem]">
-        <h3 className="ink-title mb-6 text-lg font-semibold leading-relaxed text-foreground text-balance md:mb-8 md:text-2xl md:leading-[1.8]">
+      <div className="mx-auto w-full max-w-[38rem]">
+        <h3 className="ink-title mx-auto mb-6 w-full max-w-[34rem] text-lg font-semibold leading-relaxed text-foreground text-balance md:mb-8 md:text-2xl md:leading-[1.8]">
           {text}
         </h3>
 
-        <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
+        <div className="wash-paper mx-auto w-full max-w-[34rem] rounded-2xl px-4 py-5 md:px-6 md:py-6">
           {/* スマホ版 */}
           <div className="md:hidden">
             <div className="mb-5 flex flex-col items-center gap-3 text-center">
@@ -128,12 +128,12 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
 
           {/* PC版 */}
           <div className="hidden md:block">
-            <div className="mx-auto grid max-w-[34rem] grid-cols-[6.5rem_minmax(0,1fr)_6.5rem] items-center gap-4 lg:max-w-[36rem] lg:gap-5">
+            <div className="mx-auto grid w-full grid-cols-[5.5rem_minmax(0,1fr)_5.5rem] items-center gap-3 lg:grid-cols-[6rem_minmax(0,1fr)_6rem] lg:gap-4">
               <span className="ink-title text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
                 そう思う
               </span>
 
-              <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-6">
+              <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-5">
                 {options.map((option) => {
                   const isSelected =
                     currentAnswer?.score === option.score &&
