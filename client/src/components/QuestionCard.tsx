@@ -80,26 +80,59 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
 
   return (
     <div className="historical-panel w-full rounded-[1.75rem] p-6 md:p-8">
-      <h3 className="ink-title mb-8 text-lg font-semibold leading-relaxed text-foreground md:text-2xl">
-        {text}
-      </h3>
+      <div className="mx-auto w-full max-w-[42rem]">
+        <h3 className="ink-title mb-6 text-lg font-semibold leading-relaxed text-foreground text-balance md:mb-8 md:text-2xl md:leading-[1.8]">
+          {text}
+        </h3>
 
-      <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
-        {/* スマホ版 */}
-        <div className="md:hidden">
-          <div className="mb-6 flex flex-col items-center gap-3 text-center">
-            <div className="flex items-center justify-center gap-3">
-              <span className="ink-title text-sm font-medium text-primary">
-                そう思う
-              </span>
-              <span className="text-xs text-muted-foreground">←</span>
-              <span className="text-xs text-muted-foreground">→</span>
-              <span className="ink-title text-sm font-medium text-accent">
-                そう思わない
-              </span>
+        <div className="wash-paper rounded-2xl px-4 py-5 md:px-6 md:py-6">
+          {/* スマホ版 */}
+          <div className="md:hidden">
+            <div className="mb-5 flex flex-col items-center gap-3 text-center">
+              <div className="flex items-center justify-center gap-3">
+                <span className="ink-title text-sm font-medium text-primary">
+                  そう思う
+                </span>
+                <span className="text-xs text-muted-foreground">←</span>
+                <span className="text-xs text-muted-foreground">→</span>
+                <span className="ink-title text-sm font-medium text-accent">
+                  そう思わない
+                </span>
+              </div>
+
+              <div className="flex w-full items-center justify-center gap-2 sm:gap-3">
+                {options.map((option) => {
+                  const isSelected =
+                    currentAnswer?.score === option.score &&
+                    currentAnswer?.isPositive === option.isPositive;
+
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={option.onClick}
+                      aria-pressed={isSelected}
+                      aria-label={option.label}
+                      className={cn(
+                        'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                        option.sizeClass,
+                        isSelected ? option.activeClass : option.idleClass,
+                        isSelected && 'scale-105'
+                      )}
+                    />
+                  );
+                })}
+              </div>
             </div>
+          </div>
 
-            <div className="flex items-center justify-center gap-2">
+          {/* PC版 */}
+          <div className="hidden md:grid md:grid-cols-[minmax(5rem,6.5rem)_minmax(0,1fr)_minmax(5rem,6.5rem)] md:items-center md:gap-5 lg:gap-6">
+            <span className="ink-title text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
+              そう思う
+            </span>
+
+            <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-6">
               {options.map((option) => {
                 const isSelected =
                   currentAnswer?.score === option.score &&
@@ -113,7 +146,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
                     aria-pressed={isSelected}
                     aria-label={option.label}
                     className={cn(
-                      'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                      'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
                       option.sizeClass,
                       isSelected ? option.activeClass : option.idleClass,
                       isSelected && 'scale-105'
@@ -122,42 +155,11 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
                 );
               })}
             </div>
+
+            <span className="ink-title text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
+              そう思わない
+            </span>
           </div>
-        </div>
-
-        {/* PC版 */}
-        <div className="hidden md:flex items-center justify-between gap-8">
-          <span className="ink-title font-medium tracking-[0.08em] text-primary w-24 text-base">
-            そう思う
-          </span>
-
-          <div className="flex flex-1 items-center justify-center gap-7">
-            {options.map((option) => {
-              const isSelected =
-                currentAnswer?.score === option.score &&
-                currentAnswer?.isPositive === option.isPositive;
-
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={option.onClick}
-                  aria-pressed={isSelected}
-                  aria-label={option.label}
-                  className={cn(
-                    'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
-                    option.sizeClass,
-                    isSelected ? option.activeClass : option.idleClass,
-                    isSelected && 'scale-105'
-                  )}
-                />
-              );
-            })}
-          </div>
-
-          <span className="ink-title text-right font-medium tracking-[0.08em] text-accent w-24 text-base">
-            そう思わない
-          </span>
         </div>
       </div>
     </div>
