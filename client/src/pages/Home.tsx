@@ -122,6 +122,7 @@ export default function Home() {
                     src="/daha-sengen-main-visual.png"
                     alt="打破宣言メーカーのメインビジュアル"
                     className="h-auto w-full rounded-[1.5rem] object-cover"
+                    loading="lazy"
                     onError={() => setHeroImageFailed(true)}
                   />
                 ) : (
