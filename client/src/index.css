@@ -479,3 +479,28 @@
     clip-path: polygon(0 100%, 0 75%, 3% 75%, 5% 56%, 7% 75%, 10% 75%, 12% 46%, 15% 75%, 18% 75%, 20% 58%, 22% 75%, 76% 75%, 79% 50%, 82% 75%, 85% 75%, 88% 42%, 91% 75%, 94% 75%, 97% 58%, 100% 75%, 100% 100%);
   }
 }
+
+.sparkle {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 230, 180, 0.95) 0%, rgba(255, 180, 80, 0.6) 45%, rgba(255, 180, 80, 0.0) 75%);
+  box-shadow: 0 0 12px rgba(255, 200, 120, 0.55);
+  opacity: 0;
+  animation: sparkle 1.4s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes sparkle {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(-96px) scale(1.2);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-140px) scale(1.4);
+    opacity: 0;
+  }
+}
