@@ -128,12 +128,12 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
 
           {/* PC版 */}
           <div className="hidden md:block">
-            <div className="mx-auto grid w-full grid-cols-[5.5rem_minmax(0,1fr)_5.5rem] items-center gap-3 lg:grid-cols-[6rem_minmax(0,1fr)_6rem] lg:gap-4">
-              <span className="ink-title text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
+            <div className="relative mx-auto flex w-full max-w-[34rem] items-center justify-center px-[4.75rem] lg:px-[5.5rem]">
+              <span className="ink-title absolute left-0 top-1/2 -translate-y-1/2 text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
                 そう思う
               </span>
 
-              <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-5">
+              <div className="flex items-center justify-center gap-4 lg:gap-5">
                 {options.map((option) => {
                   const isSelected =
                     currentAnswer?.score === option.score &&
@@ -157,7 +157,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
                 })}
               </div>
 
-              <span className="ink-title text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
+              <span className="ink-title absolute right-0 top-1/2 -translate-y-1/2 text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
                 そう思わない
               </span>
             </div>
