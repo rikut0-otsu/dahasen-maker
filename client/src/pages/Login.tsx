@@ -21,6 +21,7 @@ export default function Login() {
     signInWithGoogle(returnTo);
   };
 
+  
   return (
     <div className="min-h-screen bg-background paper-texture px-4 py-12">
       <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-10">
