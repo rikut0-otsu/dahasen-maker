@@ -114,7 +114,7 @@ export default function TypeDetail() {
   });
 
   const shareUrl = useMemo(() => {
-    const url = new URL(window.location.href);
+    const url = new URL(`/types/${type.id}`, window.location.origin);
 
     if (user?.name) {
       url.searchParams.set('shareName', user.name);
@@ -123,7 +123,7 @@ export default function TypeDetail() {
     }
 
     return url.toString();
-  }, [user?.name]);
+  }, [type.id, user?.name]);
 
   const handleShare = () => {
     const sharerLabel = user?.name ? `${user.name}さんが` : 'だれかが';

@@ -1,11 +1,11 @@
-import type { AppContext } from "./_lib/cloudflare";
-import typesData from "../client/src/data/types.json";
+import type { AppContext } from "./cloudflare";
+import typesData from "../../client/src/data/types.json";
 
 type AssetsBinding = {
   fetch(request: Request): Promise<Response>;
 };
 
-type PageContext = AppContext<{
+export type OGPContext = AppContext<{
   ASSETS: AssetsBinding;
 }>;
 
@@ -19,10 +19,10 @@ type TypeSummary = {
 };
 
 const defaultMetadata = {
-  title: "打破宣言メーカー | 活躍宣言をつくろう",
+  title: "打破宣言しよう！ | 打破宣言メーカー",
   description:
-    "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくる診断サイトです。",
-  imagePath: "/daha-sengen-main-visual.png",
+    "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくろう。",
+  imagePath: "/og-default.png",
 };
 
 const allTypes = typesData as TypeSummary[];
@@ -98,10 +98,16 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta property="og:description" content="${description}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${imageUrl}" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image:secure_url" content="${imageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="315" />
+    <meta property="og:image:alt" content="打破宣言メーカーの共有画像" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${imageUrl}" />
+    <meta name="twitter:image:alt" content="打破宣言メーカーの共有画像" />
   `;
 
   return html
@@ -112,23 +118,21 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     .replace("<title></title>", replacement);
 }
 
-export async function onRequestGet(context: PageContext) {
-  const response = await context.env.ASSETS.fetch(context.request);
-  const contentType = response.headers.get("content-type") ?? "";
-
-  if (!contentType.includes("text/html")) {
-    return response;
-  }
-
-  const html = await response.text();
+export async function renderPageWithMetadata(context: OGPContext) {
+  const htmlResponse = await context.env.ASSETS.fetch(
+    new Request(new URL("/index.html", context.request.url).toString(), {
+      headers: context.request.headers,
+    })
+  );
+  const html = await htmlResponse.text();
   const metadata = buildMetadata(new URL(context.request.url));
   const nextHtml = injectMetadata(html, metadata);
-  const headers = new Headers(response.headers);
+  const headers = new Headers(htmlResponse.headers);
   headers.set("content-type", "text/html; charset=utf-8");
 
   return new Response(nextHtml, {
-    status: response.status,
-    statusText: response.statusText,
+    status: htmlResponse.status,
+    statusText: htmlResponse.statusText,
     headers,
   });
 }
