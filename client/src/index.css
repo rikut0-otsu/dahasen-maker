@@ -484,23 +484,27 @@
   position: absolute;
   border-radius: 999px;
   background: radial-gradient(circle, rgba(255, 230, 180, 0.95) 0%, rgba(255, 180, 80, 0.6) 45%, rgba(255, 180, 80, 0.0) 75%);
-  box-shadow: 0 0 12px rgba(255, 200, 120, 0.55);
+  box-shadow:
+    0 0 12px rgba(255, 200, 120, 0.55),
+    0 0 24px rgba(255, 142, 44, 0.28);
   opacity: 0;
   animation: sparkle 1.4s ease-out infinite;
   will-change: transform, opacity;
+  mix-blend-mode: screen;
 }
 
 @keyframes sparkle {
   0% {
     transform: translateY(0px) scale(0.8);
+    opacity: 0;
+  }
+  16% {
     opacity: 1;
   }
-  60% {
-    transform: translateY(-96px) scale(1.2);
-    opacity: 0.55;
-  }
   100% {
-    transform: translateY(-140px) scale(1.4);
+    transform:
+      translate3d(var(--sparkle-drift, 0px), calc(var(--sparkle-rise, -160px) * -1), 0)
+      scale(var(--sparkle-scale, 1.4));
     opacity: 0;
   }
 }
