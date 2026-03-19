@@ -127,38 +127,40 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
           </div>
 
           {/* PC版 */}
-          <div className="hidden md:grid md:grid-cols-[minmax(5rem,6.5rem)_minmax(0,1fr)_minmax(5rem,6.5rem)] md:items-center md:gap-5 lg:gap-6">
-            <span className="ink-title text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
-              そう思う
-            </span>
+          <div className="hidden md:block">
+            <div className="mx-auto grid max-w-[34rem] grid-cols-[6.5rem_minmax(0,1fr)_6.5rem] items-center gap-4 lg:max-w-[36rem] lg:gap-5">
+              <span className="ink-title text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
+                そう思う
+              </span>
 
-            <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-6">
-              {options.map((option) => {
-                const isSelected =
-                  currentAnswer?.score === option.score &&
-                  currentAnswer?.isPositive === option.isPositive;
+              <div className="flex min-w-0 items-center justify-center gap-4 lg:gap-6">
+                {options.map((option) => {
+                  const isSelected =
+                    currentAnswer?.score === option.score &&
+                    currentAnswer?.isPositive === option.isPositive;
 
-                return (
-                  <button
-                    key={option.key}
-                    type="button"
-                    onClick={option.onClick}
-                    aria-pressed={isSelected}
-                    aria-label={option.label}
-                    className={cn(
-                      'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
-                      option.sizeClass,
-                      isSelected ? option.activeClass : option.idleClass,
-                      isSelected && 'scale-105'
-                    )}
-                  />
-                );
-              })}
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={option.onClick}
+                      aria-pressed={isSelected}
+                      aria-label={option.label}
+                      className={cn(
+                        'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
+                        option.sizeClass,
+                        isSelected ? option.activeClass : option.idleClass,
+                        isSelected && 'scale-105'
+                      )}
+                    />
+                  );
+                })}
+              </div>
+
+              <span className="ink-title text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
+                そう思わない
+              </span>
             </div>
-
-            <span className="ink-title text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
-              そう思わない
-            </span>
           </div>
         </div>
       </div>
