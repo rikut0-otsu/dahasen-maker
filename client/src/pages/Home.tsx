@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { CharacterCard } from '@/components/CharacterCard';
 import { GoogleLoginCard } from '@/components/GoogleLoginCard';
+import { Sparkles } from '@/components/Sparkles';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
@@ -116,7 +117,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mx-auto w-full max-w-xl">
+            <div className="relative mx-auto w-full max-w-xl">
               <div className="frame-scroll overflow-hidden rounded-[2rem] p-4">
                 {!heroImageFailed ? (
                   <img
@@ -141,6 +142,9 @@ export default function Home() {
                     </p>
                   </div>
                 )}
+              </div>
+              <div className="pointer-events-none absolute inset-0">
+                <Sparkles />
               </div>
             </div>
 
