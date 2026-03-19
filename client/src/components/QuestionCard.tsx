@@ -37,7 +37,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 2,
       isPositive: true,
       onClick: handleYesStrong,
-      sizeClass: 'h-10 w-10 md:h-[4.4rem] md:w-[4.4rem]',
+      sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
         'border-primary bg-primary shadow-[0_0_0_7px_rgba(45,140,60,0.22)]',
       idleClass: 'border-primary/90 bg-white hover:border-primary hover:bg-primary/12',
@@ -70,11 +70,12 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
       score: 2,
       isPositive: false,
       onClick: handleNoStrong,
-      sizeClass: 'h-10 w-10 md:h-[4.4rem] md:w-[4.4rem]',
+      sizeClass: 'h-12 w-12 md:h-[4.4rem] md:w-[4.4rem]',
       activeClass:
         'border-accent bg-accent shadow-[0_0_0_7px_rgba(130,190,40,0.24)]',
       idleClass: 'border-accent/90 bg-white hover:border-accent hover:bg-accent/14',
     },
+
   ];
 
   return (
@@ -98,7 +99,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
               </span>
             </div>
 
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-2">
               {options.map((option) => {
                 const isSelected =
                   currentAnswer?.score === option.score &&
@@ -113,20 +114,13 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
                     aria-label={option.label}
                     className={cn(
                       'flex shrink-0 items-center justify-center rounded-full border-[3px] transition-[box-shadow,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/40',
-                      'h-10 w-10',
+                      option.sizeClass,
                       isSelected ? option.activeClass : option.idleClass,
                       isSelected && 'scale-105'
                     )}
                   />
                 );
               })}
-            </div>
-
-            <div className="mt-2 flex w-full items-center justify-between text-xs text-muted-foreground">
-              <span className="font-medium text-primary">とても</span>
-              <span className="font-medium">やや</span>
-              <span className="font-medium">やや</span>
-              <span className="font-medium text-accent">まったく</span>
             </div>
           </div>
         </div>
