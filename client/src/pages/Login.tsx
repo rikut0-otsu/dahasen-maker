@@ -27,9 +27,9 @@ export default function Login() {
       <div className="relative isolate min-h-screen px-4 py-8 md:px-6 md:py-10">
         <div className="absolute inset-0 opacity-90">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.3] md:h-[88vh] md:opacity-[0.42]" />
+            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.38] md:h-[88vh] md:opacity-[0.5]" />
           </div>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.76),rgba(255,250,240,0.68))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.66),rgba(10,18,32,0.78))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.68),rgba(255,250,240,0.58))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.58),rgba(10,18,32,0.7))]" />
           <div className="absolute left-[6%] top-[14%] h-72 w-72 rounded-full bg-primary/10 blur-3xl md:h-96 md:w-96" />
           <div className="absolute right-[8%] top-[20%] h-72 w-72 rounded-full bg-accent/10 blur-3xl md:h-[30rem] md:w-[30rem]" />
           <div className="absolute inset-x-[18%] bottom-[-4rem] h-44 rounded-full bg-primary/10 blur-3xl md:h-56" />
