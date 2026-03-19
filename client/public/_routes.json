@@ -1,10 +1,6 @@
 {
   "version": 1,
   "include": [
-    "/",
-    "/login",
-    "/diagnosis",
-    "/result",
     "/types/*"
   ],
   "exclude": [
@@ -12,6 +8,7 @@
     "/type-images/*",
     "/api/*",
     "/og/*",
+    "/og-default.png",
     "/daha-sengen-main-visual.png",
     "/favicon.ico",
     "/robots.txt",

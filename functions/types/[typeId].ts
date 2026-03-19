@@ -1,5 +1,9 @@
-import { renderPageWithMetadata, type OGPContext } from "../_lib/og";
+import { renderTypePageWithMetadata, type OGPContext } from "../_lib/og";
 
 export async function onRequestGet(context: OGPContext) {
-  return renderPageWithMetadata(context);
+  return renderTypePageWithMetadata(context);
+}
+
+export async function onRequestHead(context: OGPContext) {
+  return renderTypePageWithMetadata(context);
 }

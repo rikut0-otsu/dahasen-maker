@@ -18,13 +18,6 @@ type TypeSummary = {
   imagePath?: string;
 };
 
-const defaultMetadata = {
-  title: "打破宣言しよう！ | 打破宣言メーカー",
-  description:
-    "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくろう。",
-  imagePath: "/og-default.png",
-};
-
 const allTypes = typesData as TypeSummary[];
 
 function escapeHtml(value: string) {
@@ -40,53 +33,43 @@ function escapeAttribute(value: string) {
   return escapeHtml(value).replaceAll("\n", " ");
 }
 
-function buildMetadata(url: URL) {
+function buildTypeMetadata(url: URL) {
   const typeIdMatch = url.pathname.match(/^\/types\/([^/]+)$/);
   const typeId = typeIdMatch?.[1];
   const shareName = url.searchParams.get("shareName")?.trim() ?? "";
 
   if (!typeId) {
-    return {
-      title: defaultMetadata.title,
-      description: defaultMetadata.description,
-      imageUrl: new URL(defaultMetadata.imagePath, url.origin).toString(),
-      url: url.toString(),
-    };
+    return null;
   }
 
   const type = allTypes.find((item) => item.id === typeId);
   if (!type) {
-    return {
-      title: defaultMetadata.title,
-      description: defaultMetadata.description,
-      imageUrl: new URL(defaultMetadata.imagePath, url.origin).toString(),
-      url: url.toString(),
-    };
+    return null;
   }
 
   const headline = shareName
     ? `${shareName}さんが打破宣言しました！`
     : `${type.name}タイプの打破宣言`;
-  const detailLabel = [type.eraLabel, type.eraTheme, type.title]
-    .filter(Boolean)
-    .join(" / ");
+  const detailLabel = [type.eraLabel, type.eraTheme, type.title].filter(Boolean).join(" / ");
   const description = shareName
     ? `${shareName}さんの診断結果は「${type.name}」。ログインして結果を見てみよう！`
     : `診断結果は「${type.name}」でした。${detailLabel}の人物像をチェックしてみよう！`;
+  const imageUrl = new URL(type.imagePath ?? "/og-default.png", url.origin).toString();
 
   return {
     title: `${headline} | 打破宣言メーカー`,
     description,
-    imageUrl: new URL(type.imagePath ?? defaultMetadata.imagePath, url.origin).toString(),
+    imageUrl,
     url: url.toString(),
   };
 }
 
-function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>) {
+function injectMetadata(html: string, metadata: NonNullable<ReturnType<typeof buildTypeMetadata>>) {
   const title = escapeHtml(metadata.title);
   const description = escapeAttribute(metadata.description);
   const imageUrl = escapeAttribute(metadata.imageUrl);
   const url = escapeAttribute(metadata.url);
+  const imageAlt = escapeAttribute(`${metadata.title}の共有画像`);
 
   const replacement = `
     <title>${title}</title>
@@ -100,14 +83,14 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta property="og:image" content="${imageUrl}" />
     <meta property="og:image:secure_url" content="${imageUrl}" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="600" />
-    <meta property="og:image:height" content="315" />
-    <meta property="og:image:alt" content="打破宣言メーカーの共有画像" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${imageAlt}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${imageUrl}" />
-    <meta name="twitter:image:alt" content="打破宣言メーカーの共有画像" />
+    <meta name="twitter:image:alt" content="${imageAlt}" />
   `;
 
   return html
@@ -118,14 +101,19 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     .replace("<title></title>", replacement);
 }
 
-export async function renderPageWithMetadata(context: OGPContext) {
+export async function renderTypePageWithMetadata(context: OGPContext) {
+  const metadata = buildTypeMetadata(new URL(context.request.url));
+  if (!metadata) {
+    return context.env.ASSETS.fetch(context.request);
+  }
+
   const htmlResponse = await context.env.ASSETS.fetch(
     new Request(new URL("/index.html", context.request.url).toString(), {
       headers: context.request.headers,
     })
   );
+
   const html = await htmlResponse.text();
-  const metadata = buildMetadata(new URL(context.request.url));
   const nextHtml = injectMetadata(html, metadata);
   const headers = new Headers(htmlResponse.headers);
   headers.set("content-type", "text/html; charset=utf-8");
