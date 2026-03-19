@@ -98,6 +98,8 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta property="og:description" content="${description}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${imageUrl}" />
+    <meta property="og:image:secure_url" content="${imageUrl}" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="600" />
     <meta property="og:image:height" content="315" />
     <meta property="og:image:alt" content="打破宣言メーカーの共有画像" />
@@ -105,6 +107,7 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${imageUrl}" />
+    <meta name="twitter:image:alt" content="打破宣言メーカーの共有画像" />
   `;
 
   return html
