@@ -102,9 +102,9 @@ export default function Home() {
           <div className="flex items-center gap-2">
             {!headerLogoFailed ? (
               <img
-                src="/site-logo.png"
+                src="/favicon_256.png"
                 alt="打破宣言メーカーのロゴ"
-                className="h-11 w-auto object-contain md:h-12"
+                className="h-11 w-11 object-contain md:h-12 md:w-12"
                 loading="eager"
                 onError={() => setHeaderLogoFailed(true)}
               />
