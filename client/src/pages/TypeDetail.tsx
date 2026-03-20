@@ -250,7 +250,7 @@ export default function TypeDetail() {
               <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                 診断スコア
               </div>
-              <h3 className="ink-title mt-4 text-2xl font-bold text-foreground">
+              <h3 className="ink-title mt-4 text-left text-2xl font-bold text-foreground [text-wrap:initial] [word-break:keep-all]">
                 あなたはこの結果になりました
               </h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -292,7 +292,7 @@ export default function TypeDetail() {
               <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                 詳細説明
               </div>
-              <h3 className="ink-title mt-4 text-2xl font-bold leading-relaxed text-foreground">
+              <h3 className="ink-title mt-4 text-left text-2xl font-bold leading-relaxed text-foreground [text-wrap:initial] [word-break:keep-all]">
                 {type.detailHeading}
               </h3>
               <div className="mt-5 space-y-4">

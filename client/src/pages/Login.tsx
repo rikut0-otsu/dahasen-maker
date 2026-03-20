@@ -87,7 +87,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-6 space-y-2 text-center text-xs text-muted-foreground">
+        <div className="relative z-10 mt-4 space-y-1.5 text-center text-xs text-muted-foreground md:mt-6 md:space-y-2">
           <p className="tracking-[0.08em] text-muted-foreground/90">
             <span className="font-medium text-foreground/80">Developed by</span>{" "}
             <span className="font-semibold text-foreground">Rikuto Otsu</span>
