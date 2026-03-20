@@ -58,6 +58,7 @@ export default function Home() {
   const { reset } = useDiagnosisContext();
   const [heroImageFailed, setHeroImageFailed] = useState(false);
   const [headerLogoFailed, setHeaderLogoFailed] = useState(false);
+  const [headerWordmarkFailed, setHeaderWordmarkFailed] = useState(false);
   const [isCharacterMenuOpen, setIsCharacterMenuOpen] = useState(false);
   const characterMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -101,13 +102,28 @@ export default function Home() {
         <div className="container flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between md:py-4">
           <div className="flex items-center justify-center gap-2 md:justify-start">
             {!headerLogoFailed ? (
-              <img
-                src="/favicon_256.png"
-                alt="打破宣言メーカーのロゴ"
-                className="h-10 w-10 object-contain md:h-12 md:w-12"
-                loading="eager"
-                onError={() => setHeaderLogoFailed(true)}
-              />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <img
+                  src="/favicon_256.png"
+                  alt="打破宣言メーカーのロゴ"
+                  className="h-10 w-10 shrink-0 object-contain md:h-12 md:w-12"
+                  loading="eager"
+                  onError={() => setHeaderLogoFailed(true)}
+                />
+                {!headerWordmarkFailed ? (
+                  <img
+                    src="/header-wordmark.png"
+                    alt="打破宣言"
+                    className="h-8 w-auto max-w-[11rem] object-contain sm:h-9 sm:max-w-[13rem] md:h-10 md:max-w-[15rem]"
+                    loading="eager"
+                    onError={() => setHeaderWordmarkFailed(true)}
+                  />
+                ) : (
+                  <div className="text-base font-semibold tracking-[0.08em] text-foreground sm:text-lg">
+                    打破宣言
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <div className="h-3 w-3 rounded-full bg-primary" />
