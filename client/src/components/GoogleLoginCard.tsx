@@ -164,7 +164,7 @@ export function GoogleLoginCard() {
             <Button
               type="button"
               variant="outline"
-              className="h-11 rounded-full border-border/80 bg-background/90 px-3 shadow-sm"
+              className="h-10 w-auto max-w-full rounded-full border-border/80 bg-background/90 px-3 shadow-sm md:h-11"
             >
               {user.picture ? (
                 <img
@@ -329,7 +329,7 @@ export function GoogleLoginCard() {
     <Button
       type="button"
       variant="outline"
-      className="h-11 rounded-full border-border/80 bg-background/90 px-5 shadow-sm"
+      className="h-10 w-auto rounded-full border-border/80 bg-background/90 px-4 shadow-sm md:h-11 md:px-5"
       onClick={() => signInWithGoogle(window.location.pathname + window.location.search)}
     >
       <Chrome className="size-4" />
