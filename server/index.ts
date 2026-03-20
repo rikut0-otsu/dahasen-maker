@@ -20,7 +20,7 @@ const defaultMetadata = {
   title: "打破宣言メーカー | 活躍宣言をつくろう",
   description:
     "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくる診断サイトです。",
-  imagePath: "/daha-sengen-main-visual.png",
+  imagePath: "/site-ogp.png",
 };
 
 function escapeHtml(value: string) {

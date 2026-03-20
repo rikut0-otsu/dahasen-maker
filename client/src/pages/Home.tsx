@@ -5,7 +5,6 @@ import { CharacterCard } from '@/components/CharacterCard';
 import { GoogleLoginCard } from '@/components/GoogleLoginCard';
 import { Sparkles } from '@/components/Sparkles';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useAuth } from '@/contexts/AuthContext';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 import { ChevronDown, ScrollText } from 'lucide-react';
@@ -57,8 +56,8 @@ const typeCodeById: Record<string, string> = {
 export default function Home() {
   const [, setLocation] = useLocation();
   const { reset } = useDiagnosisContext();
-  const { user } = useAuth();
   const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const [headerLogoFailed, setHeaderLogoFailed] = useState(false);
   const [isCharacterMenuOpen, setIsCharacterMenuOpen] = useState(false);
   const characterMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -101,8 +100,20 @@ export default function Home() {
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-primary" />
-            <div className="text-sm font-semibold text-foreground">打破宣言</div>
+            {!headerLogoFailed ? (
+              <img
+                src="/site-logo.png"
+                alt="打破宣言メーカーのロゴ"
+                className="h-11 w-auto object-contain md:h-12"
+                loading="eager"
+                onError={() => setHeaderLogoFailed(true)}
+              />
+            ) : (
+              <>
+                <div className="h-3 w-3 rounded-full bg-primary" />
+                <div className="text-sm font-semibold text-foreground">打破宣言</div>
+              </>
+            )}
           </div>
           <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
             <div className="relative" ref={characterMenuRef}>
