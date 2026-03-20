@@ -11,6 +11,8 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  jobTitle?: string | null;
+  department?: string | null;
   picture?: string | null;
 }
 
@@ -21,6 +23,7 @@ interface AuthContextValue {
   signInWithGoogle: (returnTo?: string) => void;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  setUser: (user: AuthUser | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -60,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     },
     refreshUser,
+    setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
