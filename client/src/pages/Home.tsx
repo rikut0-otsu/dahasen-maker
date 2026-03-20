@@ -358,7 +358,12 @@ export default function Home() {
               <div className="space-y-5">
                 <h2 className="ink-title text-3xl font-bold leading-tight text-foreground [text-wrap:initial] [word-break:keep-all] md:text-4xl lg:text-5xl">
                   <span className="whitespace-nowrap">日本の閉塞感を打破する。</span>
-                  <span className="mt-2 block text-primary">新卒としての活躍宣言をつくろう！</span>
+                  <span className="mt-2 hidden text-primary md:block">新卒としての打破宣言をつくろう！</span>
+                  <span className="mt-2 block text-primary md:hidden">
+                    新卒としての
+                    <br />
+                    「打破宣言」をつくろう！
+                  </span>
                 </h2>
                 <p className="text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
                   サイバーエージェントのパーパスは、
@@ -368,10 +373,10 @@ export default function Home() {
                   日本の歴史の中で、その時代ごとの閉塞感を自分の力で切り拓いてきた先人に自分を重ね併せて、
                   <br />
                   <span className="hidden md:inline">
-                    新たに会社を担う新卒としての「活躍宣言」をつくろう！
+                    新たに会社を担う新卒としての「打破宣言」をつくろう！
                   </span>
                   <span className="md:hidden">
-                    新たに会社を担う新卒として「活躍宣言」をしよう！
+                    新たに会社を担う新卒として「打破宣言」をしよう！
                   </span>
                 </p>
               </div>
