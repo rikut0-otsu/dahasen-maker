@@ -358,7 +358,7 @@ export default function Home() {
               <div className="space-y-5">
                 <h2 className="ink-title text-3xl font-bold leading-tight text-foreground [text-wrap:initial] [word-break:keep-all] md:text-4xl lg:text-5xl">
                   <span className="whitespace-nowrap">日本の閉塞感を打破する。</span>
-                  <span className="mt-2 hidden text-primary md:block">新卒としての打破宣言をつくろう！</span>
+                  <span className="mt-2 hidden text-primary md:block">新卒としての「打破宣言」をつくろう！</span>
                   <span className="mt-2 block text-primary md:hidden">
                     新卒としての
                     <br />
