@@ -356,8 +356,8 @@ export default function Home() {
                 CYBERAGENT PURPOSE
               </div>
               <div className="space-y-5">
-                <h2 className="ink-title text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl">
-                  日本の閉塞感を打破する。
+                <h2 className="ink-title text-3xl font-bold leading-tight text-foreground [text-wrap:initial] [word-break:keep-all] md:text-4xl lg:text-5xl">
+                  <span className="whitespace-nowrap">日本の閉塞感を打破する。</span>
                   <span className="mt-2 block text-primary">新卒としての活躍宣言をつくろう！</span>
                 </h2>
                 <p className="text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
