@@ -417,6 +417,34 @@
       0 16px 36px rgba(0, 0, 0, 0.22);
   }
 
+  .character-menu-panel {
+    isolation: isolate;
+    background:
+      linear-gradient(180deg, rgb(255, 252, 246), rgb(248, 242, 231));
+  }
+
+  .dark .character-menu-panel {
+    background:
+      linear-gradient(180deg, rgb(12, 20, 33), rgb(8, 14, 24));
+  }
+
+  .character-menu-panel::before,
+  .character-menu-panel::after {
+    content: none;
+  }
+
+  .character-menu-section {
+    background:
+      radial-gradient(circle at top, rgba(130, 190, 40, 0.1), transparent 56%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.985), rgba(244, 238, 225, 0.99));
+  }
+
+  .dark .character-menu-section {
+    background:
+      radial-gradient(circle at top, rgba(130, 190, 40, 0.08), transparent 56%),
+      linear-gradient(180deg, rgba(18, 28, 43, 0.985), rgba(12, 20, 33, 0.992));
+  }
+
   .ink-title {
     font-family: "Shippori Mincho", serif;
     letter-spacing: 0.03em;
