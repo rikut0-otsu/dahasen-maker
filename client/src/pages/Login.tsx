@@ -24,7 +24,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-background paper-texture">
-      <div className="relative isolate min-h-screen px-4 py-8 md:px-6 md:py-10">
+      <div className="relative isolate min-h-screen px-4 py-6 md:px-6 md:py-10">
         <div className="absolute inset-0 opacity-90">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.38] md:h-[88vh] md:opacity-[0.5]" />
@@ -47,8 +47,8 @@ export default function Login() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-4xl items-center justify-center">
-          <div className="flex w-full flex-col items-center gap-8 text-center md:gap-10">
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-4xl items-center justify-center md:min-h-[calc(100vh-4rem)]">
+          <div className="flex w-full flex-col items-center gap-6 text-center md:gap-10">
             <div className="flex max-w-[42rem] flex-col items-center gap-5">
               <div className="seal-tag inline-flex rounded-full px-4 py-2 text-sm font-semibold text-primary">
                 CYBERAGENT PURPOSE
@@ -80,6 +80,15 @@ export default function Login() {
                     <Button onClick={handleSignIn} className="h-12 w-full font-semibold">
                       Google でログイン
                     </Button>
+                    <div className="hidden pt-1 text-center text-xs text-muted-foreground md:block">
+                      <p>
+                        <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
+                      </p>
+                      <p className="mt-2 tracking-[0.08em] text-muted-foreground/90">
+                        <span className="font-medium text-foreground/80">Developed by</span>{" "}
+                        <span className="font-semibold text-foreground">Rikuto Otsu</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -87,7 +96,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-4 space-y-1.5 text-center text-xs text-muted-foreground md:mt-6 md:space-y-2">
+        <div className="relative z-10 mt-2 space-y-1 text-center text-xs text-muted-foreground md:hidden">
           <p className="tracking-[0.08em] text-muted-foreground/90">
             <span className="font-medium text-foreground/80">Developed by</span>{" "}
             <span className="font-semibold text-foreground">Rikuto Otsu</span>
