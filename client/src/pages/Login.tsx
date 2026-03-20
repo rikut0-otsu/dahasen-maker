@@ -80,6 +80,10 @@ export default function Login() {
                     <Button onClick={handleSignIn} className="h-12 w-full font-semibold">
                       Google でログイン
                     </Button>
+                    <p className="text-xs tracking-[0.08em] text-muted-foreground/90">
+                      <span className="font-medium text-foreground/80">Developed by</span>{" "}
+                      <span className="font-semibold text-foreground">Rikuto Otsu</span>
+                    </p>
                   </div>
                 </div>
               </div>
