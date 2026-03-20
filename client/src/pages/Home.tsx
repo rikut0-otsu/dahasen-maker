@@ -361,9 +361,12 @@ export default function Home() {
                   <span className="mt-2 block text-primary">新卒としての活躍宣言をつくろう！</span>
                 </h2>
                 <p className="text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
-                  サイバーエージェントのパーパスは、「日本の閉塞感を打破する」こと。
+                  サイバーエージェントのパーパスは、
+                  <span className="md:hidden"><br /></span>
+                  「日本の閉塞感を打破する」こと。
                   <br />
                   日本の歴史の中で、その時代ごとの閉塞感を自分の力で切り拓いてきた先人に自分を重ね併せて、
+                  <br />
                   新たに会社を担う新卒としての「活躍宣言」をつくろう！
                 </p>
               </div>
