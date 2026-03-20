@@ -356,11 +356,11 @@ export default function Home() {
                 CYBERAGENT PURPOSE
               </div>
               <div className="space-y-5">
-                <h2 className="ink-title text-4xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
+                <h2 className="ink-title text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl">
                   日本の閉塞感を打破する。
                   <span className="mt-2 block text-primary">新卒としての活躍宣言をつくろう！</span>
                 </h2>
-                <p className="text-base leading-8 text-muted-foreground md:text-lg">
+                <p className="text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
                   サイバーエージェントのパーパスは、「日本の閉塞感を打破する」こと。
                   <br />
                   日本の歴史の中で、その時代ごとの閉塞感を自分の力で切り拓いてきた先人に自分を重ね併せて、
@@ -369,7 +369,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl">
+            <div className="relative mx-auto w-full max-w-[20rem] md:max-w-[24rem] lg:max-w-[27rem]">
               <div className="frame-scroll overflow-hidden rounded-[2rem] p-4">
                 {!heroImageFailed ? (
                   <img
