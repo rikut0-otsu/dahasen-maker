@@ -47,7 +47,7 @@ const DEPARTMENT_OPTIONS = [
   "その他",
 ] as const;
 
-const PROFILE_PROMPT_SESSION_KEY = "profile-prompt-shown";
+const PROFILE_PROMPT_DISMISSED_KEY = "profile-prompt-dismissed";
 
 export function GoogleLoginCard() {
   const {
@@ -65,6 +65,7 @@ export function GoogleLoginCard() {
   const [department, setDepartment] = useState("");
   const [customDepartment, setCustomDepartment] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isAutoPromptActive, setIsAutoPromptActive] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -98,16 +99,16 @@ export function GoogleLoginCard() {
 
     const needsProfileSetup = !user.jobTitle?.trim() || !user.department?.trim();
     if (!needsProfileSetup) {
-      sessionStorage.removeItem(PROFILE_PROMPT_SESSION_KEY);
+      localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
       return;
     }
 
-    if (sessionStorage.getItem(PROFILE_PROMPT_SESSION_KEY) === user.id) {
+    if (localStorage.getItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`) === "true") {
       return;
     }
 
+    setIsAutoPromptActive(true);
     setIsProfileDialogOpen(true);
-    sessionStorage.setItem(PROFILE_PROMPT_SESSION_KEY, user.id);
   }, [user, isProfileDialogOpen]);
 
   if (user) {
@@ -145,6 +146,8 @@ export function GoogleLoginCard() {
           department: trimmedDepartment,
         });
 
+        localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
+        setIsAutoPromptActive(false);
         setUser(payload.user);
         setIsProfileDialogOpen(false);
         toast.success("プロフィールを更新しました");
@@ -210,7 +213,16 @@ export function GoogleLoginCard() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+        <Dialog
+          open={isProfileDialogOpen}
+          onOpenChange={(open) => {
+            if (!open && isAutoPromptActive) {
+              localStorage.setItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`, "true");
+              setIsAutoPromptActive(false);
+            }
+            setIsProfileDialogOpen(open);
+          }}
+        >
           <DialogContent className="historical-panel max-w-[calc(100%-1.5rem)] rounded-[2rem] border-border/70 p-0 sm:max-w-xl">
             <DialogHeader className="border-b border-border/70 px-6 py-5 text-left">
               <div className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-primary">

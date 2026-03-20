@@ -8,7 +8,7 @@
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "build:pages": "vite build",
     "cf:typecheck": "tsc --noEmit",
-    "d1:migrate:local": "wrangler d1 migrations apply dahasen-maker --local",
+    "d1:migrate:local": "wrangler d1 migrations apply dahasen-maker-db --local",
     "d1:migrate:remote": "wrangler d1 migrations apply dahasen-maker --remote",
     "start": "NODE_ENV=production node dist/index.js",
     "preview": "vite preview --host",
