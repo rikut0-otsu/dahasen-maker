@@ -576,7 +576,8 @@ export default function Home() {
 
       <footer className="border-t border-border bg-[rgba(251,248,241,0.72)] py-8 dark:bg-[rgba(8,14,24,0.72)]">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>打破宣言メーカー © 2026 | 戦国武将モチーフの診断サイト</p>
+          <p>打破宣言メーカー © 2026</p>
+          <p className="mt-1 tracking-[0.08em]">Developed by Rikuto Otsu</p>
         </div>
       </footer>
     </div>
