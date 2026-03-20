@@ -155,7 +155,7 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel absolute left-1/2 top-[calc(100%+0.75rem)] z-50 w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-[calc(50vw-50%)] rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:rounded-[1.75rem] md:p-6"
+                  className="historical-panel absolute left-[calc(50%-50vw+50%)] top-[calc(100%+0.75rem)] z-50 w-[calc(100vw-2rem)] max-w-[26rem] rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:max-w-none md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
