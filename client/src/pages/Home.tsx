@@ -209,13 +209,13 @@ export default function Home() {
                             <Link
                               key={type.id}
                               href={`/types/${type.id}`}
-                              className="group rounded-2xl border border-border/70 bg-white/90 px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_30px_rgba(45,140,60,0.12)]"
+                              className="group rounded-2xl border border-border/70 bg-white/90 px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_30px_rgba(45,140,60,0.12)] dark:border-[rgba(217,196,143,0.12)] dark:bg-[linear-gradient(180deg,rgba(13,22,35,0.96),rgba(9,16,28,0.98))] dark:hover:border-[rgba(130,190,40,0.4)] dark:hover:shadow-[0_16px_34px_rgba(0,0,0,0.34)]"
                               onClick={() => setIsCharacterMenuOpen(false)}
                             >
-                              <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                              <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary dark:text-[rgba(240,234,216,0.96)] dark:group-hover:text-[rgba(160,218,90,0.98)]">
                                 {type.name}
                               </p>
-                              <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                              <p className="mt-1 text-[11px] leading-5 text-muted-foreground dark:text-[rgba(201,196,181,0.8)]">
                                 {type.title}
                               </p>
                             </Link>
