@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/Sparkles";
 import { useAuth } from "@/contexts/AuthContext";
+import { CircleHelp } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -51,15 +52,17 @@ export default function Login() {
           <div className="flex w-full flex-col items-center gap-6 text-center md:gap-10">
             <div className="flex max-w-[42rem] flex-col items-center gap-5">
               <div className="seal-tag inline-flex rounded-full px-4 py-2 text-sm font-semibold text-primary">
-                CYBERAGENT PURPOSE
+                DAHASEN MAKER
               </div>
               <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground md:text-5xl lg:text-6xl">
-                閉塞感を打破する宣言を
+                閉塞感を
+                <br />
+                打破する宣言を
                 <br />
                 ここから刻もう
               </h1>
               <p className="max-w-[34rem] text-sm leading-8 text-muted-foreground md:text-base">
-                Googleログインすると、診断結果を保存していつでも見返せるようになります。
+                いざ診断結果をもとに
                 <br />
                 自分だけの「打破宣言」をつくりましょう。
               </p>
@@ -70,9 +73,9 @@ export default function Login() {
               <div className="historical-panel rounded-[2.2rem] border border-border p-5 shadow-[0_18px_50px_rgba(28,43,31,0.08)] md:p-7">
                 <div className="wash-paper rounded-[1.8rem] border border-border/70 p-6 md:p-7">
                   <p className="text-sm leading-7 text-muted-foreground">
-                    ここからあなたの「打破宣言」がはじまります。
+                    あなたの「打破宣言」がはじまります。
                     <br />
-                    戦国時代の風景を思い浮かべながら、
+                    歴史に名を残した偉人達から、
                     自分の強みを見つけてみましょう。
                   </p>
 
@@ -88,6 +91,15 @@ export default function Login() {
                         <span className="font-medium text-foreground/80">Developed by</span>{" "}
                         <span className="font-semibold text-foreground">Rikuto Otsu</span>
                       </p>
+                      <div className="mt-3 rounded-[1.35rem] border border-border/70 bg-[rgba(18,28,43,0.08)] p-4 text-left dark:bg-[rgba(18,28,43,0.72)]">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <CircleHelp className="h-4 w-4" />
+                          ログインできない場合
+                        </div>
+                        <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                          問い合わせ先は管理者にご確認ください。
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -101,6 +113,15 @@ export default function Login() {
             <span className="font-medium text-foreground/80">Developed by</span>{" "}
             <span className="font-semibold text-foreground">Rikuto Otsu</span>
           </p>
+          <div className="rounded-[1.35rem] border border-border/70 bg-[rgba(18,28,43,0.08)] p-4 text-left dark:bg-[rgba(18,28,43,0.72)]">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <CircleHelp className="h-4 w-4" />
+              ログインできない場合
+            </div>
+            <p className="mt-2 text-sm leading-7 text-muted-foreground">
+              問い合わせ先は管理者にご確認ください。
+            </p>
+          </div>
           <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
         </div>
       </div>
