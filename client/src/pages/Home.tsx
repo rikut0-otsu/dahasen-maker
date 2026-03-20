@@ -96,6 +96,26 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isCharacterMenuOpen) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    if (!mediaQuery.matches) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isCharacterMenuOpen]);
+
   return (
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
@@ -114,7 +134,7 @@ export default function Home() {
                   <img
                     src="/header-wordmark.png"
                     alt="打破宣言"
-                    className="h-8 w-auto max-w-[11rem] object-contain sm:h-9 sm:max-w-[13rem] md:h-10 md:max-w-[15rem]"
+                    className="h-9 w-auto max-w-[12.5rem] object-contain sm:h-10 sm:max-w-[14.5rem] md:h-11 md:max-w-[17rem]"
                     loading="eager"
                     onError={() => setHeaderWordmarkFailed(true)}
                   />
@@ -155,7 +175,7 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel absolute left-1/2 top-[calc(100%+0.75rem)] z-50 w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-[calc(50vw-50%)] rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:rounded-[1.75rem] md:p-6"
+                  className="historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:absolute md:left-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-none md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
@@ -189,13 +209,13 @@ export default function Home() {
                             <Link
                               key={type.id}
                               href={`/types/${type.id}`}
-                              className="group rounded-2xl border border-border/70 bg-white/90 px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_30px_rgba(45,140,60,0.12)]"
+                              className="group rounded-2xl border border-border/70 bg-white/90 px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_30px_rgba(45,140,60,0.12)] dark:border-[rgba(217,196,143,0.12)] dark:bg-[linear-gradient(180deg,rgba(13,22,35,0.96),rgba(9,16,28,0.98))] dark:hover:border-[rgba(130,190,40,0.4)] dark:hover:shadow-[0_16px_34px_rgba(0,0,0,0.34)]"
                               onClick={() => setIsCharacterMenuOpen(false)}
                             >
-                              <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                              <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary dark:text-[rgba(240,234,216,0.96)] dark:group-hover:text-[rgba(160,218,90,0.98)]">
                                 {type.name}
                               </p>
-                              <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                              <p className="mt-1 text-[11px] leading-5 text-muted-foreground dark:text-[rgba(201,196,181,0.8)]">
                                 {type.title}
                               </p>
                             </Link>

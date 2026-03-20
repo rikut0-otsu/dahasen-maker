@@ -128,8 +128,8 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
 
           {/* PC版 */}
           <div className="hidden md:block">
-            <div className="relative mx-auto flex w-full max-w-[34rem] items-center justify-center px-[5.75rem] lg:px-[6.75rem]">
-              <span className="ink-title absolute left-0 top-1/2 -translate-y-1/2 text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
+            <div className="relative mx-auto flex w-full max-w-[34rem] items-center justify-center px-[3.5rem] pt-8 lg:px-[4rem]">
+              <span className="ink-title absolute left-0 top-0 text-left font-medium tracking-[0.08em] text-primary text-base leading-tight">
                 そう思う
               </span>
 
@@ -157,7 +157,7 @@ const QuestionCardComponent: React.FC<QuestionCardProps> = ({
                 })}
               </div>
 
-              <span className="ink-title absolute right-0 top-1/2 -translate-y-1/2 text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
+              <span className="ink-title absolute right-0 top-0 text-right font-medium tracking-[0.08em] text-accent text-base leading-tight">
                 そう思わない
               </span>
             </div>
