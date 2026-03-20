@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { CharacterCard } from '@/components/CharacterCard';
 import { GoogleLoginCard } from '@/components/GoogleLoginCard';
@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
+import { ChevronDown, ScrollText } from 'lucide-react';
 
 const eraOrder = ['sengoku', 'edo', 'bakumatsu', 'heian'] as const;
 
@@ -58,6 +59,8 @@ export default function Home() {
   const { reset } = useDiagnosisContext();
   const { user } = useAuth();
   const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const [isCharacterMenuOpen, setIsCharacterMenuOpen] = useState(false);
+  const characterMenuRef = useRef<HTMLDivElement | null>(null);
 
   const handleStartDiagnosis = () => {
     reset();
@@ -71,6 +74,28 @@ export default function Home() {
     items: typesData.filter((type) => type.era === era),
   }));
 
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!characterMenuRef.current?.contains(event.target as Node)) {
+        setIsCharacterMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsCharacterMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
@@ -80,6 +105,81 @@ export default function Home() {
             <div className="text-sm font-semibold text-foreground">打破宣言</div>
           </div>
           <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
+            <div className="relative" ref={characterMenuRef}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCharacterMenuOpen((open) => !open)}
+                className="seal-tag h-11 justify-between gap-2 rounded-full border-border/70 bg-white/80 px-5 text-foreground hover:bg-white md:min-w-[180px]"
+                aria-expanded={isCharacterMenuOpen}
+                aria-controls="character-menu-panel"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <ScrollText className="h-4 w-4 text-primary" />
+                  各登場人物
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+                    isCharacterMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </Button>
+
+              {isCharacterMenuOpen && (
+                <div
+                  id="character-menu-panel"
+                  className="historical-panel absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 rounded-[1.75rem] p-4 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:p-6"
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {groupedTypes.map((group) => (
+                      <section
+                        key={group.era}
+                        className="wash-paper rounded-[1.5rem] p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <div className="seal-tag inline-flex rounded-full px-3 py-1 text-xs font-semibold text-primary">
+                              {group.label}
+                            </div>
+                            <h3 className="ink-title mt-2 text-lg font-bold text-foreground">
+                              {group.theme}
+                            </h3>
+                          </div>
+                          <a
+                            href={`#characters-${group.era}`}
+                            className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+                            onClick={() => setIsCharacterMenuOpen(false)}
+                          >
+                            一覧を見る
+                          </a>
+                        </div>
+                        <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                          {group.description}
+                        </p>
+
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                          {group.items.map((type) => (
+                            <Link
+                              key={type.id}
+                              href={`/types/${type.id}`}
+                              className="group rounded-2xl border border-border/70 bg-white/90 px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_30px_rgba(45,140,60,0.12)]"
+                              onClick={() => setIsCharacterMenuOpen(false)}
+                            >
+                              <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                                {type.name}
+                              </p>
+                              <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                                {type.title}
+                              </p>
+                            </Link>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <GoogleLoginCard />
             <ThemeToggle />
           </div>
@@ -241,6 +341,7 @@ export default function Home() {
             {groupedTypes.map((group) => (
               <section
                 key={group.era}
+                id={`characters-${group.era}`}
                 className="historical-panel rounded-[2rem] p-6 md:p-8"
               >
                 <div className="text-center">
