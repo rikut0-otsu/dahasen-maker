@@ -96,6 +96,26 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isCharacterMenuOpen) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    if (!mediaQuery.matches) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isCharacterMenuOpen]);
+
   return (
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
@@ -155,7 +175,7 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel fixed left-1/2 top-24 z-50 w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:absolute md:left-auto md:right-0 md:top-[calc(100%+0.75rem)] md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:rounded-[1.75rem] md:p-6"
+                  className="historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:absolute md:left-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-none md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
