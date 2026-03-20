@@ -114,7 +114,7 @@ export default function Home() {
                   <img
                     src="/header-wordmark.png"
                     alt="打破宣言"
-                    className="h-8 w-auto max-w-[11rem] object-contain sm:h-9 sm:max-w-[13rem] md:h-10 md:max-w-[15rem]"
+                    className="h-9 w-auto max-w-[12.5rem] object-contain sm:h-10 sm:max-w-[14.5rem] md:h-11 md:max-w-[17rem]"
                     loading="eager"
                     onError={() => setHeaderWordmarkFailed(true)}
                   />
