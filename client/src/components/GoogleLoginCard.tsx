@@ -29,18 +29,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const DEPARTMENT_OPTIONS = [
+const JOB_TITLE_OPTIONS = [
   "選択してください",
   "ビジネス",
-  "営業",
-  "マーケティング",
-  "クリエイティブ",
-  "エンジニアリング",
-  "プロダクト",
-  "コーポレート",
-  "人事",
+  "エンジニア",
+  "クリエイター",
   "その他",
 ] as const;
+
+const DEPARTMENT_OPTIONS = [
+  "選択してください",
+  "全社",
+  "内定者",
+  "広告",
+  "メディア",
+  "ゲーム",
+  "その他",
+] as const;
+
+const PROFILE_PROMPT_SESSION_KEY = "profile-prompt-shown";
 
 export function GoogleLoginCard() {
   const {
@@ -54,6 +61,7 @@ export function GoogleLoginCard() {
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [name, setName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
+  const [customJobTitle, setCustomJobTitle] = useState("");
   const [department, setDepartment] = useState("");
   const [customDepartment, setCustomDepartment] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -63,31 +71,64 @@ export function GoogleLoginCard() {
       return;
     }
 
+    const nextJobTitle = user.jobTitle ?? "";
     const nextDepartment = user.department ?? "";
+    const isPresetJobTitle = JOB_TITLE_OPTIONS.includes(
+      nextJobTitle as (typeof JOB_TITLE_OPTIONS)[number]
+    );
     const isPresetDepartment = DEPARTMENT_OPTIONS.includes(
       nextDepartment as (typeof DEPARTMENT_OPTIONS)[number]
     );
 
     setName(user.name ?? "");
-    setJobTitle(user.jobTitle ?? "");
+    setJobTitle(
+      nextJobTitle ? (isPresetJobTitle ? nextJobTitle : "その他") : "選択してください"
+    );
+    setCustomJobTitle(isPresetJobTitle ? "" : nextJobTitle);
     setDepartment(
       nextDepartment ? (isPresetDepartment ? nextDepartment : "その他") : "選択してください"
     );
     setCustomDepartment(isPresetDepartment ? "" : nextDepartment);
   }, [user, isProfileDialogOpen]);
 
+  useEffect(() => {
+    if (!user || isProfileDialogOpen) {
+      return;
+    }
+
+    const needsProfileSetup = !user.jobTitle?.trim() || !user.department?.trim();
+    if (!needsProfileSetup) {
+      sessionStorage.removeItem(PROFILE_PROMPT_SESSION_KEY);
+      return;
+    }
+
+    if (sessionStorage.getItem(PROFILE_PROMPT_SESSION_KEY) === user.id) {
+      return;
+    }
+
+    setIsProfileDialogOpen(true);
+    sessionStorage.setItem(PROFILE_PROMPT_SESSION_KEY, user.id);
+  }, [user, isProfileDialogOpen]);
+
   if (user) {
+    const resolvedJobTitle = jobTitle === "その他" ? customJobTitle.trim() : jobTitle;
     const resolvedDepartment =
       department === "その他" ? customDepartment.trim() : department;
 
     const handleSaveProfile = async () => {
       const trimmedName = name.trim();
-      const trimmedJobTitle = jobTitle.trim();
+      const trimmedJobTitle =
+        resolvedJobTitle === "選択してください" ? "" : resolvedJobTitle.trim();
       const trimmedDepartment =
         resolvedDepartment === "選択してください" ? "" : resolvedDepartment.trim();
 
       if (!trimmedName) {
         toast.error("名前を入力してください");
+        return;
+      }
+
+      if (jobTitle === "その他" && !trimmedJobTitle) {
+        toast.error("職種を入力してください");
         return;
       }
 
@@ -198,13 +239,26 @@ export function GoogleLoginCard() {
 
               <div className="grid gap-2">
                 <Label htmlFor="profile-job-title">職種</Label>
-                <Input
-                  id="profile-job-title"
-                  value={jobTitle}
-                  onChange={(event) => setJobTitle(event.target.value)}
-                  placeholder="例: プロダクトマネージャー"
-                  maxLength={50}
-                />
+                <Select value={jobTitle} onValueChange={setJobTitle}>
+                  <SelectTrigger id="profile-job-title" className="h-11 w-full">
+                    <SelectValue placeholder="職種を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {JOB_TITLE_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {jobTitle === "その他" && (
+                  <Input
+                    value={customJobTitle}
+                    onChange={(event) => setCustomJobTitle(event.target.value)}
+                    placeholder="職種を入力"
+                    maxLength={50}
+                  />
+                )}
               </div>
 
               <div className="grid gap-2">
