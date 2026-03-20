@@ -98,13 +98,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background paper-texture">
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
-        <div className="container flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-2">
+        <div className="container flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between md:py-4">
+          <div className="flex items-center justify-center gap-2 md:justify-start">
             {!headerLogoFailed ? (
               <img
                 src="/favicon_256.png"
                 alt="打破宣言メーカーのロゴ"
-                className="h-11 w-11 object-contain md:h-12 md:w-12"
+                className="h-10 w-10 object-contain md:h-12 md:w-12"
                 loading="eager"
                 onError={() => setHeaderLogoFailed(true)}
               />
@@ -115,13 +115,13 @@ export default function Home() {
               </>
             )}
           </div>
-          <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
-            <div className="relative" ref={characterMenuRef}>
+          <div className="flex flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-3">
+            <div className="relative shrink-0" ref={characterMenuRef}>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsCharacterMenuOpen((open) => !open)}
-                className="seal-tag h-11 justify-between gap-2 rounded-full border-border/70 bg-white/80 px-5 text-foreground hover:bg-white md:min-w-[180px]"
+                className="seal-tag h-10 justify-between gap-2 rounded-full border-border/70 bg-white/80 px-4 text-sm text-foreground hover:bg-white md:h-11 md:px-5 md:text-base md:min-w-[180px]"
                 aria-expanded={isCharacterMenuOpen}
                 aria-controls="character-menu-panel"
               >
@@ -139,7 +139,7 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 rounded-[1.75rem] p-4 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:p-6"
+                  className="historical-panel absolute left-1/2 top-[calc(100%+0.75rem)] z-50 w-[min(calc(100vw-2rem),26rem)] -translate-x-1/2 rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] md:left-auto md:right-0 md:w-[min(92vw,58rem)] md:translate-x-0 md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
