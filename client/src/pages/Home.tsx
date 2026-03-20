@@ -435,66 +435,24 @@ export default function Home() {
               </div>
             </div>
 
-            <section className="historical-panel w-full max-w-5xl rounded-[2rem] p-6 text-left md:p-8">
+            <section className="historical-panel w-full max-w-5xl rounded-[2rem] p-5 text-left md:p-8">
               <div className="mx-auto max-w-3xl text-center">
-                <div className="seal-tag inline-flex rounded-full px-4 py-1.5 text-sm font-medium text-primary">
+                <div className="seal-tag inline-flex rounded-full px-3 py-1 text-xs font-medium text-primary md:px-4 md:py-1.5 md:text-sm">
                   診断ロジック
                 </div>
-                <h3 className="ink-title mt-4 text-3xl font-bold text-foreground">
+                <h3 className="ink-title mt-3 text-xl font-bold leading-snug text-foreground md:mt-4 md:text-3xl">
                   4つの軸を掛け合わせて
-                  <span className="mt-2 block text-primary">16タイプの登場人物に分類します</span>
+                  <span className="mt-1 block text-primary md:mt-2">16タイプの登場人物に分類します</span>
                 </h3>
-                <p className="mt-4 text-sm leading-7 text-muted-foreground md:text-base">
+                <p className="mt-3 text-[11px] leading-5 text-muted-foreground md:mt-4 md:text-base md:leading-7">
                   診断では、4つの領域それぞれでどちらの傾向が強いかを見ています。
                   <br className="hidden md:block" />
                   その組み合わせが、あなたらしい「打破スタイル」の輪郭になります。
                 </p>
               </div>
 
-              <div className="mt-8 hidden gap-4 md:grid md:grid-cols-2">
-                {diagnosisAxes.map((axis) => (
-                  <article key={axis.key} className="wash-paper rounded-[1.75rem] p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <h4 className="ink-title text-xl font-bold text-foreground">{axis.label}</h4>
-                      <div className="seal-tag inline-flex rounded-full px-3 py-1 text-xs font-semibold text-primary">
-                        2択
-                      </div>
-                    </div>
-                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                      {axis.summary}
-                    </p>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      {[axis.left, axis.right].map((item) => (
-                        <div
-                          key={item.code}
-                          className="rounded-[1.4rem] border border-border/70 bg-white/85 p-4 dark:border-[rgba(217,196,143,0.14)] dark:bg-[rgba(8,14,24,0.58)]"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="inline-flex min-w-[3.4rem] items-center justify-center rounded-[0.9rem] border border-primary/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(242,237,224,0.9))] px-3 py-2 text-sm font-bold tracking-[0.18em] text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:border-[rgba(217,196,143,0.18)] dark:bg-[linear-gradient(180deg,rgba(18,29,45,0.96),rgba(11,18,29,0.98))]">
-                              <span className="ink-title text-sm">{item.code}</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-foreground">
-                                {item.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {item.alias}
-                              </p>
-                            </div>
-                          </div>
-                          <p className="mt-3 text-xs leading-6 text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-              </div>
-
-              <div className="mt-8 md:hidden">
-                <Accordion type="single" collapsible className="space-y-3">
+              <div className="mt-5 md:mt-8">
+                <Accordion type="single" collapsible className="space-y-3" defaultValue="decision">
                   {diagnosisAxes.map((axis) => (
                     <AccordionItem
                       key={axis.key}
@@ -503,14 +461,14 @@ export default function Home() {
                     >
                       <AccordionTrigger className="py-4 hover:no-underline">
                         <div>
-                          <p className="ink-title text-lg font-bold text-foreground">{axis.label}</p>
-                          <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                          <p className="ink-title text-lg font-bold text-foreground md:text-xl">{axis.label}</p>
+                          <p className="mt-1 text-xs leading-6 text-muted-foreground md:text-sm md:leading-7">
                             {axis.summary}
                           </p>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="pb-4">
-                        <div className="grid gap-3">
+                        <div className="grid gap-3 md:grid-cols-2">
                           {[axis.left, axis.right].map((item) => (
                             <div
                               key={item.code}
@@ -540,9 +498,10 @@ export default function Home() {
 
             <Button
               onClick={handleStartDiagnosis}
-              className="slip-tag h-14 px-10 pl-12 text-lg font-semibold text-foreground shadow-lg shadow-primary/10 hover:bg-[rgba(255,255,255,0.96)]"
+              className="slip-tag relative h-15 px-11 pl-13 text-lg font-bold text-foreground shadow-[0_22px_44px_rgba(45,140,60,0.24)] ring-2 ring-primary/25 hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.99)] hover:shadow-[0_28px_52px_rgba(45,140,60,0.3)] dark:border dark:border-[rgba(217,196,143,0.22)] dark:bg-[linear-gradient(180deg,rgba(24,38,58,0.99),rgba(13,22,36,0.99))] dark:text-[rgba(245,240,223,0.98)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.42)] dark:hover:bg-[linear-gradient(180deg,rgba(31,47,69,0.99),rgba(16,27,43,0.99))]"
             >
-              診断を開始する
+              <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_top,rgba(130,190,40,0.18),transparent_60%)]" aria-hidden="true" />
+              <span className="relative">診断を開始する</span>
             </Button>
           </div>
         </div>
