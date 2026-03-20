@@ -247,7 +247,7 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:absolute md:left-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-none md:w-[min(92vw,58rem)] md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-[1.75rem] md:p-6"
+                  className="historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:top-22 md:max-h-[min(76vh,42rem)] md:w-[min(92vw,58rem)] md:max-w-[58rem] md:overflow-y-auto md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
