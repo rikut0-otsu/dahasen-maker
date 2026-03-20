@@ -55,9 +55,7 @@ export default function Login() {
                 DAHASEN MAKER
               </div>
               <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground md:text-5xl lg:text-6xl">
-                日本の閉塞感を
-                <br />
-                打破する宣言を
+                あなたの「打破宣言」を
                 <br />
                 ここから刻もう
               </h1>
@@ -84,7 +82,7 @@ export default function Login() {
                     <Button onClick={handleSignIn} className="h-12 w-full font-semibold">
                       Google でログイン
                     </Button>
-                    <div className="hidden pt-1 text-center text-xs text-muted-foreground md:block">
+                    <div className="pt-1 text-center text-xs text-muted-foreground">
                       <p>
                         <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
                       </p>
@@ -106,25 +104,6 @@ export default function Login() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 mt-2 space-y-1 text-center text-xs text-muted-foreground md:hidden">
-          <p className="tracking-[0.08em] text-muted-foreground/90">
-            <span className="font-medium text-foreground/80">Developed by</span>{" "}
-            <span className="font-semibold text-foreground">Rikuto Otsu</span>
-          </p>
-          <div>
-            <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
-          </div>
-          <div className="rounded-[1.35rem] border border-border/70 bg-[rgba(18,28,43,0.08)] p-4 text-left dark:bg-[rgba(18,28,43,0.72)]">
-            <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-              <CircleHelp className="h-3.5 w-3.5" />
-              ログインできない場合
-            </div>
-            <p className="mt-1.5 text-xs leading-6 text-muted-foreground">
-              問い合わせ先は管理者にご確認ください。
-            </p>
           </div>
         </div>
       </div>
