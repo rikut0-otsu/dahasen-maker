@@ -55,7 +55,7 @@ export default function Login() {
                 DAHASEN MAKER
               </div>
               <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground md:text-5xl lg:text-6xl">
-                閉塞感を
+                日本の閉塞感を
                 <br />
                 打破する宣言を
                 <br />
@@ -76,6 +76,7 @@ export default function Login() {
                     あなたの「打破宣言」がはじまります。
                     <br />
                     歴史に名を残した偉人達から、
+                    <br />
                     自分の強みを見つけてみましょう。
                   </p>
 
@@ -92,11 +93,11 @@ export default function Login() {
                         <span className="font-semibold text-foreground">Rikuto Otsu</span>
                       </p>
                       <div className="mt-3 rounded-[1.35rem] border border-border/70 bg-[rgba(18,28,43,0.08)] p-4 text-left dark:bg-[rgba(18,28,43,0.72)]">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                          <CircleHelp className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                          <CircleHelp className="h-3.5 w-3.5" />
                           ログインできない場合
                         </div>
-                        <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                        <p className="mt-1.5 text-xs leading-6 text-muted-foreground">
                           問い合わせ先は管理者にご確認ください。
                         </p>
                       </div>
@@ -113,16 +114,18 @@ export default function Login() {
             <span className="font-medium text-foreground/80">Developed by</span>{" "}
             <span className="font-semibold text-foreground">Rikuto Otsu</span>
           </p>
+          <div>
+            <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
+          </div>
           <div className="rounded-[1.35rem] border border-border/70 bg-[rgba(18,28,43,0.08)] p-4 text-left dark:bg-[rgba(18,28,43,0.72)]">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <CircleHelp className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+              <CircleHelp className="h-3.5 w-3.5" />
               ログインできない場合
             </div>
-            <p className="mt-2 text-sm leading-7 text-muted-foreground">
+            <p className="mt-1.5 text-xs leading-6 text-muted-foreground">
               問い合わせ先は管理者にご確認ください。
             </p>
           </div>
-          <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
         </div>
       </div>
     </div>
