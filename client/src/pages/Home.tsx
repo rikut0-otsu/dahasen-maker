@@ -367,7 +367,12 @@ export default function Home() {
                   <br />
                   日本の歴史の中で、その時代ごとの閉塞感を自分の力で切り拓いてきた先人に自分を重ね併せて、
                   <br />
-                  新たに会社を担う新卒としての「活躍宣言」をつくろう！
+                  <span className="hidden md:inline">
+                    新たに会社を担う新卒としての「活躍宣言」をつくろう！
+                  </span>
+                  <span className="md:hidden">
+                    新たに会社を担う新卒として「活躍宣言」をしよう！
+                  </span>
                 </p>
               </div>
             </div>
