@@ -80,10 +80,6 @@ export default function Login() {
                     <Button onClick={handleSignIn} className="h-12 w-full font-semibold">
                       Google でログイン
                     </Button>
-                    <p className="text-xs tracking-[0.08em] text-muted-foreground/90">
-                      <span className="font-medium text-foreground/80">Developed by</span>{" "}
-                      <span className="font-semibold text-foreground">Rikuto Otsu</span>
-                    </p>
                   </div>
                 </div>
               </div>
@@ -91,7 +87,11 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-6 text-center text-xs text-muted-foreground">
+        <div className="relative z-10 mt-6 space-y-2 text-center text-xs text-muted-foreground">
+          <p className="tracking-[0.08em] text-muted-foreground/90">
+            <span className="font-medium text-foreground/80">Developed by</span>{" "}
+            <span className="font-semibold text-foreground">Rikuto Otsu</span>
+          </p>
           <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
         </div>
       </div>
