@@ -39,6 +39,23 @@ export async function logout() {
   await readJson<{ ok: true }>(response);
 }
 
+export async function updateCurrentUserProfile(input: {
+  name: string;
+  jobTitle: string;
+  department: string;
+}) {
+  const response = await fetch("/api/me", {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  return readJson<{ user: AuthUser }>(response);
+}
+
 export async function saveDiagnosisResult(input: {
   typeId: string;
   answers: Answer[];

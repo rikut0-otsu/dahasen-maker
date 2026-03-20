@@ -33,8 +33,10 @@ export async function readAuthenticatedUser(context: AppContext) {
     sessionId,
     user: {
       id: user.id,
-      name: user.name,
+      name: user.display_name ?? user.name,
       email: user.email,
+      jobTitle: user.job_title,
+      department: user.department,
       picture: user.picture_url,
     },
   };
