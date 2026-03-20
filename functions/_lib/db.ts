@@ -12,13 +12,44 @@ export interface DbUser {
   picture_url: string | null;
 }
 
+function isMissingColumnError(error: unknown) {
+  return (
+    error instanceof Error &&
+    /no such column|has no column named/i.test(error.message)
+  );
+}
+
 export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
-  return db
-    .prepare(
-      "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url FROM users WHERE google_sub = ?"
-    )
-    .bind(googleSub)
-    .first<DbUser>();
+  try {
+    return await db
+      .prepare(
+        "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url FROM users WHERE google_sub = ?"
+      )
+      .bind(googleSub)
+      .first<DbUser>();
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    const legacyUser = await db
+      .prepare(
+        "SELECT id, google_sub, email, email_verified, name, picture_url FROM users WHERE google_sub = ?"
+      )
+      .bind(googleSub)
+      .first<Omit<DbUser, "display_name" | "job_title" | "department">>();
+
+    if (!legacyUser) {
+      return null;
+    }
+
+    return {
+      ...legacyUser,
+      display_name: null,
+      job_title: null,
+      department: null,
+    };
+  }
 }
 
 export async function upsertUser(
@@ -33,39 +64,76 @@ export async function upsertUser(
     now: number;
   }
 ) {
-  await db
-    .prepare(
-      `INSERT INTO users (
-        id,
-        google_sub,
-        email,
-        email_verified,
-        name,
-        display_name,
-        picture_url,
-        created_at,
-        updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(google_sub) DO UPDATE SET
-        email = excluded.email,
-        email_verified = excluded.email_verified,
-        name = excluded.name,
-        display_name = COALESCE(users.display_name, excluded.display_name),
-        picture_url = excluded.picture_url,
-        updated_at = excluded.updated_at`
-    )
-    .bind(
-      input.userId,
-      input.googleSub,
-      input.email,
-      input.emailVerified ? 1 : 0,
-      input.name,
-      input.name,
-      input.pictureUrl,
-      input.now,
-      input.now
-    )
-    .run();
+  try {
+    await db
+      .prepare(
+        `INSERT INTO users (
+          id,
+          google_sub,
+          email,
+          email_verified,
+          name,
+          display_name,
+          picture_url,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(google_sub) DO UPDATE SET
+          email = excluded.email,
+          email_verified = excluded.email_verified,
+          name = excluded.name,
+          display_name = COALESCE(users.display_name, excluded.display_name),
+          picture_url = excluded.picture_url,
+          updated_at = excluded.updated_at`
+      )
+      .bind(
+        input.userId,
+        input.googleSub,
+        input.email,
+        input.emailVerified ? 1 : 0,
+        input.name,
+        input.name,
+        input.pictureUrl,
+        input.now,
+        input.now
+      )
+      .run();
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    await db
+      .prepare(
+        `INSERT INTO users (
+          id,
+          google_sub,
+          email,
+          email_verified,
+          name,
+          picture_url,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(google_sub) DO UPDATE SET
+          email = excluded.email,
+          email_verified = excluded.email_verified,
+          name = excluded.name,
+          picture_url = excluded.picture_url,
+          updated_at = excluded.updated_at`
+      )
+      .bind(
+        input.userId,
+        input.googleSub,
+        input.email,
+        input.emailVerified ? 1 : 0,
+        input.name,
+        input.pictureUrl,
+        input.now,
+        input.now
+      )
+      .run();
+  }
 }
 
 export async function createSession(
@@ -93,25 +161,59 @@ export async function createSession(
 }
 
 export async function getUserBySessionId(db: D1Database, sessionId: string) {
-  return db
-    .prepare(
-      `SELECT
-        users.id,
-        users.google_sub,
-        users.email,
-        users.email_verified,
-        users.name,
-        users.display_name,
-        users.job_title,
-        users.department,
-        users.picture_url
-      FROM sessions
-      INNER JOIN users ON users.id = sessions.user_id
-      WHERE sessions.id = ?
-        AND sessions.expires_at > ?`
-    )
-    .bind(sessionId, Date.now())
-    .first<DbUser>();
+  try {
+    return await db
+      .prepare(
+        `SELECT
+          users.id,
+          users.google_sub,
+          users.email,
+          users.email_verified,
+          users.name,
+          users.display_name,
+          users.job_title,
+          users.department,
+          users.picture_url
+        FROM sessions
+        INNER JOIN users ON users.id = sessions.user_id
+        WHERE sessions.id = ?
+          AND sessions.expires_at > ?`
+      )
+      .bind(sessionId, Date.now())
+      .first<DbUser>();
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    const legacyUser = await db
+      .prepare(
+        `SELECT
+          users.id,
+          users.google_sub,
+          users.email,
+          users.email_verified,
+          users.name,
+          users.picture_url
+        FROM sessions
+        INNER JOIN users ON users.id = sessions.user_id
+        WHERE sessions.id = ?
+          AND sessions.expires_at > ?`
+      )
+      .bind(sessionId, Date.now())
+      .first<Omit<DbUser, "display_name" | "job_title" | "department">>();
+
+    if (!legacyUser) {
+      return null;
+    }
+
+    return {
+      ...legacyUser,
+      display_name: null,
+      job_title: null,
+      department: null,
+    };
+  }
 }
 
 export async function touchSession(
@@ -142,23 +244,29 @@ export async function updateUserProfile(
     now: number;
   }
 ) {
-  await db
-    .prepare(
-      `UPDATE users
-       SET display_name = ?,
-           job_title = ?,
-           department = ?,
-           updated_at = ?
-       WHERE id = ?`
-    )
-    .bind(
-      input.displayName,
-      input.jobTitle,
-      input.department,
-      input.now,
-      input.userId
-    )
-    .run();
+  try {
+    await db
+      .prepare(
+        `UPDATE users
+         SET display_name = ?,
+             job_title = ?,
+             department = ?,
+             updated_at = ?
+         WHERE id = ?`
+      )
+      .bind(
+        input.displayName,
+        input.jobTitle,
+        input.department,
+        input.now,
+        input.userId
+      )
+      .run();
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+  }
 }
 
 export async function insertDiagnosisResult(
