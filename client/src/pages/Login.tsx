@@ -54,8 +54,8 @@ export default function Login() {
               <div className="seal-tag inline-flex rounded-full px-4 py-2 text-sm font-semibold text-primary">
                 DAHASEN MAKER
               </div>
-              <h1 className="ink-title text-4xl font-bold leading-[1.18] text-foreground [text-wrap:initial] [word-break:keep-all] md:text-5xl lg:text-6xl">
-                あなたの「打破宣言」を
+              <h1 className="ink-title text-[2.05rem] font-bold leading-[1.18] text-foreground [text-wrap:initial] [word-break:keep-all] md:text-[2.9rem] lg:text-[3.7rem]">
+                <span className="whitespace-nowrap">あなたの「打破宣言」を</span>
                 <br />
                 ここから刻もう
               </h1>
