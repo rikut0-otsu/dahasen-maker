@@ -247,13 +247,13 @@ export default function Home() {
               {isCharacterMenuOpen && (
                 <div
                   id="character-menu-panel"
-                  className="historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:top-22 md:max-h-[min(76vh,42rem)] md:w-[min(92vw,58rem)] md:max-w-[58rem] md:overflow-y-auto md:rounded-[1.75rem] md:p-6"
+                  className="character-menu-panel historical-panel fixed left-1/2 top-24 z-50 max-h-[min(70vh,36rem)] w-[calc(100vw-2rem)] max-w-[26rem] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[1.4rem] p-3 shadow-[0_22px_60px_rgba(28,43,31,0.16)] touch-pan-y md:top-22 md:max-h-[min(76vh,42rem)] md:w-[min(92vw,58rem)] md:max-w-[58rem] md:overflow-y-auto md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="grid gap-4 md:grid-cols-2">
                     {groupedTypes.map((group) => (
                       <section
                         key={group.era}
-                        className="wash-paper rounded-[1.5rem] p-4"
+                        className="character-menu-section wash-paper rounded-[1.5rem] p-4"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div>
