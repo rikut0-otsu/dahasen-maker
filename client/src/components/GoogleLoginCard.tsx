@@ -39,11 +39,21 @@ const JOB_TITLE_OPTIONS = [
 
 const DEPARTMENT_OPTIONS = [
   "選択してください",
-  "全社",
   "内定者",
-  "広告",
-  "メディア",
-  "ゲーム",
+  "全社",
+  "インターネット広告事業本部（新規含む）",
+  "CyberACE",
+  "CyberZ",
+  "AI事業本部",
+  "ABEMA管轄",
+  "宣伝本部",
+  "WINTICKET",
+  "アニメ＆IP事業本部",
+  "ライフスタイル管轄",
+  "FANTECH本部",
+  "IU",
+  "SGE",
+  "採用人事",
   "その他",
 ] as const;
 
