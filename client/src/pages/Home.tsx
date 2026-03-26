@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import { useAuth } from '@/contexts/AuthContext';
 import typesData from '@/data/types.json';
-import { ChevronDown, ScrollText } from 'lucide-react';
+import { ChevronDown, ScrollText, ShieldCheck } from 'lucide-react';
 
 const eraOrder = ['sengoku', 'edo', 'bakumatsu', 'heian'] as const;
 
@@ -233,6 +233,7 @@ export default function Home() {
                 onClick={() => setLocation('/admin')}
                 className="h-10 rounded-full border-border/80 bg-background/90 px-4 shadow-sm md:h-11 md:px-5"
               >
+                <ShieldCheck className="h-4 w-4 text-primary" />
                 管理者ページ
               </Button>
             )}
