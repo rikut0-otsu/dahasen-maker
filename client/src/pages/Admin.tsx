@@ -65,6 +65,12 @@ const PIE_TABS = [
   { key: "department", label: "部署別" },
   { key: "jobTitle", label: "職種別" },
 ] as const;
+const ADMIN_OUTLINE_BUTTON =
+  "rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200";
+const ADMIN_CHART_CLASS =
+  "h-[320px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-slate-500 [&_.recharts-polar-angle-axis-tick_text]:fill-slate-500 [&_.recharts-default-tooltip]:border-slate-200 [&_.recharts-default-tooltip]:bg-white [&_.recharts-default-tooltip]:text-slate-900 [&_.recharts-tooltip-wrapper]:outline-none";
+const ADMIN_LINE_CHART_CLASS =
+  "h-[260px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-slate-500 [&_.recharts-cartesian-grid_line]:stroke-slate-200 [&_.recharts-default-tooltip]:border-slate-200 [&_.recharts-default-tooltip]:bg-white [&_.recharts-default-tooltip]:text-slate-900 [&_.recharts-tooltip-wrapper]:outline-none";
 
 const typeMetaById = Object.fromEntries(
   typesData.map((type) => [type.id, { name: type.name, era: type.era, eraLabel: type.eraLabel }])
@@ -626,8 +632,8 @@ export default function Admin() {
                     key={filter.key}
                     type="button"
                     variant="outline"
-                    className={`rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 ${
-                      trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900" : ""
+                    className={`${ADMIN_OUTLINE_BUTTON} ${
+                      trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900 hover:text-white active:bg-slate-900" : ""
                     }`}
                     onClick={() => setTrendRange(filter.key)}
                   >
@@ -641,7 +647,7 @@ export default function Admin() {
                 <div className="h-[260px] rounded-2xl bg-slate-100" />
               ) : (
                 <ChartContainer
-                  className="h-[260px] w-full"
+                  className={ADMIN_LINE_CHART_CLASS}
                   config={{
                     users: { label: "新規ユーザー", color: "#1d4ed8" },
                     diagnoses: { label: "診断数", color: "#0f172a" },
@@ -651,7 +657,15 @@ export default function Admin() {
                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
                     <XAxis dataKey="date" tickFormatter={formatDay} tickLine={false} axisLine={false} />
                     <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-                    <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) => formatDay(String(label))} />} />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="border-slate-200 bg-white text-slate-900"
+                          labelClassName="text-slate-900"
+                          labelFormatter={(label) => formatDay(String(label))}
+                        />
+                      }
+                    />
                     <Line type="monotone" dataKey="users" stroke="var(--color-users)" strokeWidth={2.5} dot={false} />
                     <Line type="monotone" dataKey="diagnoses" stroke="var(--color-diagnoses)" strokeWidth={2.5} dot={false} />
                   </LineChart>
@@ -679,8 +693,8 @@ export default function Admin() {
                         key={tab.key}
                         type="button"
                         variant="outline"
-                        className={`rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 ${
-                          pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900" : ""
+                        className={`${ADMIN_OUTLINE_BUTTON} ${
+                          pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900 hover:text-white active:bg-slate-900" : ""
                         }`}
                         onClick={() => setPieTab(tab.key)}
                       >
@@ -755,13 +769,13 @@ export default function Admin() {
                   全タイプを対象に、4人物ずつ表示します。0件のタイプも確認できます。
                 </CardDescription>
               </div>
-              <Button type="button" variant="outline" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100" onClick={exportDiagnosisCsv}>
+              <Button type="button" variant="outline" className={ADMIN_OUTLINE_BUTTON} onClick={exportDiagnosisCsv}>
                 <Download className="mr-2 h-4 w-4" />
                 集計CSV
               </Button>
             </CardHeader>
             <CardContent>
-              <ChartContainer className="h-[320px] w-full" config={{ count: { label: "診断数", color: "#2563eb" } }}>
+              <ChartContainer className={ADMIN_CHART_CLASS} config={{ count: { label: "診断数", color: "#2563eb" } }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={pagedTypeCounts}
@@ -771,7 +785,14 @@ export default function Admin() {
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                     <XAxis type="number" hide />
                     <YAxis type="category" dataKey="typeName" width={110} tickLine={false} axisLine={false} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="border-slate-200 bg-white text-slate-900"
+                          labelClassName="text-slate-900"
+                        />
+                      }
+                    />
                     <Bar dataKey="count" fill="var(--color-count)" radius={[0, 8, 8, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -785,7 +806,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                    className={ADMIN_OUTLINE_BUTTON}
                     disabled={typePage === 1}
                     onClick={() => setTypePage((current) => current - 1)}
                   >
@@ -797,7 +818,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                    className={ADMIN_OUTLINE_BUTTON}
                     disabled={typePage === totalTypePages}
                     onClick={() => setTypePage((current) => current + 1)}
                   >
@@ -817,7 +838,7 @@ export default function Admin() {
                 オーナーは固定権限です。管理者はその下位権限で、管理者ページ閲覧と管理者付与・解除ができます。ユーザーは10件ずつ表示し、検索・絞り込み・並び替えに対応しています。
               </p>
             </div>
-            <Button type="button" variant="outline" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100" onClick={exportUsersCsv}>
+            <Button type="button" variant="outline" className={ADMIN_OUTLINE_BUTTON} onClick={exportUsersCsv}>
               <Download className="mr-2 h-4 w-4" />
               ユーザーCSV
             </Button>
@@ -933,7 +954,7 @@ export default function Admin() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="flex-1 rounded-xl"
+                        className={`flex-1 ${ADMIN_OUTLINE_BUTTON}`}
                         disabled={savingUserId === listedUser.id || listedUser.isOwner}
                         onClick={() => void handleToggleAdmin(listedUser)}
                       >
@@ -958,15 +979,15 @@ export default function Admin() {
               </div>
 
               <div className="hidden md:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ユーザー</TableHead>
-                      <TableHead>部署 / 職種</TableHead>
-                      <TableHead>最新診断</TableHead>
-                      <TableHead>権限</TableHead>
-                      <TableHead>登録日</TableHead>
-                      <TableHead className="text-right">操作</TableHead>
+                <Table className="[&_tbody_tr:hover]:bg-slate-50/90 [&_thead_tr]:border-slate-200 [&_tbody_tr]:border-slate-200">
+                  <TableHeader className="bg-slate-50/80">
+                    <TableRow className="hover:bg-slate-50/80">
+                      <TableHead className="text-slate-700">ユーザー</TableHead>
+                      <TableHead className="text-slate-700">部署 / 職種</TableHead>
+                      <TableHead className="text-slate-700">最新診断</TableHead>
+                      <TableHead className="text-slate-700">権限</TableHead>
+                      <TableHead className="text-slate-700">登録日</TableHead>
+                      <TableHead className="text-right text-slate-700">操作</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1012,7 +1033,7 @@ export default function Admin() {
                             <Button
                               type="button"
                               variant="outline"
-                              className="rounded-xl"
+                              className={ADMIN_OUTLINE_BUTTON}
                               disabled={savingUserId === listedUser.id || listedUser.isOwner}
                               onClick={() => void handleToggleAdmin(listedUser)}
                             >
