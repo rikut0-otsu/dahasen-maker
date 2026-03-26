@@ -705,7 +705,11 @@ export default function Admin() {
                     ))}
                   </div>
                   <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                    <Switch checked={showPieLabels} onCheckedChange={setShowPieLabels} />
+                    <Switch
+                      checked={showPieLabels}
+                      onCheckedChange={setShowPieLabels}
+                      className="data-[state=unchecked]:border-slate-300 data-[state=unchecked]:bg-slate-300 data-[state=checked]:bg-slate-900 [&_[data-slot=switch-thumb]]:bg-white dark:data-[state=unchecked]:bg-slate-300 dark:data-[state=checked]:bg-slate-900"
+                    />
                     <span>円グラフ上に項目名と割合を表示</span>
                   </label>
                 </div>
