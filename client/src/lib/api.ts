@@ -87,6 +87,10 @@ export interface AdminUser {
   isOwner?: boolean;
   isEnvAdmin?: boolean;
   isAdmin: boolean;
+  latestDiagnosis?: {
+    typeId: string;
+    createdAt: number;
+  } | null;
   createdAt: number;
   updatedAt: number;
 }

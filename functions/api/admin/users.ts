@@ -1,7 +1,11 @@
 import type { AppContext } from "../../_lib/cloudflare";
 import { resolveAccessLevel, resolveAdminStatus } from "../../_lib/admin";
 import { requireAdminUser } from "../../_lib/auth";
-import { getAllUsers, updateUserAdminStatus } from "../../_lib/db";
+import {
+  getAllUsers,
+  getLatestDiagnosesForUsers,
+  updateUserAdminStatus,
+} from "../../_lib/db";
 import { errorResponse, json, readJson } from "../../_lib/http";
 
 export async function onRequestGet(context: AppContext) {
@@ -11,6 +15,10 @@ export async function onRequestGet(context: AppContext) {
   }
 
   const users = await getAllUsers(context.env.DB);
+  const latestDiagnoses = await getLatestDiagnosesForUsers(
+    context.env.DB,
+    users.map((user) => user.id)
+  );
 
   return json({
     users: users.map((user) => ({
@@ -42,6 +50,12 @@ export async function onRequestGet(context: AppContext) {
         email: user.email,
         persistedIsAdmin: user.is_admin,
       }),
+      latestDiagnosis: latestDiagnoses.has(user.id)
+        ? {
+            typeId: latestDiagnoses.get(user.id)!.type_id,
+            createdAt: latestDiagnoses.get(user.id)!.created_at,
+          }
+        : null,
       createdAt: user.created_at,
       updatedAt: user.updated_at,
     })),
@@ -107,6 +121,8 @@ export async function onRequestPatch(context: AppContext) {
   if (!updatedUser) {
     return errorResponse(404, "対象ユーザーが見つかりません");
   }
+  const latestDiagnoses = await getLatestDiagnosesForUsers(context.env.DB, [body.userId]);
+  const latestDiagnosis = latestDiagnoses.get(body.userId);
 
   return json({
     user: {
@@ -138,6 +154,12 @@ export async function onRequestPatch(context: AppContext) {
         email: updatedUser.email,
         persistedIsAdmin: updatedUser.is_admin,
       }),
+      latestDiagnosis: latestDiagnosis
+        ? {
+            typeId: latestDiagnosis.type_id,
+            createdAt: latestDiagnosis.created_at,
+          }
+        : null,
       createdAt: updatedUser.created_at,
       updatedAt: updatedUser.updated_at,
     },

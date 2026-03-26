@@ -16,6 +16,10 @@ export interface AuthUser {
   jobTitle?: string | null;
   department?: string | null;
   picture?: string | null;
+  latestDiagnosis?: {
+    typeId: string;
+    createdAt: number;
+  } | null;
 }
 
 interface AuthContextValue {

@@ -47,6 +47,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const PAGE_SIZE = 10;
@@ -73,6 +74,16 @@ function formatDay(date: string) {
   return new Date(date).toLocaleDateString("ja-JP", {
     month: "numeric",
     day: "numeric",
+  });
+}
+
+function formatDateTime(value: number) {
+  return new Date(value).toLocaleString("ja-JP", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -189,6 +200,7 @@ export default function Admin() {
   const [typePage, setTypePage] = useState(1);
   const [trendRange, setTrendRange] = useState<(typeof TREND_FILTERS)[number]["key"]>("14d");
   const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
+  const [showPieLabels, setShowPieLabels] = useState(false);
 
   const loadAdminData = async (showRefreshing = false) => {
     if (showRefreshing) {
@@ -356,6 +368,45 @@ export default function Admin() {
     [pieData]
   );
 
+  const renderPieLabel = ({
+    cx,
+    cy,
+    midAngle,
+    outerRadius,
+    percent,
+    name,
+  }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    outerRadius: number;
+    percent: number;
+    name: string;
+  }) => {
+    if (!showPieLabels || percent <= 0) {
+      return null;
+    }
+
+    const radius = outerRadius + 26;
+    const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
+    const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);
+    const anchor = x > cx ? "start" : "end";
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#0f172a"
+        textAnchor={anchor}
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight={600}
+      >
+        {`${name} ${Math.round(percent * 1000) / 10}%`}
+      </text>
+    );
+  };
+
   const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
   const handleToggleAdmin = async (targetUser: AdminUser) => {
@@ -418,13 +469,15 @@ export default function Admin() {
 
   const exportUsersCsv = () => {
     downloadCsv("admin-users.csv", [
-      ["name", "email", "access", "department", "jobTitle", "createdAt"],
+      ["name", "email", "access", "department", "jobTitle", "latestType", "latestDiagnosisAt", "createdAt"],
       ...filteredUsers.map((target) => [
         target.name,
         target.email,
         target.isOwner ? "owner" : target.isAdmin ? "admin" : "user",
         target.department || "",
         target.jobTitle || "",
+        target.latestDiagnosis ? typeMetaById[target.latestDiagnosis.typeId]?.name ?? target.latestDiagnosis.typeId : "",
+        target.latestDiagnosis ? new Date(target.latestDiagnosis.createdAt).toISOString() : "",
         new Date(target.createdAt).toISOString(),
       ]),
     ]);
@@ -468,9 +521,17 @@ export default function Admin() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-2xl bg-white/12 px-4 py-3 text-sm backdrop-blur-sm">
+              <div
+                className={`rounded-2xl px-4 py-3 text-sm backdrop-blur-sm ${
+                  user?.isOwner
+                    ? "border border-amber-200/35 bg-[linear-gradient(135deg,rgba(251,191,36,0.26),rgba(245,158,11,0.14))] text-amber-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                    : "bg-white/12 text-white"
+                }`}
+              >
                 <p className="font-semibold">{user?.name ?? "-"}</p>
-                <p className="mt-1 text-cyan-50/80">{user?.isOwner ? "Owner" : "Admin"}</p>
+                <p className={`mt-1 ${user?.isOwner ? "text-amber-100/90" : "text-cyan-50/80"}`}>
+                  {user?.isOwner ? "Owner" : "Admin"}
+                </p>
               </div>
               <Button
                 type="button"
@@ -571,25 +632,39 @@ export default function Admin() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {PIE_TABS.map((tab) => (
-                    <Button
-                      key={tab.key}
-                      type="button"
-                      variant="outline"
-                      className={`rounded-xl ${pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
-                      onClick={() => setPieTab(tab.key)}
-                    >
-                      {tab.label}
-                    </Button>
-                  ))}
+                <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {PIE_TABS.map((tab) => (
+                      <Button
+                        key={tab.key}
+                        type="button"
+                        variant="outline"
+                        className={`rounded-xl ${pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
+                        onClick={() => setPieTab(tab.key)}
+                      >
+                        {tab.label}
+                      </Button>
+                    ))}
+                  </div>
+                  <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    <Switch checked={showPieLabels} onCheckedChange={setShowPieLabels} />
+                    <span>円グラフ上に項目名と割合を表示</span>
+                  </label>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                   <div className="h-[320px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={48} outerRadius={110}>
+                        <Pie
+                          data={pieData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={48}
+                          outerRadius={110}
+                          labelLine={showPieLabels}
+                          label={renderPieLabel}
+                        >
                           {pieData.map((item, index) => (
                             <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                           ))}
@@ -765,6 +840,23 @@ export default function Admin() {
                         <Briefcase className="h-4 w-4" />
                         <span>{listedUser.jobTitle || "職種未設定"}</span>
                       </div>
+                      <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                          最新の診断結果
+                        </p>
+                        {listedUser.latestDiagnosis ? (
+                          <>
+                            <p className="mt-1 font-medium text-slate-900">
+                              {typeMetaById[listedUser.latestDiagnosis.typeId]?.name ?? listedUser.latestDiagnosis.typeId}
+                            </p>
+                            <p className="mt-1 text-xs text-slate-500">
+                              {formatDateTime(listedUser.latestDiagnosis.createdAt)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-xs text-slate-500">診断履歴はまだありません</p>
+                        )}
+                      </div>
                     </div>
 
                     <div className="mt-4 flex gap-2">
@@ -801,6 +893,7 @@ export default function Admin() {
                     <TableRow>
                       <TableHead>ユーザー</TableHead>
                       <TableHead>部署 / 職種</TableHead>
+                      <TableHead>最新診断</TableHead>
                       <TableHead>権限</TableHead>
                       <TableHead>登録日</TableHead>
                       <TableHead className="text-right">操作</TableHead>
@@ -818,6 +911,18 @@ export default function Admin() {
                             <p>{listedUser.department || "部署未設定"}</p>
                             <p>{listedUser.jobTitle || "職種未設定"}</p>
                           </div>
+                        </TableCell>
+                        <TableCell className="py-4 whitespace-normal">
+                          {listedUser.latestDiagnosis ? (
+                            <div className="space-y-1 text-sm text-slate-600">
+                              <p className="font-medium text-slate-900">
+                                {typeMetaById[listedUser.latestDiagnosis.typeId]?.name ?? listedUser.latestDiagnosis.typeId}
+                              </p>
+                              <p>{formatDateTime(listedUser.latestDiagnosis.createdAt)}</p>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-slate-400">未診断</p>
+                          )}
                         </TableCell>
                         <TableCell className="py-4">
                           <div className="flex flex-wrap items-center gap-2">

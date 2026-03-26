@@ -407,6 +407,12 @@ export interface DashboardDiagnosisRecord {
   created_at: number;
 }
 
+export interface LatestDiagnosisRecord {
+  user_id: string;
+  type_id: string;
+  created_at: number;
+}
+
 export async function getDashboardUsers(db: D1Database) {
   try {
     const result = await db
@@ -469,6 +475,57 @@ export async function getDashboardDiagnoses(db: D1Database) {
     .all<DashboardDiagnosisRecord>();
 
   return result.results;
+}
+
+export async function getLatestDiagnosisForUser(
+  db: D1Database,
+  userId: string
+) {
+  return db
+    .prepare(
+      `SELECT
+        user_id,
+        type_id,
+        created_at
+      FROM diagnosis_results
+      WHERE user_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1`
+    )
+    .bind(userId)
+    .first<LatestDiagnosisRecord>();
+}
+
+export async function getLatestDiagnosesForUsers(
+  db: D1Database,
+  userIds: string[]
+) {
+  if (userIds.length === 0) {
+    return new Map<string, LatestDiagnosisRecord>();
+  }
+
+  const placeholders = userIds.map(() => "?").join(", ");
+  const result = await db
+    .prepare(
+      `SELECT
+        user_id,
+        type_id,
+        created_at
+      FROM diagnosis_results
+      WHERE user_id IN (${placeholders})
+      ORDER BY created_at DESC`
+    )
+    .bind(...userIds)
+    .all<LatestDiagnosisRecord>();
+
+  const latestByUserId = new Map<string, LatestDiagnosisRecord>();
+  for (const row of result.results) {
+    if (!latestByUserId.has(row.user_id)) {
+      latestByUserId.set(row.user_id, row);
+    }
+  }
+
+  return latestByUserId;
 }
 
 export async function insertDiagnosisResult(
