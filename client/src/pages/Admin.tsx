@@ -543,14 +543,14 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef4ff_48%,#f8fafc_100%)] text-slate-900">
-      <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
-        <section className="rounded-[2rem] bg-[linear-gradient(135deg,#0f172a,#1d4ed8_55%,#38bdf8)] px-5 py-6 text-white shadow-[0_20px_70px_rgba(37,99,235,0.22)] md:px-8 md:py-8">
+      <div className="mx-auto max-w-6xl px-3 py-4 md:px-6 md:py-8">
+        <section className="rounded-[1.75rem] bg-[linear-gradient(135deg,#0f172a,#1d4ed8_55%,#38bdf8)] px-4 py-5 text-white shadow-[0_20px_70px_rgba(37,99,235,0.22)] md:rounded-[2rem] md:px-8 md:py-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <Button
                 type="button"
                 variant="outline"
-                className="mb-4 h-10 rounded-2xl border-white/20 bg-white/10 text-white hover:bg-white/16"
+                className="mb-4 h-10 w-full rounded-2xl border-white/20 bg-white/10 text-white hover:bg-white/16 md:w-auto"
                 onClick={() => setLocation("/")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -566,7 +566,7 @@ export default function Admin() {
                 登録ユーザーの管理、管理者権限の付与・解除、診断結果の集計確認をひとつの画面で行えるようにしています。オーナーは固定権限で、管理者はその下位権限として扱います。
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <div
                 className={`rounded-2xl px-4 py-3 text-sm backdrop-blur-sm ${
                   user?.isOwner
@@ -582,7 +582,7 @@ export default function Admin() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 rounded-2xl border-white/20 bg-white/10 text-white hover:bg-white/16"
+                className="h-11 w-full rounded-2xl border-white/20 bg-white/10 text-white hover:bg-white/16 sm:w-auto"
                 onClick={() => void loadAdminData(true)}
                 disabled={isRefreshing}
               >
@@ -628,7 +628,7 @@ export default function Admin() {
                 <CardTitle className="text-slate-950">診断結果の推移</CardTitle>
                 <CardDescription className="text-slate-600">期間を切り替えて新規登録数と診断実行数を確認できます。</CardDescription>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
                 {TREND_FILTERS.map((filter) => (
                   <Button
                     key={filter.key}
@@ -689,7 +689,7 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
                     {PIE_TABS.map((tab) => (
                       <Button
                         key={tab.key}
@@ -714,8 +714,8 @@ export default function Admin() {
                   </label>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-                  <div className="h-[320px]">
+                <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
+                  <div className="h-[280px] md:h-[320px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -736,7 +736,7 @@ export default function Admin() {
                     </ResponsiveContainer>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     {pieData.length === 0 ? (
                       <p className="text-sm text-slate-500">まだ集計データがありません。</p>
                     ) : (
@@ -768,14 +768,14 @@ export default function Admin() {
           </div>
 
           <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
-            <CardHeader className="md:flex-row md:items-end md:justify-between">
+            <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <CardTitle className="text-slate-950">人物別ランキング</CardTitle>
                 <CardDescription className="text-slate-600">
                   全タイプを対象に、4人物ずつ表示します。0件のタイプも確認できます。
                 </CardDescription>
               </div>
-              <Button type="button" variant="outline" className={ADMIN_OUTLINE_BUTTON} onClick={exportDiagnosisCsv}>
+              <Button type="button" variant="outline" className={`w-full md:w-auto ${ADMIN_OUTLINE_BUTTON}`} onClick={exportDiagnosisCsv}>
                 <Download className="mr-2 h-4 w-4" />
                 集計CSV
               </Button>
@@ -804,11 +804,11 @@ export default function Admin() {
                 </ResponsiveContainer>
               </ChartContainer>
 
-              <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+              <div className="mt-4 flex flex-col gap-3 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
                 <p>
                   {allTypeCounts.length} タイプ中 {(typePage - 1) * TYPE_PAGE_SIZE + 1} - {Math.min(typePage * TYPE_PAGE_SIZE, allTypeCounts.length)} 件を表示
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-3 items-center gap-2 md:flex md:items-center">
                   <Button
                     type="button"
                     variant="outline"
@@ -844,7 +844,7 @@ export default function Admin() {
                 オーナーは固定権限です。管理者はその下位権限で、管理者ページ閲覧と管理者付与・解除ができます。ユーザーは10件ずつ表示し、検索・絞り込み・並び替えに対応しています。
               </p>
             </div>
-            <Button type="button" variant="outline" className={ADMIN_OUTLINE_BUTTON} onClick={exportUsersCsv}>
+            <Button type="button" variant="outline" className={`w-full lg:w-auto ${ADMIN_OUTLINE_BUTTON}`} onClick={exportUsersCsv}>
               <Download className="mr-2 h-4 w-4" />
               ユーザーCSV
             </Button>
@@ -957,7 +957,7 @@ export default function Admin() {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
                       <Button
                         type="button"
                         variant="outline"
@@ -1067,12 +1067,12 @@ export default function Admin() {
                 </Table>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-200 pt-4 text-sm text-slate-600">
+              <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
                 <p>
                   {filteredUsers.length} 件中 {(page - 1) * PAGE_SIZE + 1} - {Math.min(page * PAGE_SIZE, filteredUsers.length)} 件を表示
                 </p>
-                <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" className="rounded-xl" disabled={page === 1} onClick={() => setPage((current) => current - 1)}>
+                <div className="grid grid-cols-3 items-center gap-2 md:flex md:items-center">
+                  <Button type="button" variant="outline" className={ADMIN_OUTLINE_BUTTON} disabled={page === 1} onClick={() => setPage((current) => current - 1)}>
                     前へ
                   </Button>
                   <span className="min-w-16 text-center">
@@ -1081,7 +1081,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl"
+                    className={ADMIN_OUTLINE_BUTTON}
                     disabled={page === totalPages}
                     onClick={() => setPage((current) => current + 1)}
                   >
