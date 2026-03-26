@@ -294,26 +294,55 @@ export interface AdminUserSummary {
 }
 
 export async function getAllUsers(db: D1Database) {
-  const result = await db
-    .prepare(
-      `SELECT
-        id,
-        email,
-        name,
-        display_name,
-        job_title,
-        department,
-        picture_url,
-        google_sub,
-        is_admin,
-        created_at,
-        updated_at
-      FROM users
-      ORDER BY created_at DESC, updated_at DESC`
-    )
-    .all<AdminUserSummary>();
+  try {
+    const result = await db
+      .prepare(
+        `SELECT
+          id,
+          email,
+          name,
+          display_name,
+          job_title,
+          department,
+          picture_url,
+          google_sub,
+          is_admin,
+          created_at,
+          updated_at
+        FROM users
+        ORDER BY created_at DESC, updated_at DESC`
+      )
+      .all<AdminUserSummary>();
 
-  return result.results;
+    return result.results;
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    const legacyResult = await db
+      .prepare(
+        `SELECT
+          id,
+          email,
+          name,
+          display_name,
+          job_title,
+          department,
+          picture_url,
+          google_sub,
+          created_at,
+          updated_at
+        FROM users
+        ORDER BY created_at DESC, updated_at DESC`
+      )
+      .all<Omit<AdminUserSummary, "is_admin">>();
+
+    return legacyResult.results.map((user) => ({
+      ...user,
+      is_admin: 0,
+    }));
+  }
 }
 
 export async function insertDiagnosisResult(
