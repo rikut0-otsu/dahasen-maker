@@ -11,6 +11,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  isAdmin: boolean;
   jobTitle?: string | null;
   department?: string | null;
   picture?: string | null;

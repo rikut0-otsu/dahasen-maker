@@ -10,6 +10,9 @@ export interface DbUser {
   job_title: string | null;
   department: string | null;
   picture_url: string | null;
+  is_admin: number;
+  created_at?: number;
+  updated_at?: number;
 }
 
 function isMissingColumnError(error: unknown) {
@@ -23,7 +26,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
   try {
     return await db
       .prepare(
-        "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url FROM users WHERE google_sub = ?"
+        "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url, is_admin FROM users WHERE google_sub = ?"
       )
       .bind(googleSub)
       .first<DbUser>();
@@ -37,7 +40,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
         "SELECT id, google_sub, email, email_verified, name, picture_url FROM users WHERE google_sub = ?"
       )
       .bind(googleSub)
-      .first<Omit<DbUser, "display_name" | "job_title" | "department">>();
+      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "is_admin">>();
 
     if (!legacyUser) {
       return null;
@@ -48,6 +51,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
       display_name: null,
       job_title: null,
       department: null,
+      is_admin: 0,
     };
   }
 }
@@ -61,6 +65,7 @@ export async function upsertUser(
     emailVerified: boolean;
     name: string;
     pictureUrl: string | null;
+    isAdmin: boolean;
     now: number;
   }
 ) {
@@ -75,15 +80,17 @@ export async function upsertUser(
           name,
           display_name,
           picture_url,
+          is_admin,
           created_at,
           updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(google_sub) DO UPDATE SET
           email = excluded.email,
           email_verified = excluded.email_verified,
           name = excluded.name,
           display_name = COALESCE(users.display_name, excluded.display_name),
           picture_url = excluded.picture_url,
+          is_admin = excluded.is_admin,
           updated_at = excluded.updated_at`
       )
       .bind(
@@ -94,6 +101,7 @@ export async function upsertUser(
         input.name,
         input.name,
         input.pictureUrl,
+        input.isAdmin ? 1 : 0,
         input.now,
         input.now
       )
@@ -173,7 +181,8 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
           users.display_name,
           users.job_title,
           users.department,
-          users.picture_url
+          users.picture_url,
+          users.is_admin
         FROM sessions
         INNER JOIN users ON users.id = sessions.user_id
         WHERE sessions.id = ?
@@ -201,7 +210,7 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
           AND sessions.expires_at > ?`
       )
       .bind(sessionId, Date.now())
-      .first<Omit<DbUser, "display_name" | "job_title" | "department">>();
+      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "is_admin">>();
 
     if (!legacyUser) {
       return null;
@@ -212,6 +221,7 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
       display_name: null,
       job_title: null,
       department: null,
+      is_admin: 0,
     };
   }
 }
@@ -267,6 +277,43 @@ export async function updateUserProfile(
       throw error;
     }
   }
+}
+
+export interface AdminUserSummary {
+  id: string;
+  email: string;
+  name: string;
+  display_name: string | null;
+  job_title: string | null;
+  department: string | null;
+  picture_url: string | null;
+  google_sub: string;
+  is_admin: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export async function getAllUsers(db: D1Database) {
+  const result = await db
+    .prepare(
+      `SELECT
+        id,
+        email,
+        name,
+        display_name,
+        job_title,
+        department,
+        picture_url,
+        google_sub,
+        is_admin,
+        created_at,
+        updated_at
+      FROM users
+      ORDER BY created_at DESC, updated_at DESC`
+    )
+    .all<AdminUserSummary>();
+
+  return result.results;
 }
 
 export async function insertDiagnosisResult(

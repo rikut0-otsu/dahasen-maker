@@ -4,8 +4,10 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export function ProtectedRoute({
   children,
+  adminOnly = false,
 }: {
   children: React.ReactNode;
+  adminOnly?: boolean;
 }) {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
@@ -16,6 +18,12 @@ export function ProtectedRoute({
       setLocation(`/login?returnTo=${encodeURIComponent(returnTo)}`);
     }
   }, [isLoading, user, location, setLocation]);
+
+  useEffect(() => {
+    if (!isLoading && user && adminOnly && !user.isAdmin) {
+      setLocation("/");
+    }
+  }, [adminOnly, isLoading, setLocation, user]);
 
   if (isLoading) {
     return (
@@ -29,6 +37,10 @@ export function ProtectedRoute({
   }
 
   if (!user) {
+    return null;
+  }
+
+  if (adminOnly && !user.isAdmin) {
     return null;
   }
 

@@ -18,6 +18,7 @@ import {
   validateGoogleIdToken,
 } from "../../../_lib/google";
 import { withSessionCookie } from "../../../_lib/auth";
+import { isConfiguredAdmin } from "../../../_lib/admin";
 import { json } from "../../../_lib/http";
 
 function redirect(location: string, headers?: HeadersInit) {
@@ -86,6 +87,7 @@ export async function onRequestGet(context: AppContext) {
     const now = Date.now();
     const existingUser = await findUserByGoogleSub(context.env.DB, googleSub);
     const userId = existingUser?.id ?? crypto.randomUUID();
+    const isAdmin = isConfiguredAdmin(context.env, { googleSub, email });
 
     await upsertUser(context.env.DB, {
       userId,
@@ -94,6 +96,7 @@ export async function onRequestGet(context: AppContext) {
       emailVerified: Boolean(profile.email_verified),
       name,
       pictureUrl: profile.picture ?? null,
+      isAdmin,
       now,
     });
 

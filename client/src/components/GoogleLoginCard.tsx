@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Chrome, LogOut, PencilLine, Settings2 } from "lucide-react";
+import { Chrome, LogOut, PencilLine, Settings2, ShieldCheck } from "lucide-react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateCurrentUserProfile } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,7 @@ export function GoogleLoginCard() {
     signInWithGoogle,
     isLoading,
   } = useAuth();
+  const [, setLocation] = useLocation();
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [name, setName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
@@ -209,6 +211,12 @@ export function GoogleLoginCard() {
               <PencilLine />
               プロフィール編集
             </DropdownMenuItem>
+            {user.isAdmin && (
+              <DropdownMenuItem onClick={() => setLocation("/admin")}>
+                <ShieldCheck />
+                管理者ページ
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               variant="destructive"
               onClick={() => {
