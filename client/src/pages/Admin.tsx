@@ -67,6 +67,8 @@ const PIE_TABS = [
 ] as const;
 const ADMIN_OUTLINE_BUTTON =
   "rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200";
+const ADMIN_ACTIVE_BUTTON =
+  "!border-slate-900 !bg-slate-900 !text-white hover:!bg-slate-900 hover:!text-white active:!bg-slate-900";
 const ADMIN_CHART_CLASS =
   "h-[320px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-slate-500 [&_.recharts-polar-angle-axis-tick_text]:fill-slate-500 [&_.recharts-default-tooltip]:border-slate-200 [&_.recharts-default-tooltip]:bg-white [&_.recharts-default-tooltip]:text-slate-900 [&_.recharts-tooltip-wrapper]:outline-none";
 const ADMIN_LINE_CHART_CLASS =
@@ -633,7 +635,7 @@ export default function Admin() {
                     type="button"
                     variant="outline"
                     className={`${ADMIN_OUTLINE_BUTTON} ${
-                      trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900 hover:text-white active:bg-slate-900" : ""
+                      trendRange === filter.key ? ADMIN_ACTIVE_BUTTON : ""
                     }`}
                     onClick={() => setTrendRange(filter.key)}
                   >
@@ -694,7 +696,7 @@ export default function Admin() {
                         type="button"
                         variant="outline"
                         className={`${ADMIN_OUTLINE_BUTTON} ${
-                          pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900 hover:text-white active:bg-slate-900" : ""
+                          pieTab === tab.key ? ADMIN_ACTIVE_BUTTON : ""
                         }`}
                         onClick={() => setPieTab(tab.key)}
                       >
@@ -853,7 +855,8 @@ export default function Admin() {
                     value={searchText}
                     onChange={(event) => setSearchText(event.target.value)}
                     placeholder="名前・メール・部署・職種で検索"
-                    className="pl-10"
+                    autoComplete="off"
+                    className="border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 autofill:shadow-[inset_0_0_0px_1000px_white] autofill:[-webkit-text-fill-color:#0f172a]"
                   />
                 </div>
                 <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
