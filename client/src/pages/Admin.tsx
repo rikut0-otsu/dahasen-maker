@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   Activity,
   AlertTriangle,
+  ArrowLeft,
   Briefcase,
   Building2,
   Crown,
@@ -29,6 +30,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   deleteAdminUser,
@@ -64,8 +66,8 @@ const PIE_TABS = [
 ] as const;
 
 const typeMetaById = Object.fromEntries(
-  typesData.map((type) => [type.id, { name: type.name, era: type.era }])
-) as Record<string, { name: string; era: string }>;
+  typesData.map((type) => [type.id, { name: type.name, era: type.era, eraLabel: type.eraLabel }])
+) as Record<string, { name: string; era: string; eraLabel: string }>;
 
 function formatDay(date: string) {
   return new Date(date).toLocaleDateString("ja-JP", {
@@ -164,6 +166,7 @@ function PieTooltip({
 
 export default function Admin() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [trends, setTrends] = useState<AdminDashboardTrend[]>([]);
   const [topTypes, setTopTypes] = useState<AdminDashboardType[]>([]);
@@ -263,7 +266,7 @@ export default function Admin() {
   const eraBreakdown = useMemo(() => {
     const map = new Map<string, number>();
     for (const item of topTypes) {
-      const era = typeMetaById[item.typeId]?.era ?? "other";
+      const era = typeMetaById[item.typeId]?.eraLabel ?? "その他";
       map.set(era, (map.get(era) ?? 0) + item.count);
     }
 
@@ -445,6 +448,15 @@ export default function Admin() {
         <section className="rounded-[2rem] bg-[linear-gradient(135deg,#0f172a,#1d4ed8_55%,#38bdf8)] px-5 py-6 text-white shadow-[0_20px_70px_rgba(37,99,235,0.22)] md:px-8 md:py-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
+              <Button
+                type="button"
+                variant="outline"
+                className="mb-4 h-10 rounded-2xl border-white/20 bg-white/10 text-white hover:bg-white/16"
+                onClick={() => setLocation("/")}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                ホームに戻る
+              </Button>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">
                 Operation Dashboard
               </p>
