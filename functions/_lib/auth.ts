@@ -7,7 +7,12 @@ import {
   getCookie,
   getSessionTtlMs,
 } from "./cookies";
-import { deleteSession, getUserBySessionId, touchSession } from "./db";
+import {
+  deleteSession,
+  getLatestDiagnosisForUser,
+  getUserBySessionId,
+  touchSession,
+} from "./db";
 import { errorResponse } from "./http";
 
 export async function readAuthenticatedUser(context: AppContext) {
@@ -34,6 +39,7 @@ export async function readAuthenticatedUser(context: AppContext) {
       expiresAt: now + getSessionTtlMs(),
     })
   );
+  const latestDiagnosis = await getLatestDiagnosisForUser(context.env.DB, user.id);
 
   return {
     sessionId,
@@ -47,6 +53,12 @@ export async function readAuthenticatedUser(context: AppContext) {
       picture: user.picture_url,
       isAdmin: accessLevel !== "user",
       isOwner: accessLevel === "owner",
+      latestDiagnosis: latestDiagnosis
+        ? {
+            typeId: latestDiagnosis.type_id,
+            createdAt: latestDiagnosis.created_at,
+          }
+        : null,
     },
   };
 }

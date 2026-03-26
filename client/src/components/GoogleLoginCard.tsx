@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Chrome, LogOut, PencilLine, Settings2, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateCurrentUserProfile } from "@/lib/api";
+import typesData from "@/data/types.json";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -65,6 +66,7 @@ export function GoogleLoginCard() {
     user,
     setUser,
     signOut,
+    refreshUser,
     isGoogleConfigured,
     signInWithGoogle,
     isLoading,
@@ -78,6 +80,16 @@ export function GoogleLoginCard() {
   const [customDepartment, setCustomDepartment] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isAutoPromptActive, setIsAutoPromptActive] = useState(false);
+  const latestTypeName = useMemo(() => {
+    if (!user?.latestDiagnosis?.typeId) {
+      return null;
+    }
+
+    return (
+      typesData.find((type) => type.id === user.latestDiagnosis?.typeId)?.name ??
+      user.latestDiagnosis.typeId
+    );
+  }, [user?.latestDiagnosis]);
 
   useEffect(() => {
     if (!user) {
@@ -205,9 +217,19 @@ export function GoogleLoginCard() {
                   {[user.jobTitle, user.department].filter(Boolean).join(" / ")}
                 </p>
               )}
+              {user.latestDiagnosis && (
+                <p className="mt-1 truncate text-xs text-muted-foreground">
+                  最新診断: {latestTypeName}
+                </p>
+              )}
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsProfileDialogOpen(true)}>
+            <DropdownMenuItem
+              onClick={() => {
+                void refreshUser();
+                setIsProfileDialogOpen(true);
+              }}
+            >
               <PencilLine />
               プロフィール編集
             </DropdownMenuItem>
@@ -256,6 +278,40 @@ export function GoogleLoginCard() {
             </DialogHeader>
 
             <div className="grid gap-5 px-6 py-6">
+              <div className="rounded-2xl border border-border/70 bg-muted/40 px-4 py-4">
+                <p className="text-sm font-semibold text-foreground">最新の診断結果</p>
+                {user.latestDiagnosis ? (
+                  <div className="mt-2 space-y-2">
+                    <p className="text-base font-medium text-foreground">{latestTypeName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      診断日時:{" "}
+                      {new Date(user.latestDiagnosis.createdAt).toLocaleString("ja-JP", {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => {
+                        setIsProfileDialogOpen(false);
+                        setLocation(`/types/${user.latestDiagnosis?.typeId ?? ""}`);
+                      }}
+                    >
+                      診断結果を見る
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    まだ診断結果は保存されていません。
+                  </p>
+                )}
+              </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="profile-name">名前</Label>
                 <Input
