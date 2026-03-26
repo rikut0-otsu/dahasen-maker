@@ -24,6 +24,7 @@ import {
   Pie,
   PieChart,
   ResponsiveContainer,
+  Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -125,6 +126,26 @@ function MetricCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function PieTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ name?: string; value?: number }>;
+}) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const item = payload[0];
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-lg">
+      <p className="font-medium text-slate-900">{item.name}</p>
+      <p className="mt-1 text-slate-600">{item.value ?? 0} 件</p>
+    </div>
   );
 }
 
@@ -453,7 +474,7 @@ export default function Admin() {
                         <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                       ))}
                     </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <RechartsTooltip content={<PieTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -475,7 +496,7 @@ export default function Admin() {
                         <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                       ))}
                     </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <RechartsTooltip content={<PieTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
