@@ -38,6 +38,7 @@ export async function readAuthenticatedUser(context: AppContext) {
       jobTitle: user.job_title,
       department: user.department,
       picture: user.picture_url,
+      isAdmin: user.is_admin === 1,
     },
   };
 }
@@ -55,6 +56,22 @@ export async function requireAuthenticatedUser(context: AppContext) {
     ok: true as const,
     auth,
   };
+}
+
+export async function requireAdminUser(context: AppContext) {
+  const authResult = await requireAuthenticatedUser(context);
+  if (!authResult.ok) {
+    return authResult;
+  }
+
+  if (!authResult.auth.user.isAdmin) {
+    return {
+      ok: false as const,
+      response: errorResponse(403, "管理者権限が必要です"),
+    };
+  }
+
+  return authResult;
 }
 
 export function withSessionCookie(

@@ -7,6 +7,7 @@ import { GoogleLoginCard } from '@/components/GoogleLoginCard';
 import { Sparkles } from '@/components/Sparkles';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
+import { useAuth } from '@/contexts/AuthContext';
 import typesData from '@/data/types.json';
 import { ChevronDown, ScrollText } from 'lucide-react';
 
@@ -128,6 +129,7 @@ const diagnosisAxes = [
 export default function Home() {
   const [, setLocation] = useLocation();
   const { reset } = useDiagnosisContext();
+  const { user } = useAuth();
   const [heroImageFailed, setHeroImageFailed] = useState(false);
   const [headerLogoFailed, setHeaderLogoFailed] = useState(false);
   const [headerWordmarkFailed, setHeaderWordmarkFailed] = useState(false);
@@ -224,6 +226,16 @@ export default function Home() {
             )}
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-3">
+            {user?.isAdmin && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setLocation('/admin')}
+                className="h-10 rounded-full border-border/80 bg-background/90 px-4 shadow-sm md:h-11 md:px-5"
+              >
+                管理者ページ
+              </Button>
+            )}
             <div className="relative shrink-0" ref={characterMenuRef}>
               <Button
                 type="button"

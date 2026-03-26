@@ -73,3 +73,25 @@ export async function saveDiagnosisResult(input: {
 
   return readJson<{ resultId: string }>(response);
 }
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  rawName: string;
+  googleSub: string;
+  jobTitle?: string | null;
+  department?: string | null;
+  picture?: string | null;
+  isAdmin: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export async function getAdminUsers() {
+  const response = await fetch("/api/admin/users", {
+    credentials: "include",
+  });
+
+  return readJson<{ users: AdminUser[] }>(response);
+}

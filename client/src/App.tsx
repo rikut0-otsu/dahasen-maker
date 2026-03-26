@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import Diagnosis from "./pages/Diagnosis";
 import Result from "./pages/Result";
 import TypeDetail from "./pages/TypeDetail";
+import Admin from "./pages/Admin";
 
 function Router() {
   return (
@@ -47,6 +48,14 @@ function Router() {
         component={() => (
           <ProtectedRoute>
             <Result />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/admin"
+        component={() => (
+          <ProtectedRoute adminOnly>
+            <Admin />
           </ProtectedRoute>
         )}
       />
