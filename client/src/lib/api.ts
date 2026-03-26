@@ -112,6 +112,19 @@ export async function updateAdminUser(input: { userId: string; isAdmin: boolean 
   return readJson<{ user: AdminUser }>(response);
 }
 
+export async function deleteAdminUser(input: { userId: string }) {
+  const response = await fetch("/api/admin/users-delete", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  return readJson<{ ok: true }>(response);
+}
+
 export interface AdminDashboardSummary {
   totalUsers: number;
   totalDiagnoses: number;
