@@ -13,6 +13,8 @@ export interface AppEnv {
   DB: D1Database;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  OWNER_GOOGLE_SUBS?: string;
+  OWNER_EMAILS?: string;
   ADMIN_GOOGLE_SUBS?: string;
   ADMIN_EMAILS?: string;
 }

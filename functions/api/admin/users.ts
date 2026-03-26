@@ -1,5 +1,5 @@
 import type { AppContext } from "../../_lib/cloudflare";
-import { resolveAdminStatus } from "../../_lib/admin";
+import { resolveAccessLevel, resolveAdminStatus } from "../../_lib/admin";
 import { requireAdminUser } from "../../_lib/auth";
 import { getAllUsers, updateUserAdminStatus } from "../../_lib/db";
 import { errorResponse, json, readJson } from "../../_lib/http";
@@ -14,6 +14,11 @@ export async function onRequestGet(context: AppContext) {
 
   return json({
     users: users.map((user) => ({
+      accessLevel: resolveAccessLevel(context.env, {
+        googleSub: user.google_sub,
+        email: user.email,
+        persistedIsAdmin: user.is_admin,
+      }),
       id: user.id,
       email: user.email,
       name: user.display_name ?? user.name,
@@ -22,6 +27,12 @@ export async function onRequestGet(context: AppContext) {
       jobTitle: user.job_title,
       department: user.department,
       picture: user.picture_url,
+      isOwner:
+        resolveAccessLevel(context.env, {
+          googleSub: user.google_sub,
+          email: user.email,
+          persistedIsAdmin: user.is_admin,
+        }) === "owner",
       isEnvAdmin: resolveAdminStatus(context.env, {
         googleSub: user.google_sub,
         email: user.email,
@@ -48,6 +59,28 @@ export async function onRequestPatch(context: AppContext) {
     return errorResponse(400, "更新内容が不正です");
   }
 
+  const users = await getAllUsers(context.env.DB);
+  const actor = users.find((user) => user.id === auth.auth.user.id);
+  const targetUser = users.find((user) => user.id === body.userId);
+
+  if (!actor) {
+    return errorResponse(404, "操作ユーザーが見つかりません");
+  }
+
+  if (!targetUser) {
+    return errorResponse(404, "対象ユーザーが見つかりません");
+  }
+
+  const targetAccessLevel = resolveAccessLevel(context.env, {
+    googleSub: targetUser.google_sub,
+    email: targetUser.email,
+    persistedIsAdmin: targetUser.is_admin,
+  });
+
+  if (targetAccessLevel === "owner") {
+    return errorResponse(403, "オーナー権限は画面から変更できません");
+  }
+
   if (body.userId === auth.auth.user.id && !body.isAdmin) {
     return errorResponse(400, "自分自身の管理者権限は外せません");
   }
@@ -69,14 +102,19 @@ export async function onRequestPatch(context: AppContext) {
     throw error;
   }
 
-  const users = await getAllUsers(context.env.DB);
-  const updatedUser = users.find((user) => user.id === body.userId);
+  const refreshedUsers = await getAllUsers(context.env.DB);
+  const updatedUser = refreshedUsers.find((user) => user.id === body.userId);
   if (!updatedUser) {
     return errorResponse(404, "対象ユーザーが見つかりません");
   }
 
   return json({
     user: {
+      accessLevel: resolveAccessLevel(context.env, {
+        googleSub: updatedUser.google_sub,
+        email: updatedUser.email,
+        persistedIsAdmin: updatedUser.is_admin,
+      }),
       id: updatedUser.id,
       email: updatedUser.email,
       name: updatedUser.display_name ?? updatedUser.name,
@@ -85,6 +123,12 @@ export async function onRequestPatch(context: AppContext) {
       jobTitle: updatedUser.job_title,
       department: updatedUser.department,
       picture: updatedUser.picture_url,
+      isOwner:
+        resolveAccessLevel(context.env, {
+          googleSub: updatedUser.google_sub,
+          email: updatedUser.email,
+          persistedIsAdmin: updatedUser.is_admin,
+        }) === "owner",
       isEnvAdmin: resolveAdminStatus(context.env, {
         googleSub: updatedUser.google_sub,
         email: updatedUser.email,
