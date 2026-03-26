@@ -45,7 +45,7 @@ export async function onRequestGet(context: AppContext) {
   const trendDates = Array.from(usersByDay.keys()).concat(Array.from(diagnosesByDay.keys()));
   const trends = Array.from(new Set(trendDates))
     .sort()
-    .slice(-14)
+    .slice(-120)
     .map((date) => ({
       date,
       users: usersByDay.get(date) ?? 0,

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
+  AlertTriangle,
   Briefcase,
   Building2,
   Crown,
@@ -47,8 +48,20 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const PAGE_SIZE = 10;
-const TYPE_PAGE_SIZE = 5;
+const TYPE_PAGE_SIZE = 4;
 const PIE_COLORS = ["#0f172a", "#10b981", "#2563eb", "#f59e0b", "#ef4444", "#8b5cf6"];
+const TREND_FILTERS = [
+  { key: "7d", label: "7日" },
+  { key: "14d", label: "14日" },
+  { key: "30d", label: "30日" },
+  { key: "all", label: "全期間" },
+] as const;
+const PIE_TABS = [
+  { key: "era", label: "時代別" },
+  { key: "person", label: "人物別" },
+  { key: "department", label: "部署別" },
+  { key: "jobTitle", label: "職種別" },
+] as const;
 
 const typeMetaById = Object.fromEntries(
   typesData.map((type) => [type.id, { name: type.name, era: type.era }])
@@ -171,6 +184,8 @@ export default function Admin() {
   const [sortKey, setSortKey] = useState<"newest" | "oldest" | "name">("newest");
   const [page, setPage] = useState(1);
   const [typePage, setTypePage] = useState(1);
+  const [trendRange, setTrendRange] = useState<(typeof TREND_FILTERS)[number]["key"]>("14d");
+  const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
 
   const loadAdminData = async (showRefreshing = false) => {
     if (showRefreshing) {
@@ -264,6 +279,28 @@ export default function Admin() {
     [topTypes]
   );
 
+  const departmentBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of users) {
+      const key = target.department?.trim() || "未設定";
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [users]);
+
+  const jobTitleBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of users) {
+      const key = target.jobTitle?.trim() || "未設定";
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [users]);
+
   const allTypeCounts = useMemo(() => {
     const countMap = new Map(topTypes.map((item) => [item.typeId, item.count]));
 
@@ -294,6 +331,29 @@ export default function Admin() {
       setTypePage(totalTypePages);
     }
   }, [typePage, totalTypePages]);
+
+  const trendData = useMemo(() => {
+    if (trendRange === "all") {
+      return trends;
+    }
+
+    const limit = trendRange === "7d" ? 7 : trendRange === "14d" ? 14 : 30;
+    return trends.slice(-limit);
+  }, [trendRange, trends]);
+
+  const pieData = useMemo(() => {
+    if (pieTab === "era") return eraBreakdown;
+    if (pieTab === "person") return personBreakdown;
+    if (pieTab === "department") return departmentBreakdown;
+    return jobTitleBreakdown;
+  }, [pieTab, eraBreakdown, personBreakdown, departmentBreakdown, jobTitleBreakdown]);
+
+  const pieTotal = useMemo(
+    () => pieData.reduce((sum, item) => sum + item.value, 0),
+    [pieData]
+  );
+
+  const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
   const handleToggleAdmin = async (targetUser: AdminUser) => {
     if (targetUser.isOwner) {
@@ -420,6 +480,21 @@ export default function Admin() {
           </section>
         )}
 
+        {ownerUsers.length === 0 && (
+          <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-semibold">オーナーが見つかっていません</p>
+                <p className="mt-1 leading-6">
+                  この画面にオーナーが表示されない場合、Cloudflare の `OWNER_EMAILS` に
+                  `otsu_rikuto@cyberagent.co.jp` が入っていない可能性があります。
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard title="Users" value={summary.totalUsers} description="登録ユーザー数" icon={Users} />
           <MetricCard title="Diagnoses" value={summary.totalDiagnoses} description="保存済み診断結果数" icon={Activity} />
@@ -429,9 +504,24 @@ export default function Admin() {
 
         <section className="mt-6 space-y-6">
           <Card className="border-slate-200 bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle>診断結果の推移</CardTitle>
-              <CardDescription>直近14日間の新規登録数と診断実行数です。</CardDescription>
+            <CardHeader className="md:flex-row md:items-end md:justify-between">
+              <div>
+                <CardTitle>診断結果の推移</CardTitle>
+                <CardDescription>期間を切り替えて新規登録数と診断実行数を確認できます。</CardDescription>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {TREND_FILTERS.map((filter) => (
+                  <Button
+                    key={filter.key}
+                    type="button"
+                    variant="outline"
+                    className={`rounded-xl ${trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
+                    onClick={() => setTrendRange(filter.key)}
+                  >
+                    {filter.label}
+                  </Button>
+                ))}
+              </div>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -444,7 +534,7 @@ export default function Admin() {
                     diagnoses: { label: "診断数", color: "#0f172a" },
                   }}
                 >
-                  <LineChart data={trends}>
+                  <LineChart data={trendData}>
                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
                     <XAxis dataKey="date" tickFormatter={formatDay} tickLine={false} axisLine={false} />
                     <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
@@ -458,47 +548,72 @@ export default function Admin() {
           </Card>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <Card className="border-slate-200 bg-white shadow-sm">
+            <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChartIcon className="h-4 w-4 text-blue-600" />
-                  時代別の構成比
+                  円グラフ集計
                 </CardTitle>
-                <CardDescription>江戸・戦国・幕末・平安など、時代セグメントの割合です。</CardDescription>
+                <CardDescription>
+                  時代別・人物別・部署別・職種別を切り替えて、割合を常時確認できます。
+                </CardDescription>
               </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={eraBreakdown} dataKey="value" nameKey="name" innerRadius={52} outerRadius={96}>
-                      {eraBreakdown.map((item, index) => (
-                        <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip content={<PieTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+              <CardContent>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {PIE_TABS.map((tab) => (
+                    <Button
+                      key={tab.key}
+                      type="button"
+                      variant="outline"
+                      className={`rounded-xl ${pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
+                      onClick={() => setPieTab(tab.key)}
+                    >
+                      {tab.label}
+                    </Button>
+                  ))}
+                </div>
 
-            <Card className="border-slate-200 bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChartIcon className="h-4 w-4 text-blue-600" />
-                  人物別の構成比
-                </CardTitle>
-                <CardDescription>診断結果の人物別割合です。</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={personBreakdown} dataKey="value" nameKey="name" innerRadius={42} outerRadius={96}>
-                      {personBreakdown.map((item, index) => (
-                        <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip content={<PieTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                  <div className="h-[320px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={48} outerRadius={110}>
+                          {pieData.map((item, index) => (
+                            <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip content={<PieTooltip />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="space-y-3">
+                    {pieData.length === 0 ? (
+                      <p className="text-sm text-slate-500">まだ集計データがありません。</p>
+                    ) : (
+                      pieData.map((item, index) => {
+                        const percent = pieTotal === 0 ? 0 : Math.round((item.value / pieTotal) * 1000) / 10;
+                        return (
+                          <div key={item.name} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex min-w-0 items-center gap-3">
+                                <span
+                                  className="h-3 w-3 shrink-0 rounded-full"
+                                  style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+                                />
+                                <span className="truncate text-sm font-medium text-slate-900">{item.name}</span>
+                              </div>
+                              <div className="text-right text-sm">
+                                <p className="font-semibold text-slate-900">{percent}%</p>
+                                <p className="text-slate-500">{item.value} 件</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -508,7 +623,7 @@ export default function Admin() {
               <div>
                 <CardTitle>人物別ランキング</CardTitle>
                 <CardDescription>
-                  全タイプを対象に、5件ずつ表示します。0件のタイプも確認できます。
+                  全タイプを対象に、4人物ずつ表示します。0件のタイプも確認できます。
                 </CardDescription>
               </div>
               <Button type="button" variant="outline" className="rounded-xl" onClick={exportDiagnosisCsv}>
