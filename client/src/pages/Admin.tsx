@@ -195,6 +195,8 @@ export default function Admin() {
   const [savingUserId, setSavingUserId] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | "owner" | "admin" | "user">("all");
+  const [diagnosisFilter, setDiagnosisFilter] = useState("all");
+  const [eraFilter, setEraFilter] = useState("all");
   const [sortKey, setSortKey] = useState<"newest" | "oldest" | "name">("newest");
   const [page, setPage] = useState(1);
   const [typePage, setTypePage] = useState(1);
@@ -240,6 +242,19 @@ export default function Admin() {
         if (roleFilter === "admin" && (target.isOwner || !target.isAdmin)) return false;
         if (roleFilter === "user" && target.isAdmin) return false;
 
+        if (diagnosisFilter === "none" && target.latestDiagnosis) return false;
+        if (diagnosisFilter !== "all" && diagnosisFilter !== "none" && target.latestDiagnosis?.typeId !== diagnosisFilter) {
+          return false;
+        }
+
+        const targetEra = target.latestDiagnosis
+          ? (typeMetaById[target.latestDiagnosis.typeId]?.era ?? "other")
+          : null;
+        if (eraFilter === "none" && target.latestDiagnosis) return false;
+        if (eraFilter !== "all" && eraFilter !== "none" && targetEra !== eraFilter) {
+          return false;
+        }
+
         if (!normalized) return true;
 
         return [target.name, target.email, target.department, target.jobTitle]
@@ -260,14 +275,37 @@ export default function Admin() {
         if (accessDiff !== 0) return accessDiff;
         return b.createdAt - a.createdAt;
       });
-  }, [users, searchText, roleFilter, sortKey]);
+  }, [users, searchText, roleFilter, diagnosisFilter, eraFilter, sortKey]);
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
   const pagedUsers = filteredUsers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   useEffect(() => {
     setPage(1);
-  }, [searchText, roleFilter, sortKey]);
+  }, [searchText, roleFilter, diagnosisFilter, eraFilter, sortKey]);
+
+  const diagnosisFilterOptions = useMemo(
+    () => [
+      { value: "all", label: "すべての診断結果" },
+      { value: "none", label: "未診断" },
+      ...typesData.map((type) => ({
+        value: type.id,
+        label: type.name,
+      })),
+    ],
+    []
+  );
+
+  const eraFilterOptions = useMemo(
+    () => [
+      { value: "all", label: "すべての時代" },
+      { value: "none", label: "未診断" },
+      ...Array.from(
+        new Map(typesData.map((type) => [type.era, type.eraLabel])).entries()
+      ).map(([value, label]) => ({ value, label })),
+    ],
+    []
+  );
 
   useEffect(() => {
     if (page > totalPages) {
@@ -576,11 +614,11 @@ export default function Admin() {
         </section>
 
         <section className="mt-6 space-y-6">
-          <Card className="border-slate-200 bg-white shadow-sm">
+          <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
             <CardHeader className="md:flex-row md:items-end md:justify-between">
               <div>
-                <CardTitle>診断結果の推移</CardTitle>
-                <CardDescription>期間を切り替えて新規登録数と診断実行数を確認できます。</CardDescription>
+                <CardTitle className="text-slate-950">診断結果の推移</CardTitle>
+                <CardDescription className="text-slate-600">期間を切り替えて新規登録数と診断実行数を確認できます。</CardDescription>
               </div>
               <div className="flex flex-wrap gap-2">
                 {TREND_FILTERS.map((filter) => (
@@ -588,7 +626,9 @@ export default function Admin() {
                     key={filter.key}
                     type="button"
                     variant="outline"
-                    className={`rounded-xl ${trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
+                    className={`rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 ${
+                      trendRange === filter.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900" : ""
+                    }`}
                     onClick={() => setTrendRange(filter.key)}
                   >
                     {filter.label}
@@ -621,13 +661,13 @@ export default function Admin() {
           </Card>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
+            <Card className="border-slate-200 bg-white text-slate-900 shadow-sm lg:col-span-2">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-slate-950">
                   <PieChartIcon className="h-4 w-4 text-blue-600" />
                   円グラフ集計
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-slate-600">
                   時代別・人物別・部署別・職種別を切り替えて、割合を常時確認できます。
                 </CardDescription>
               </CardHeader>
@@ -639,7 +679,9 @@ export default function Admin() {
                         key={tab.key}
                         type="button"
                         variant="outline"
-                        className={`rounded-xl ${pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white" : ""}`}
+                        className={`rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 ${
+                          pieTab === tab.key ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-900" : ""
+                        }`}
                         onClick={() => setPieTab(tab.key)}
                       >
                         {tab.label}
@@ -705,15 +747,15 @@ export default function Admin() {
             </Card>
           </div>
 
-          <Card className="border-slate-200 bg-white shadow-sm">
+          <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
             <CardHeader className="md:flex-row md:items-end md:justify-between">
               <div>
-                <CardTitle>人物別ランキング</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-slate-950">人物別ランキング</CardTitle>
+                <CardDescription className="text-slate-600">
                   全タイプを対象に、4人物ずつ表示します。0件のタイプも確認できます。
                 </CardDescription>
               </div>
-              <Button type="button" variant="outline" className="rounded-xl" onClick={exportDiagnosisCsv}>
+              <Button type="button" variant="outline" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100" onClick={exportDiagnosisCsv}>
                 <Download className="mr-2 h-4 w-4" />
                 集計CSV
               </Button>
@@ -743,7 +785,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl"
+                    className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
                     disabled={typePage === 1}
                     onClick={() => setTypePage((current) => current - 1)}
                   >
@@ -755,7 +797,7 @@ export default function Admin() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl"
+                    className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
                     disabled={typePage === totalTypePages}
                     onClick={() => setTypePage((current) => current + 1)}
                   >
@@ -775,15 +817,15 @@ export default function Admin() {
                 オーナーは固定権限です。管理者はその下位権限で、管理者ページ閲覧と管理者付与・解除ができます。ユーザーは10件ずつ表示し、検索・絞り込み・並び替えに対応しています。
               </p>
             </div>
-            <Button type="button" variant="outline" className="rounded-xl" onClick={exportUsersCsv}>
+            <Button type="button" variant="outline" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100" onClick={exportUsersCsv}>
               <Download className="mr-2 h-4 w-4" />
               ユーザーCSV
             </Button>
           </div>
 
-          <Card className="border-slate-200 bg-white shadow-sm">
+          <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
             <CardContent className="space-y-4 p-4 md:p-5">
-              <div className="grid gap-3 md:grid-cols-[1.3fr_0.8fr_0.8fr]">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.4fr_0.9fr_0.9fr_1fr_1fr]">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <Input
@@ -798,7 +840,7 @@ export default function Admin() {
                   <select
                     value={roleFilter}
                     onChange={(event) => setRoleFilter(event.target.value as typeof roleFilter)}
-                    className="h-11 w-full bg-transparent text-sm outline-none"
+                    className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
                   >
                     <option value="all">すべての権限</option>
                     <option value="owner">Owner</option>
@@ -809,9 +851,37 @@ export default function Admin() {
                 <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
                   <Filter className="h-4 w-4 text-slate-500" />
                   <select
+                    value={diagnosisFilter}
+                    onChange={(event) => setDiagnosisFilter(event.target.value)}
+                    className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
+                  >
+                    {diagnosisFilterOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                  <Filter className="h-4 w-4 text-slate-500" />
+                  <select
+                    value={eraFilter}
+                    onChange={(event) => setEraFilter(event.target.value)}
+                    className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
+                  >
+                    {eraFilterOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                  <Filter className="h-4 w-4 text-slate-500" />
+                  <select
                     value={sortKey}
                     onChange={(event) => setSortKey(event.target.value as typeof sortKey)}
-                    className="h-11 w-full bg-transparent text-sm outline-none"
+                    className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
                   >
                     <option value="newest">新しい順</option>
                     <option value="oldest">古い順</option>
