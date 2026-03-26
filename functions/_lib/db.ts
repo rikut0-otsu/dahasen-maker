@@ -345,6 +345,112 @@ export async function getAllUsers(db: D1Database) {
   }
 }
 
+export async function updateUserAdminStatus(
+  db: D1Database,
+  input: { userId: string; isAdmin: boolean; now: number }
+) {
+  try {
+    await db
+      .prepare(
+        `UPDATE users
+         SET is_admin = ?,
+             updated_at = ?
+         WHERE id = ?`
+      )
+      .bind(input.isAdmin ? 1 : 0, input.now, input.userId)
+      .run();
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    throw new Error("ADMIN_COLUMN_MISSING");
+  }
+}
+
+export interface DashboardUserRecord {
+  id: string;
+  email: string;
+  name: string;
+  display_name: string | null;
+  department: string | null;
+  job_title: string | null;
+  google_sub: string;
+  is_admin: number;
+  created_at: number;
+}
+
+export interface DashboardDiagnosisRecord {
+  id: string;
+  user_id: string;
+  type_id: string;
+  created_at: number;
+}
+
+export async function getDashboardUsers(db: D1Database) {
+  try {
+    const result = await db
+      .prepare(
+        `SELECT
+          id,
+          email,
+          name,
+          display_name,
+          department,
+          job_title,
+          google_sub,
+          is_admin,
+          created_at
+        FROM users
+        ORDER BY created_at DESC`
+      )
+      .all<DashboardUserRecord>();
+
+    return result.results;
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    const legacyResult = await db
+      .prepare(
+        `SELECT
+          id,
+          email,
+          name,
+          display_name,
+          department,
+          job_title,
+          google_sub,
+          created_at
+        FROM users
+        ORDER BY created_at DESC`
+      )
+      .all<Omit<DashboardUserRecord, "is_admin">>();
+
+    return legacyResult.results.map((user) => ({
+      ...user,
+      is_admin: 0,
+    }));
+  }
+}
+
+export async function getDashboardDiagnoses(db: D1Database) {
+  const result = await db
+    .prepare(
+      `SELECT
+        id,
+        user_id,
+        type_id,
+        created_at
+      FROM diagnosis_results
+      ORDER BY created_at DESC`
+    )
+    .all<DashboardDiagnosisRecord>();
+
+  return result.results;
+}
+
 export async function insertDiagnosisResult(
   db: D1Database,
   input: {

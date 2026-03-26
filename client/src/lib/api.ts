@@ -83,6 +83,7 @@ export interface AdminUser {
   jobTitle?: string | null;
   department?: string | null;
   picture?: string | null;
+  isEnvAdmin?: boolean;
   isAdmin: boolean;
   createdAt: number;
   updatedAt: number;
@@ -94,4 +95,54 @@ export async function getAdminUsers() {
   });
 
   return readJson<{ users: AdminUser[] }>(response);
+}
+
+export async function updateAdminUser(input: { userId: string; isAdmin: boolean }) {
+  const response = await fetch("/api/admin/users", {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  return readJson<{ user: AdminUser }>(response);
+}
+
+export interface AdminDashboardSummary {
+  totalUsers: number;
+  totalDiagnoses: number;
+  activeUsers: number;
+  adminCount: number;
+  avgDiagnosesPerUser: number;
+}
+
+export interface AdminDashboardTrend {
+  date: string;
+  users: number;
+  diagnoses: number;
+}
+
+export interface AdminDashboardType {
+  typeId: string;
+  count: number;
+}
+
+export interface AdminDashboardDepartment {
+  department: string;
+  count: number;
+}
+
+export async function getAdminDashboard() {
+  const response = await fetch("/api/admin/dashboard", {
+    credentials: "include",
+  });
+
+  return readJson<{
+    summary: AdminDashboardSummary;
+    trends: AdminDashboardTrend[];
+    topTypes: AdminDashboardType[];
+    topDepartments: AdminDashboardDepartment[];
+  }>(response);
 }
