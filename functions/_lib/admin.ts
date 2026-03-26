@@ -15,3 +15,10 @@ export function isConfiguredAdmin(env: AppEnv, input: { googleSub: string; email
 
   return adminGoogleSubs.has(input.googleSub) || adminEmails.has(input.email);
 }
+
+export function resolveAdminStatus(
+  env: AppEnv,
+  input: { googleSub: string; email: string; persistedIsAdmin?: number }
+) {
+  return input.persistedIsAdmin === 1 || isConfiguredAdmin(env, input);
+}

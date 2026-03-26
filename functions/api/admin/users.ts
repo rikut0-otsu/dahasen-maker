@@ -1,4 +1,5 @@
 import type { AppContext } from "../../_lib/cloudflare";
+import { resolveAdminStatus } from "../../_lib/admin";
 import { requireAdminUser } from "../../_lib/auth";
 import { getAllUsers } from "../../_lib/db";
 import { json } from "../../_lib/http";
@@ -21,7 +22,11 @@ export async function onRequestGet(context: AppContext) {
       jobTitle: user.job_title,
       department: user.department,
       picture: user.picture_url,
-      isAdmin: user.is_admin === 1,
+      isAdmin: resolveAdminStatus(context.env, {
+        googleSub: user.google_sub,
+        email: user.email,
+        persistedIsAdmin: user.is_admin,
+      }),
       createdAt: user.created_at,
       updatedAt: user.updated_at,
     })),

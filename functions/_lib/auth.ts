@@ -1,4 +1,5 @@
 import { COOKIE_NAME } from "../../shared/const";
+import { resolveAdminStatus } from "./admin";
 import type { AppContext } from "./cloudflare";
 import {
   createExpiredSessionCookie,
@@ -38,7 +39,11 @@ export async function readAuthenticatedUser(context: AppContext) {
       jobTitle: user.job_title,
       department: user.department,
       picture: user.picture_url,
-      isAdmin: user.is_admin === 1,
+      isAdmin: resolveAdminStatus(context.env, {
+        googleSub: user.google_sub,
+        email: user.email,
+        persistedIsAdmin: user.is_admin,
+      }),
     },
   };
 }
