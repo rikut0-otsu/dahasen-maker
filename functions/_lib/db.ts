@@ -368,6 +368,26 @@ export async function updateUserAdminStatus(
   }
 }
 
+export async function deleteUserCascade(
+  db: D1Database,
+  input: { userId: string }
+) {
+  await db
+    .prepare("DELETE FROM sessions WHERE user_id = ?")
+    .bind(input.userId)
+    .run();
+
+  await db
+    .prepare("DELETE FROM diagnosis_results WHERE user_id = ?")
+    .bind(input.userId)
+    .run();
+
+  await db
+    .prepare("DELETE FROM users WHERE id = ?")
+    .bind(input.userId)
+    .run();
+}
+
 export interface DashboardUserRecord {
   id: string;
   email: string;
