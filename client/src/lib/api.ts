@@ -75,6 +75,7 @@ export async function saveDiagnosisResult(input: {
 }
 
 export interface AdminUser {
+  accessLevel?: "user" | "admin" | "owner";
   id: string;
   email: string;
   name: string;
@@ -83,6 +84,7 @@ export interface AdminUser {
   jobTitle?: string | null;
   department?: string | null;
   picture?: string | null;
+  isOwner?: boolean;
   isEnvAdmin?: boolean;
   isAdmin: boolean;
   createdAt: number;
