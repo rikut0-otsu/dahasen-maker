@@ -398,8 +398,8 @@ export default function Home() {
             <div className="relative mx-auto w-full max-w-[20rem] md:max-w-[24rem] lg:max-w-[27rem]">
               <div className="frame-scroll overflow-hidden rounded-[2rem] p-4">
                 {!heroImageFailed ? (
-                  <img
-                    src="/daha-sengen-main-visual.png"
+                    <img
+                      src="/daha-sengen-main-visual.png?v=20260330"
                     alt="打破宣言メーカーのメインビジュアル"
                     className="h-auto w-full rounded-[1.5rem] object-cover"
                     loading="lazy"
