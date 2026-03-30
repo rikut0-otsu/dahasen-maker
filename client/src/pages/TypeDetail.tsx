@@ -126,25 +126,27 @@ export default function TypeDetail() {
     return url.toString();
   }, [type.id, user?.name]);
 
+  const sharerLabel = user?.name ? `${user.name}さんが` : 'だれかが';
+  const shareTitle = `${sharerLabel}打破宣言しました！`;
+  const shareText = `${sharerLabel}打破宣言しました！\n\n診断結果は「${type.name}」です。\n${type.title}\n\nログインして結果を見てみよう！`;
+
   const handleShare = () => {
-    const sharerLabel = user?.name ? `${user.name}さんが` : 'だれかが';
-    const text = `${sharerLabel}打破宣言しました！\n\n診断結果は「${type.name}」です。\n${type.title}\n\nログインして結果を見てみよう！`;
     if (navigator.share) {
       navigator.share({
-        title: `${sharerLabel}打破宣言しました！`,
-        text,
+        title: shareTitle,
+        text: shareText,
         url: shareUrl,
       });
       return;
     }
 
-    navigator.clipboard.writeText(`${text}\n${shareUrl}`);
+    navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
     alert('結果をコピーしました');
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(shareUrl);
-    alert('URLをコピーしました');
+    navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+    alert('結果をコピーしました');
   };
 
   const handleRetry = () => {
