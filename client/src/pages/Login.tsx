@@ -28,7 +28,7 @@ export default function Login() {
       <div className="relative isolate min-h-screen px-4 py-6 md:px-6 md:py-10">
         <div className="absolute inset-0 opacity-90">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png')] bg-contain bg-center bg-no-repeat opacity-[0.38] md:h-[104vh] md:max-w-[88rem] md:opacity-[0.5]" />
+            <div className="h-[84vh] w-full max-w-5xl bg-[url('/daha-sengen-main-visual.png?v=20260330')] bg-contain bg-center bg-no-repeat opacity-[0.38] md:h-[104vh] md:max-w-[88rem] md:opacity-[0.5]" />
           </div>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,252,244,0.68),rgba(255,250,240,0.58))] dark:bg-[linear-gradient(180deg,rgba(10,18,32,0.58),rgba(10,18,32,0.7))]" />
           <div className="absolute left-[6%] top-[14%] h-72 w-72 rounded-full bg-primary/10 blur-3xl md:h-96 md:w-96" />

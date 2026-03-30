@@ -20,7 +20,7 @@ function toBase64(buffer: ArrayBuffer) {
 }
 
 export async function onRequestGet(context: OGPContext) {
-  const assetUrl = new URL("/daha-sengen-main-visual.png", context.request.url);
+  const assetUrl = new URL("/daha-sengen-main-visual.png?v=20260330", context.request.url);
   const imageResponse = await context.env.ASSETS.fetch(new Request(assetUrl.toString()));
   const imageBuffer = await imageResponse.arrayBuffer();
   const imageBase64 = toBase64(imageBuffer);
