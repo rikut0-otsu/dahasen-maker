@@ -398,15 +398,13 @@ export default function Home() {
             <div className="relative mx-auto w-full max-w-[20rem] md:max-w-[24rem] lg:max-w-[27rem]">
               <div className="frame-scroll overflow-hidden rounded-[2rem] p-4">
                 {!heroImageFailed ? (
-                  <div className="washi-image-stage rounded-[1.5rem]">
-                    <img
-                      src="/daha-sengen-main-visual.png?v=20260330"
+                  <img
+                    src="/daha-sengen-main-visual.png?v=20260330"
                     alt="打破宣言メーカーのメインビジュアル"
-                      className="washi-image h-auto w-full rounded-[1.5rem] object-cover"
+                    className="h-auto w-full rounded-[1.5rem] object-cover"
                     loading="lazy"
                     onError={() => setHeroImageFailed(true)}
-                    />
-                  </div>
+                  />
                 ) : (
                   <div className="flex aspect-[3/4] flex-col items-center justify-center rounded-[1.5rem] bg-[radial-gradient(circle_at_top,_rgba(130,190,40,0.15),_transparent_45%),linear-gradient(180deg,#fcfdf9_0%,#f1f6eb_100%)] px-8 text-center">
                     <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-primary">
