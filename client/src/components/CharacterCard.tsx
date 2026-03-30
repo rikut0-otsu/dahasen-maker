@@ -30,13 +30,15 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
         <div className="wash-paper relative z-10 p-3">
           <div className="frame-scroll mx-auto aspect-[3/4] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
             {imagePath && !imageFailed ? (
-              <img
-                src={imagePath}
-                alt={`${name}の画像`}
-                className="h-full w-full rounded-[1rem] object-contain bg-white"
-                loading="lazy"
-                onError={() => setImageFailed(true)}
-              />
+              <div className="washi-image-stage h-full w-full rounded-[1rem] bg-white">
+                <img
+                  src={imagePath}
+                  alt={`${name}の画像`}
+                  className="washi-image h-full w-full rounded-[1rem] object-contain"
+                  loading="lazy"
+                  onError={() => setImageFailed(true)}
+                />
+              </div>
             ) : (
               <div
                 className="flex h-full w-full items-center justify-center rounded-[1rem] text-4xl font-bold text-white"

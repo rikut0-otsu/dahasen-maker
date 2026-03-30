@@ -417,6 +417,84 @@
       0 16px 36px rgba(0, 0, 0, 0.22);
   }
 
+  .washi-image-stage {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 16%, rgba(184, 155, 87, 0.12), transparent 24%),
+      radial-gradient(circle at 82% 84%, rgba(130, 190, 40, 0.08), transparent 22%),
+      linear-gradient(180deg, rgba(252, 248, 239, 0.96), rgba(241, 234, 220, 0.98));
+  }
+
+  .washi-image-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 14% 20%, rgba(109, 94, 53, 0.08) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 78% 72%, rgba(109, 94, 53, 0.06) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 62% 30%, rgba(255, 255, 255, 0.22) 0 1.4px, transparent 1.8px),
+      repeating-linear-gradient(125deg, rgba(145, 127, 82, 0.035) 0 2px, transparent 2px 10px);
+    background-size: 160px 160px, 200px 200px, 220px 220px, 18px 18px;
+    opacity: 0.72;
+    mix-blend-mode: multiply;
+  }
+
+  .washi-image-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255, 252, 246, 0.12), rgba(130, 104, 46, 0.08)),
+      radial-gradient(circle at center, transparent 54%, rgba(96, 74, 28, 0.12) 100%);
+    opacity: 0.55;
+    mix-blend-mode: soft-light;
+  }
+
+  .washi-image {
+    filter:
+      sepia(0.14)
+      saturate(0.9)
+      contrast(0.96)
+      brightness(1.02)
+      drop-shadow(0 14px 22px rgba(72, 58, 33, 0.12));
+    transform: scale(1.01);
+  }
+
+  .dark .washi-image-stage {
+    background:
+      radial-gradient(circle at 18% 16%, rgba(217, 196, 143, 0.08), transparent 24%),
+      radial-gradient(circle at 82% 84%, rgba(130, 190, 40, 0.08), transparent 22%),
+      linear-gradient(180deg, rgba(21, 31, 46, 0.98), rgba(13, 21, 34, 0.98));
+  }
+
+  .dark .washi-image-stage::before {
+    background:
+      radial-gradient(circle at 14% 20%, rgba(217, 196, 143, 0.06) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 78% 72%, rgba(217, 196, 143, 0.05) 0 1px, transparent 1.2px),
+      repeating-linear-gradient(125deg, rgba(217, 196, 143, 0.025) 0 2px, transparent 2px 11px);
+    background-size: 170px 170px, 210px 210px, 18px 18px;
+    opacity: 0.5;
+  }
+
+  .dark .washi-image-stage::after {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(217, 196, 143, 0.08)),
+      radial-gradient(circle at center, transparent 56%, rgba(0, 0, 0, 0.24) 100%);
+    opacity: 0.48;
+  }
+
+  .dark .washi-image {
+    filter:
+      sepia(0.08)
+      saturate(0.92)
+      contrast(0.98)
+      brightness(0.98)
+      drop-shadow(0 14px 24px rgba(0, 0, 0, 0.28));
+  }
+
   .character-menu-panel {
     isolation: isolate;
     background:
