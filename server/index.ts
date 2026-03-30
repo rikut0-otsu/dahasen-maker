@@ -21,7 +21,23 @@ const defaultMetadata = {
   description:
     "日本の閉塞感を打破する。歴史上の人物になぞらえながら、新卒としての活躍宣言をつくる診断サイトです。",
   imagePath: "/site_ogp.png",
+  imageWidth: 512,
+  imageHeight: 266,
 };
+
+function getImageDimensions(imagePath: string) {
+  if (imagePath.startsWith("/type-images/")) {
+    return {
+      width: 332,
+      height: 512,
+    };
+  }
+
+  return {
+    width: defaultMetadata.imageWidth,
+    height: defaultMetadata.imageHeight,
+  };
+}
 
 function escapeHtml(value: string) {
   return value
@@ -75,6 +91,8 @@ function buildMetadata(req: express.Request) {
       title: defaultMetadata.title,
       description: defaultMetadata.description,
       imageUrl: `${origin}${defaultMetadata.imagePath}`,
+      imageWidth: defaultMetadata.imageWidth,
+      imageHeight: defaultMetadata.imageHeight,
       url: currentUrl,
     };
   }
@@ -85,6 +103,8 @@ function buildMetadata(req: express.Request) {
       title: defaultMetadata.title,
       description: defaultMetadata.description,
       imageUrl: `${origin}${defaultMetadata.imagePath}`,
+      imageWidth: defaultMetadata.imageWidth,
+      imageHeight: defaultMetadata.imageHeight,
       url: currentUrl,
     };
   }
@@ -97,10 +117,15 @@ function buildMetadata(req: express.Request) {
     ? `${shareName}さんの診断結果は「${type.name}」。ログインして結果を見てみよう！`
     : `診断結果は「${type.name}」でした。${detailLabel}の人物像をチェックしてみよう！`;
 
+  const imagePath = type.imagePath ?? defaultMetadata.imagePath;
+  const imageDimensions = getImageDimensions(imagePath);
+
   return {
     title: `${headline} | 打破宣言メーカー`,
     description,
-    imageUrl: `${origin}${type.imagePath ?? defaultMetadata.imagePath}`,
+    imageUrl: `${origin}${imagePath}`,
+    imageWidth: imageDimensions.width,
+    imageHeight: imageDimensions.height,
     url: currentUrl,
   };
 }
@@ -109,6 +134,8 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
   const title = escapeHtml(metadata.title);
   const description = escapeAttribute(metadata.description);
   const imageUrl = escapeAttribute(metadata.imageUrl);
+  const imageWidth = String(metadata.imageWidth);
+  const imageHeight = String(metadata.imageHeight);
   const url = escapeAttribute(metadata.url);
 
   const tags = `
@@ -118,6 +145,9 @@ function injectMetadata(html: string, metadata: ReturnType<typeof buildMetadata>
     <meta property="og:description" content="${description}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${imageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="${imageWidth}" />
+    <meta property="og:image:height" content="${imageHeight}" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
