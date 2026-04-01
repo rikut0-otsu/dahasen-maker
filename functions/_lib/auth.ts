@@ -50,6 +50,7 @@ export async function readAuthenticatedUser(context: AppContext) {
       email: user.email,
       jobTitle: user.job_title,
       department: user.department,
+      joinYear: user.join_year,
       picture: user.picture_url,
       isAdmin: accessLevel !== "user",
       isOwner: accessLevel === "owner",

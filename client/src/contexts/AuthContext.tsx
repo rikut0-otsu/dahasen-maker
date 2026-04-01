@@ -15,6 +15,7 @@ export interface AuthUser {
   isOwner: boolean;
   jobTitle?: string | null;
   department?: string | null;
+  joinYear?: number | null;
   picture?: string | null;
   latestDiagnosis?: {
     typeId: string;

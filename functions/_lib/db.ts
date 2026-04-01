@@ -9,6 +9,7 @@ export interface DbUser {
   display_name: string | null;
   job_title: string | null;
   department: string | null;
+  join_year: number | null;
   picture_url: string | null;
   is_admin: number;
   created_at?: number;
@@ -26,7 +27,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
   try {
     return await db
       .prepare(
-        "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url, is_admin FROM users WHERE google_sub = ?"
+        "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, join_year, picture_url, is_admin FROM users WHERE google_sub = ?"
       )
       .bind(googleSub)
       .first<DbUser>();
@@ -40,7 +41,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
         "SELECT id, google_sub, email, email_verified, name, picture_url FROM users WHERE google_sub = ?"
       )
       .bind(googleSub)
-      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "is_admin">>();
+      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "join_year" | "is_admin">>();
 
     if (!legacyUser) {
       return null;
@@ -51,6 +52,7 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
       display_name: null,
       job_title: null,
       department: null,
+      join_year: null,
       is_admin: 0,
     };
   }
@@ -181,6 +183,7 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
           users.display_name,
           users.job_title,
           users.department,
+          users.join_year,
           users.picture_url,
           users.is_admin
         FROM sessions
@@ -210,7 +213,7 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
           AND sessions.expires_at > ?`
       )
       .bind(sessionId, Date.now())
-      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "is_admin">>();
+      .first<Omit<DbUser, "display_name" | "job_title" | "department" | "join_year" | "is_admin">>();
 
     if (!legacyUser) {
       return null;
@@ -221,6 +224,7 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
       display_name: null,
       job_title: null,
       department: null,
+      join_year: null,
       is_admin: 0,
     };
   }
@@ -251,6 +255,7 @@ export async function updateUserProfile(
     displayName: string;
     jobTitle: string | null;
     department: string | null;
+    joinYear: number | null;
     now: number;
   }
 ) {
@@ -261,6 +266,7 @@ export async function updateUserProfile(
          SET display_name = ?,
              job_title = ?,
              department = ?,
+             join_year = ?,
              updated_at = ?
          WHERE id = ?`
       )
@@ -268,6 +274,7 @@ export async function updateUserProfile(
         input.displayName,
         input.jobTitle,
         input.department,
+        input.joinYear,
         input.now,
         input.userId
       )
@@ -276,6 +283,8 @@ export async function updateUserProfile(
     if (!isMissingColumnError(error)) {
       throw error;
     }
+
+    throw new Error("JOIN_YEAR_COLUMN_MISSING");
   }
 }
 
@@ -286,6 +295,7 @@ export interface AdminUserSummary {
   display_name: string | null;
   job_title: string | null;
   department: string | null;
+  join_year: number | null;
   picture_url: string | null;
   google_sub: string;
   is_admin: number;
@@ -304,6 +314,7 @@ export async function getAllUsers(db: D1Database) {
           display_name,
           job_title,
           department,
+          join_year,
           picture_url,
           google_sub,
           is_admin,
@@ -336,10 +347,11 @@ export async function getAllUsers(db: D1Database) {
         FROM users
         ORDER BY created_at DESC, updated_at DESC`
       )
-      .all<Omit<AdminUserSummary, "is_admin">>();
+      .all<Omit<AdminUserSummary, "is_admin" | "join_year">>();
 
     return legacyResult.results.map((user) => ({
       ...user,
+      join_year: null,
       is_admin: 0,
     }));
   }
@@ -395,6 +407,7 @@ export interface DashboardUserRecord {
   display_name: string | null;
   department: string | null;
   job_title: string | null;
+  join_year: number | null;
   google_sub: string;
   is_admin: number;
   created_at: number;
@@ -424,6 +437,7 @@ export async function getDashboardUsers(db: D1Database) {
           display_name,
           department,
           job_title,
+          join_year,
           google_sub,
           is_admin,
           created_at
@@ -452,10 +466,11 @@ export async function getDashboardUsers(db: D1Database) {
         FROM users
         ORDER BY created_at DESC`
       )
-      .all<Omit<DashboardUserRecord, "is_admin">>();
+      .all<Omit<DashboardUserRecord, "is_admin" | "join_year">>();
 
     return legacyResult.results.map((user) => ({
       ...user,
+      join_year: null,
       is_admin: 0,
     }));
   }

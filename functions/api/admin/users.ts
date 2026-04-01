@@ -34,6 +34,7 @@ export async function onRequestGet(context: AppContext) {
       googleSub: user.google_sub,
       jobTitle: user.job_title,
       department: user.department,
+      joinYear: user.join_year,
       picture: user.picture_url,
       isOwner:
         resolveAccessLevel(context.env, {
@@ -138,6 +139,7 @@ export async function onRequestPatch(context: AppContext) {
       googleSub: updatedUser.google_sub,
       jobTitle: updatedUser.job_title,
       department: updatedUser.department,
+      joinYear: updatedUser.join_year,
       picture: updatedUser.picture_url,
       isOwner:
         resolveAccessLevel(context.env, {
