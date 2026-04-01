@@ -1,10 +1,20 @@
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
 import { Download, RotateCcw, Share2 } from 'lucide-react';
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { useLocation, useRoute } from 'wouter';
 
 const axisMeta = {
@@ -48,6 +58,7 @@ export default function TypeDetail() {
   const [, setLocation] = useLocation();
   const [match, params] = useRoute('/types/:typeId');
   const [imageFailed, setImageFailed] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { user } = useAuth();
   const { reset, state, calculateIndicatorScores, calculateResult } = useDiagnosisContext();
 
@@ -126,21 +137,21 @@ export default function TypeDetail() {
   }, [type.id, user?.name]);
 
   const sharerLabel = user?.name ? `${user.name}さんが` : 'だれかが';
-  const shareTitle = `${sharerLabel}打破宣言しました！`;
-  const shareText = `${sharerLabel}打破宣言しました！\n\n診断結果は「${type.name}」です。\n${type.title}\n\nログインして結果を見てみよう！`;
+  const defaultShareText = `${sharerLabel}打破宣言しました！\n\n診断結果は「${type.name}」です。\n${type.title}\n\nログインして結果を見てみよう！`;
+  const [shareDraft, setShareDraft] = useState(defaultShareText);
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: shareTitle,
-        text: shareText,
-        url: shareUrl,
-      });
-      return;
+  useEffect(() => {
+    setShareDraft(defaultShareText);
+  }, [defaultShareText]);
+
+  const handleCopyShareText = async () => {
+    try {
+      await navigator.clipboard.writeText(`${shareDraft}\n${shareUrl}`);
+      toast.success('シェア内容をコピーしました');
+      setIsShareDialogOpen(false);
+    } catch {
+      toast.error('コピーに失敗しました');
     }
-
-    navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-    alert('結果をコピーしました');
   };
 
   const handleRetry = () => {
@@ -150,6 +161,55 @@ export default function TypeDetail() {
 
   return (
     <div className="min-h-screen bg-background paper-texture">
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="historical-panel max-w-[calc(100%-1.5rem)] rounded-[2rem] border-border/70 p-0 sm:max-w-2xl">
+          <DialogHeader className="border-b border-border/70 px-6 py-5 text-left">
+            <DialogTitle className="ink-title text-2xl text-foreground">
+              結果をコピーしてシェア
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-7 text-muted-foreground">
+              表示された文面は自由に編集できます。下のボタンで本文とURLをまとめてコピーします。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5 px-6 py-5">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">シェア本文</p>
+              <Textarea
+                value={shareDraft}
+                onChange={(event) => setShareDraft(event.target.value)}
+                className="min-h-48 resize-y rounded-2xl border-border/70 bg-white/80 px-4 py-3 text-sm leading-7"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">シェアURL</p>
+              <Textarea
+                value={shareUrl}
+                readOnly
+                className="min-h-24 resize-none rounded-2xl border-border/70 bg-white/60 px-4 py-3 text-sm leading-7 text-muted-foreground"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="border-t border-border/70 px-6 py-5">
+            <Button
+              variant="outline"
+              onClick={() => setIsShareDialogOpen(false)}
+              className="slip-tag pl-8 text-foreground hover:bg-[rgba(255,255,255,0.96)]"
+            >
+              閉じる
+            </Button>
+            <Button
+              onClick={handleCopyShareText}
+              className="slip-tag pl-8 text-foreground hover:bg-[rgba(255,255,255,0.96)]"
+            >
+              文章とURLをコピー
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <nav className="sticky top-0 z-50 border-b border-border/80 bg-[rgba(251,248,241,0.88)] backdrop-blur-none md:backdrop-blur-sm dark:bg-[rgba(8,14,24,0.78)]">
         <div className="container flex items-center justify-between py-4">
           <Button
@@ -372,7 +432,7 @@ export default function TypeDetail() {
 
           <section className="flex flex-col gap-4 md:flex-row">
             <Button
-              onClick={handleShare}
+              onClick={() => setIsShareDialogOpen(true)}
               variant="outline"
               className="slip-tag h-12 flex-1 pl-8 text-primary hover:bg-[rgba(255,255,255,0.96)]"
             >

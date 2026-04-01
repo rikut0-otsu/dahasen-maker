@@ -201,8 +201,8 @@ function PieBreakdownCard({
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="mt-4 grid gap-5 lg:grid-cols-[1fr_0.95fr]">
-          <div className="h-[260px]">
+        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(280px,0.9fr)_minmax(320px,1.1fr)]">
+          <div className="mx-auto h-[260px] w-full max-w-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -221,7 +221,7 @@ function PieBreakdownCard({
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 self-start">
             {data.map((item, index) => {
               const percent = total === 0 ? 0 : Math.round((item.value / total) * 1000) / 10;
               return (
@@ -1032,37 +1032,14 @@ export default function Admin() {
           </div>
 
           <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
-            <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <CardTitle className="text-slate-950">26新卒研修向け円グラフ集計</CardTitle>
-                <CardDescription className="text-slate-600">
-                  対象年を切り替えながら、研修対象者の時代別・人物別・部署別の人物分布を確認できます。
-                </CardDescription>
-              </div>
-              <div className="flex flex-col gap-3 md:items-end">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className={`w-full md:w-auto ${ADMIN_OUTLINE_BUTTON}`}
-                  onClick={exportTrainingCsv}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  研修集計CSV
-                </Button>
-                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
-                  <CalendarRange className="h-4 w-4 text-slate-500" />
-                  <select
-                    value={trainingJoinYear}
-                    onChange={(event) => setTrainingJoinYear(event.target.value)}
-                    className="h-11 bg-transparent text-sm text-slate-700 outline-none"
-                  >
-                    {trainingYearOptions.map((year) => (
-                      <option key={year} value={year}>
-                        {year}年入社
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <CardHeader>
+              <CardTitle className="text-slate-950">26新卒研修向け円グラフ集計</CardTitle>
+              <CardDescription className="text-slate-600">
+                対象年を切り替えながら、研修対象者の時代別・人物別・部署別の人物分布を確認できます。
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   {TRAINING_PIE_TABS.map((tab) => (
                     <Button
@@ -1078,9 +1055,33 @@ export default function Admin() {
                     </Button>
                   ))}
                 </div>
+                <div className="flex flex-col gap-3 lg:w-auto lg:min-w-[220px]">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={`w-full ${ADMIN_OUTLINE_BUTTON}`}
+                    onClick={exportTrainingCsv}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    研修集計CSV
+                  </Button>
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                    <CalendarRange className="h-4 w-4 text-slate-500" />
+                    <select
+                      value={trainingJoinYear}
+                      onChange={(event) => setTrainingJoinYear(event.target.value)}
+                      className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
+                    >
+                      {trainingYearOptions.map((year) => (
+                        <option key={year} value={year}>
+                          {year}年入社
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
+
               {trainingPieTab === "era" && (
                 <PieBreakdownCard
                   title={`${trainingJoinYear}年入社 時代別円グラフ`}
