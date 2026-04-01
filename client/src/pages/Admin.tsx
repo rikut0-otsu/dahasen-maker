@@ -183,69 +183,78 @@ function PieBreakdownCard({
   description,
   data,
   emptyMessage,
+  embedded = false,
 }: {
   title: string;
   description: string;
   data: Array<{ name: string; value: number }>;
   emptyMessage: string;
+  embedded?: boolean;
 }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const content = (
+    <>
+      <div>
+        <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+        <p className="mt-1 text-sm text-slate-600">{description}</p>
+      </div>
+      {data.length === 0 ? (
+        <p className="mt-4 text-sm text-slate-500">{emptyMessage}</p>
+      ) : (
+        <div className="mt-4 grid gap-5 lg:grid-cols-[1fr_0.95fr]">
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={40}
+                  outerRadius={96}
+                >
+                  {data.map((item, index) => (
+                    <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip content={<PieTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="space-y-2">
+            {data.map((item, index) => {
+              const percent = total === 0 ? 0 : Math.round((item.value / total) * 1000) / 10;
+              return (
+                <div key={item.name} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className="h-3 w-3 shrink-0 rounded-full"
+                        style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+                      />
+                      <span className="truncate text-sm font-medium text-slate-900">{item.name}</span>
+                    </div>
+                    <div className="text-right text-sm">
+                      <p className="font-semibold text-slate-900">{percent}%</p>
+                      <p className="text-slate-500">{item.value} 人</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  if (embedded) {
+    return content;
+  }
 
   return (
     <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-slate-950">{title}</CardTitle>
-        <CardDescription className="text-slate-600">{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {data.length === 0 ? (
-          <p className="text-sm text-slate-500">{emptyMessage}</p>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-[1fr_0.95fr]">
-            <div className="h-[260px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={data}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={40}
-                    outerRadius={96}
-                  >
-                    {data.map((item, index) => (
-                      <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip content={<PieTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-2">
-              {data.map((item, index) => {
-                const percent = total === 0 ? 0 : Math.round((item.value / total) * 1000) / 10;
-                return (
-                  <div key={item.name} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <span
-                          className="h-3 w-3 shrink-0 rounded-full"
-                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                        />
-                        <span className="truncate text-sm font-medium text-slate-900">{item.name}</span>
-                      </div>
-                      <div className="text-right text-sm">
-                        <p className="font-semibold text-slate-900">{percent}%</p>
-                        <p className="text-slate-500">{item.value} 人</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </CardContent>
+      <CardContent className="p-6">{content}</CardContent>
     </Card>
   );
 }
@@ -299,6 +308,7 @@ export default function Admin() {
   const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
   const [trainingPieTab, setTrainingPieTab] = useState<(typeof TRAINING_PIE_TABS)[number]["key"]>("era");
   const [trainingJoinYear, setTrainingJoinYear] = useState(String(new Date().getFullYear()));
+  const [trainingDepartment, setTrainingDepartment] = useState("");
   const [showPieLabels, setShowPieLabels] = useState(false);
 
   const loadAdminData = async (showRefreshing = false) => {
@@ -653,6 +663,30 @@ export default function Admin() {
       .sort((a, b) => b.total - a.total || a.department.localeCompare(b.department, "ja"));
   }, [trainingUsers]);
 
+  const trainingDepartmentOptions = useMemo(
+    () => trainingDepartmentBreakdowns.map((item) => item.department),
+    [trainingDepartmentBreakdowns]
+  );
+
+  useEffect(() => {
+    if (trainingDepartmentOptions.length === 0) {
+      if (trainingDepartment !== "") {
+        setTrainingDepartment("");
+      }
+      return;
+    }
+
+    if (!trainingDepartmentOptions.includes(trainingDepartment)) {
+      setTrainingDepartment(trainingDepartmentOptions[0]);
+    }
+  }, [trainingDepartment, trainingDepartmentOptions]);
+
+  const selectedTrainingDepartmentBreakdown = useMemo(
+    () =>
+      trainingDepartmentBreakdowns.find((item) => item.department === trainingDepartment) ?? null,
+    [trainingDepartment, trainingDepartmentBreakdowns]
+  );
+
   const handleToggleAdmin = async (targetUser: AdminUser) => {
     if (targetUser.isOwner) {
       toast.error("オーナー権限は画面から変更できません");
@@ -738,6 +772,37 @@ export default function Admin() {
         String(target.count),
       ]),
     ]);
+  };
+
+  const exportTrainingCsv = () => {
+    const rows: string[][] = [
+      ["year", "section", "group", "label", "count"],
+      ...trainingEraBreakdown.map((item) => [
+        trainingJoinYear,
+        "era",
+        "all",
+        item.name,
+        String(item.value),
+      ]),
+      ...trainingPersonBreakdown.map((item) => [
+        trainingJoinYear,
+        "person",
+        "all",
+        item.name,
+        String(item.value),
+      ]),
+      ...trainingDepartmentBreakdowns.flatMap((department) =>
+        department.data.map((item) => [
+          trainingJoinYear,
+          "department_person",
+          department.department,
+          item.name,
+          String(item.value),
+        ])
+      ),
+    ];
+
+    downloadCsv(`training-summary-${trainingJoinYear}.csv`, rows);
   };
 
   return (
@@ -975,6 +1040,15 @@ export default function Admin() {
                 </CardDescription>
               </div>
               <div className="flex flex-col gap-3 md:items-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className={`w-full md:w-auto ${ADMIN_OUTLINE_BUTTON}`}
+                  onClick={exportTrainingCsv}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  研修集計CSV
+                </Button>
                 <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
                   <CalendarRange className="h-4 w-4 text-slate-500" />
                   <select
@@ -1013,6 +1087,7 @@ export default function Admin() {
                   description={`${trainingJoinYear}年入社ユーザーの最新診断結果を時代別に集計しています。`}
                   data={trainingEraBreakdown}
                   emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                  embedded
                 />
               )}
 
@@ -1022,6 +1097,7 @@ export default function Admin() {
                   description={`${trainingJoinYear}年入社ユーザーの最新診断結果を人物別に集計しています。`}
                   data={trainingPersonBreakdown}
                   emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                  embedded
                 />
               )}
 
@@ -1032,16 +1108,30 @@ export default function Admin() {
                       {trainingJoinYear}年入社で診断結果があるユーザーがまだいません。
                     </p>
                   ) : (
-                    <div className="grid gap-6 xl:grid-cols-2">
-                      {trainingDepartmentBreakdowns.map((department) => (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                        <Building2 className="h-4 w-4 text-slate-500" />
+                        <select
+                          value={trainingDepartment}
+                          onChange={(event) => setTrainingDepartment(event.target.value)}
+                          className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
+                        >
+                          {trainingDepartmentOptions.map((department) => (
+                            <option key={department} value={department}>
+                              {department}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {selectedTrainingDepartmentBreakdown && (
                         <PieBreakdownCard
-                          key={department.department}
-                          title={department.department}
-                          description={`${trainingJoinYear}年入社 ${department.total}人分の最新診断結果を集計`}
-                          data={department.data}
+                          title={`${selectedTrainingDepartmentBreakdown.department} 人物別円グラフ`}
+                          description={`${trainingJoinYear}年入社 ${selectedTrainingDepartmentBreakdown.total}人分の最新診断結果を集計`}
+                          data={selectedTrainingDepartmentBreakdown.data}
                           emptyMessage="集計データがありません。"
+                          embedded
                         />
-                      ))}
+                      )}
                     </div>
                   )}
                 </>
