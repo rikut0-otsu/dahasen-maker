@@ -28,7 +28,7 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
     const content = (
       <div className="historical-panel isolate flex h-full flex-col overflow-hidden rounded-[1.6rem] text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_rgba(45,140,60,0.12)]">
         <div className="wash-paper relative z-10 p-3">
-          <div className="frame-scroll mx-auto aspect-[3/4] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
+          <div className="frame-scroll mx-auto aspect-[13/16] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
             {imagePath && !imageFailed ? (
               <div className="h-full w-full rounded-[1rem] bg-white">
                 <img

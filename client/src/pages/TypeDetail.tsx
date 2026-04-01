@@ -177,7 +177,7 @@ export default function TypeDetail() {
             </div>
             <div className="grid gap-8 lg:grid-cols-[360px_1fr] lg:items-center">
               <div className="frame-scroll mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] p-4">
-                <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white">
+                <div className="aspect-[13/16] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white">
                 {!imageFailed ? (
                   <img
                     src={typeImagePath}
