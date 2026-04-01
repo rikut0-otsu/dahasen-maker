@@ -173,6 +173,78 @@ function MetricCard({
   );
 }
 
+function PieBreakdownCard({
+  title,
+  description,
+  data,
+  emptyMessage,
+}: {
+  title: string;
+  description: string;
+  data: Array<{ name: string; value: number }>;
+  emptyMessage: string;
+}) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  return (
+    <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-slate-950">{title}</CardTitle>
+        <CardDescription className="text-slate-600">{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-sm text-slate-500">{emptyMessage}</p>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-[1fr_0.95fr]">
+            <div className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={40}
+                    outerRadius={96}
+                  >
+                    {data.map((item, index) => (
+                      <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip content={<PieTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="space-y-2">
+              {data.map((item, index) => {
+                const percent = total === 0 ? 0 : Math.round((item.value / total) * 1000) / 10;
+                return (
+                  <div key={item.name} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className="h-3 w-3 shrink-0 rounded-full"
+                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+                        />
+                        <span className="truncate text-sm font-medium text-slate-900">{item.name}</span>
+                      </div>
+                      <div className="text-right text-sm">
+                        <p className="font-semibold text-slate-900">{percent}%</p>
+                        <p className="text-slate-500">{item.value} 人</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function PieTooltip({
   active,
   payload,
@@ -487,6 +559,53 @@ export default function Admin() {
 
   const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
+  const freshers2026 = useMemo(
+    () => users.filter((target) => target.joinYear === 2026 && target.latestDiagnosis),
+    [users]
+  );
+
+  const freshers2026PersonBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of freshers2026) {
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const label = typeMetaById[typeId]?.name ?? typeId;
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja"));
+  }, [freshers2026]);
+
+  const freshers2026DepartmentBreakdowns = useMemo(() => {
+    const departmentMap = new Map<string, Map<string, number>>();
+
+    for (const target of freshers2026) {
+      const department = target.department?.trim() || "部署未設定";
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const person = typeMetaById[typeId]?.name ?? typeId;
+
+      if (!departmentMap.has(department)) {
+        departmentMap.set(department, new Map<string, number>());
+      }
+
+      const personMap = departmentMap.get(department)!;
+      personMap.set(person, (personMap.get(person) ?? 0) + 1);
+    }
+
+    return Array.from(departmentMap.entries())
+      .map(([department, personMap]) => ({
+        department,
+        total: Array.from(personMap.values()).reduce((sum, value) => sum + value, 0),
+        data: Array.from(personMap.entries())
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja")),
+      }))
+      .sort((a, b) => b.total - a.total || a.department.localeCompare(b.department, "ja"));
+  }, [freshers2026]);
+
   const handleToggleAdmin = async (targetUser: AdminUser) => {
     if (targetUser.isOwner) {
       toast.error("オーナー権限は画面から変更できません");
@@ -796,6 +915,43 @@ export default function Admin() {
                     )}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-6">
+            <PieBreakdownCard
+              title="新卒 2026 人物別円グラフ"
+              description="2026年入社ユーザーの最新診断結果を人物別に集計しています。"
+              data={freshers2026PersonBreakdown}
+              emptyMessage="2026年入社で診断結果があるユーザーがまだいません。"
+            />
+
+            <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-slate-950">新卒 2026 部署別 人物円グラフ</CardTitle>
+                <CardDescription className="text-slate-600">
+                  2026年入社ユーザーを部署ごとに分け、各部署の最新診断結果を人物別に集計しています。
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {freshers2026DepartmentBreakdowns.length === 0 ? (
+                  <p className="text-sm text-slate-500">
+                    2026年入社で診断結果があるユーザーがまだいません。
+                  </p>
+                ) : (
+                  <div className="grid gap-6 xl:grid-cols-2">
+                    {freshers2026DepartmentBreakdowns.map((department) => (
+                      <PieBreakdownCard
+                        key={department.department}
+                        title={department.department}
+                        description={`${department.total}人分の最新診断結果を集計`}
+                        data={department.data}
+                        emptyMessage="集計データがありません。"
+                      />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
