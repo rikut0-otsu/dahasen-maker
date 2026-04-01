@@ -43,6 +43,7 @@ export async function updateCurrentUserProfile(input: {
   name: string;
   jobTitle: string;
   department: string;
+  joinYear: number | null;
 }) {
   const response = await fetch("/api/me", {
     method: "PATCH",
@@ -83,6 +84,7 @@ export interface AdminUser {
   googleSub: string;
   jobTitle?: string | null;
   department?: string | null;
+  joinYear?: number | null;
   picture?: string | null;
   isOwner?: boolean;
   isEnvAdmin?: boolean;

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   Briefcase,
   Building2,
+  CalendarRange,
   Crown,
   Download,
   Filter,
@@ -62,6 +63,7 @@ const TREND_FILTERS = [
 const PIE_TABS = [
   { key: "era", label: "時代別" },
   { key: "person", label: "人物別" },
+  { key: "joinYear", label: "入社年別" },
   { key: "department", label: "部署別" },
   { key: "jobTitle", label: "職種別" },
 ] as const;
@@ -106,6 +108,14 @@ function downloadCsv(filename: string, rows: string[][]) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+function formatJoinYear(joinYear?: number | null) {
+  if (joinYear == null) {
+    return "入社年未設定";
+  }
+
+  return `${String(joinYear).padStart(2, "0")}年入社`;
 }
 
 function AccessBadge({ user }: { user: AdminUser }) {
@@ -265,7 +275,13 @@ export default function Admin() {
 
         if (!normalized) return true;
 
-        return [target.name, target.email, target.department, target.jobTitle]
+        return [
+          target.name,
+          target.email,
+          target.department,
+          target.jobTitle,
+          target.joinYear != null ? formatJoinYear(target.joinYear) : null,
+        ]
           .filter(Boolean)
           .some((value) => String(value).toLowerCase().includes(normalized));
       })
@@ -351,6 +367,21 @@ export default function Admin() {
       .sort((a, b) => b.value - a.value);
   }, [users]);
 
+  const joinYearBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of users) {
+      const key = formatJoinYear(target.joinYear);
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => {
+        if (a.name === "入社年未設定") return 1;
+        if (b.name === "入社年未設定") return -1;
+        return a.name.localeCompare(b.name, "ja");
+      });
+  }, [users]);
+
   const jobTitleBreakdown = useMemo(() => {
     const map = new Map<string, number>();
     for (const target of users) {
@@ -405,9 +436,10 @@ export default function Admin() {
   const pieData = useMemo(() => {
     if (pieTab === "era") return eraBreakdown;
     if (pieTab === "person") return personBreakdown;
+    if (pieTab === "joinYear") return joinYearBreakdown;
     if (pieTab === "department") return departmentBreakdown;
     return jobTitleBreakdown;
-  }, [pieTab, eraBreakdown, personBreakdown, departmentBreakdown, jobTitleBreakdown]);
+  }, [pieTab, eraBreakdown, personBreakdown, joinYearBreakdown, departmentBreakdown, jobTitleBreakdown]);
 
   const pieTotal = useMemo(
     () => pieData.reduce((sum, item) => sum + item.value, 0),
@@ -515,11 +547,12 @@ export default function Admin() {
 
   const exportUsersCsv = () => {
     downloadCsv("admin-users.csv", [
-      ["name", "email", "access", "department", "jobTitle", "latestType", "latestDiagnosisAt", "createdAt"],
+      ["name", "email", "access", "joinYear", "department", "jobTitle", "latestType", "latestDiagnosisAt", "createdAt"],
       ...filteredUsers.map((target) => [
         target.name,
         target.email,
         target.isOwner ? "owner" : target.isAdmin ? "admin" : "user",
+        target.joinYear != null ? String(target.joinYear).padStart(2, "0") : "",
         target.department || "",
         target.jobTitle || "",
         target.latestDiagnosis ? typeMetaById[target.latestDiagnosis.typeId]?.name ?? target.latestDiagnosis.typeId : "",
@@ -858,7 +891,7 @@ export default function Admin() {
                   <Input
                     value={searchText}
                     onChange={(event) => setSearchText(event.target.value)}
-                    placeholder="名前・メール・部署・職種で検索"
+                    placeholder="名前・メール・入社年・部署・職種で検索"
                     autoComplete="off"
                     className="border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 autofill:shadow-[inset_0_0_0px_1000px_white] autofill:[-webkit-text-fill-color:#0f172a]"
                   />
@@ -931,6 +964,10 @@ export default function Admin() {
 
                     <div className="mt-4 space-y-2 text-sm text-slate-600">
                       <div className="flex items-center gap-2">
+                        <CalendarRange className="h-4 w-4" />
+                        <span>{formatJoinYear(listedUser.joinYear)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Building2 className="h-4 w-4" />
                         <span>{listedUser.department || "部署未設定"}</span>
                       </div>
@@ -990,7 +1027,7 @@ export default function Admin() {
                   <TableHeader className="bg-slate-50/80">
                     <TableRow className="hover:bg-slate-50/80">
                       <TableHead className="text-slate-700">ユーザー</TableHead>
-                      <TableHead className="text-slate-700">部署 / 職種</TableHead>
+                      <TableHead className="text-slate-700">入社年 / 部署 / 職種</TableHead>
                       <TableHead className="text-slate-700">最新診断</TableHead>
                       <TableHead className="text-slate-700">権限</TableHead>
                       <TableHead className="text-slate-700">登録日</TableHead>
@@ -1006,6 +1043,7 @@ export default function Admin() {
                         </TableCell>
                         <TableCell className="py-4 whitespace-normal">
                           <div className="space-y-1 text-sm text-slate-600">
+                            <p>{formatJoinYear(listedUser.joinYear)}</p>
                             <p>{listedUser.department || "部署未設定"}</p>
                             <p>{listedUser.jobTitle || "職種未設定"}</p>
                           </div>

@@ -20,11 +20,13 @@ export async function onRequestPatch(context: AppContext) {
     name?: string;
     jobTitle?: string;
     department?: string;
+    joinYear?: number | null;
   }>(context.request);
 
   const name = body.name?.trim();
   const jobTitle = body.jobTitle?.trim() ?? "";
   const department = body.department?.trim() ?? "";
+  const joinYear = body.joinYear;
 
   if (!name) {
     return errorResponse(400, "名前を入力してください");
@@ -42,13 +44,33 @@ export async function onRequestPatch(context: AppContext) {
     return errorResponse(400, "部署は50文字以内で入力してください");
   }
 
-  await updateUserProfile(context.env.DB, {
-    userId: authResult.auth.user.id,
-    displayName: name,
-    jobTitle: jobTitle || null,
-    department: department || null,
-    now: Date.now(),
-  });
+  if (
+    joinYear !== null &&
+    joinYear !== undefined &&
+    (!Number.isInteger(joinYear) || joinYear < 26 || joinYear > 99)
+  ) {
+    return errorResponse(400, "入社年は26年から99年の範囲で選択してください");
+  }
+
+  try {
+    await updateUserProfile(context.env.DB, {
+      userId: authResult.auth.user.id,
+      displayName: name,
+      jobTitle: jobTitle || null,
+      department: department || null,
+      joinYear: joinYear ?? null,
+      now: Date.now(),
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "JOIN_YEAR_COLUMN_MISSING") {
+      return errorResponse(
+        400,
+        "入社年の保存には users.join_year 列が必要です。D1 マイグレーションを適用してください。"
+      );
+    }
+
+    throw error;
+  }
 
   return json({
     user: {
@@ -56,6 +78,7 @@ export async function onRequestPatch(context: AppContext) {
       name,
       jobTitle: jobTitle || null,
       department: department || null,
+      joinYear: joinYear ?? null,
     },
   });
 }

@@ -59,6 +59,14 @@ const DEPARTMENT_OPTIONS = [
   "その他",
 ] as const;
 
+const JOIN_YEAR_OPTIONS = Array.from({ length: 74 }, (_, index) => {
+  const year = ((26 + index - 1) % 100) + 1;
+  return {
+    value: String(year).padStart(2, "0"),
+    label: `${String(year).padStart(2, "0")}年入社`,
+  };
+});
+
 const PROFILE_PROMPT_DISMISSED_KEY = "profile-prompt-dismissed";
 
 export function GoogleLoginCard() {
@@ -78,6 +86,7 @@ export function GoogleLoginCard() {
   const [customJobTitle, setCustomJobTitle] = useState("");
   const [department, setDepartment] = useState("");
   const [customDepartment, setCustomDepartment] = useState("");
+  const [joinYear, setJoinYear] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isAutoPromptActive, setIsAutoPromptActive] = useState(false);
   const latestTypeName = useMemo(() => {
@@ -114,6 +123,11 @@ export function GoogleLoginCard() {
       nextDepartment ? (isPresetDepartment ? nextDepartment : "その他") : "選択してください"
     );
     setCustomDepartment(isPresetDepartment ? "" : nextDepartment);
+    setJoinYear(
+      user.joinYear !== null && user.joinYear !== undefined
+        ? String(user.joinYear).padStart(2, "0")
+        : ""
+    );
   }, [user, isProfileDialogOpen]);
 
   useEffect(() => {
@@ -121,7 +135,8 @@ export function GoogleLoginCard() {
       return;
     }
 
-    const needsProfileSetup = !user.jobTitle?.trim() || !user.department?.trim();
+    const needsProfileSetup =
+      !user.jobTitle?.trim() || !user.department?.trim() || user.joinYear == null;
     if (!needsProfileSetup) {
       localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
       return;
@@ -139,6 +154,7 @@ export function GoogleLoginCard() {
     const resolvedJobTitle = jobTitle === "その他" ? customJobTitle.trim() : jobTitle;
     const resolvedDepartment =
       department === "その他" ? customDepartment.trim() : department;
+    const resolvedJoinYear = joinYear ? Number(joinYear) : null;
 
     const handleSaveProfile = async () => {
       const trimmedName = name.trim();
@@ -162,12 +178,18 @@ export function GoogleLoginCard() {
         return;
       }
 
+      if (resolvedJoinYear == null) {
+        toast.error("入社年を選択してください");
+        return;
+      }
+
       setIsSaving(true);
       try {
         const payload = await updateCurrentUserProfile({
           name: trimmedName,
           jobTitle: trimmedJobTitle,
           department: trimmedDepartment,
+          joinYear: resolvedJoinYear,
         });
 
         localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
@@ -212,9 +234,11 @@ export function GoogleLoginCard() {
             <div className="px-2 py-2">
               <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
               <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-              {(user.jobTitle || user.department) && (
+              {(user.joinYear != null || user.jobTitle || user.department) && (
                 <p className="mt-1 truncate text-xs text-muted-foreground">
-                  {[user.jobTitle, user.department].filter(Boolean).join(" / ")}
+                  {[user.joinYear != null ? `${String(user.joinYear).padStart(2, "0")}年入社` : null, user.jobTitle, user.department]
+                    .filter(Boolean)
+                    .join(" / ")}
                 </p>
               )}
               {user.latestDiagnosis && (
@@ -310,6 +334,22 @@ export function GoogleLoginCard() {
                     まだ診断結果は保存されていません。
                   </p>
                 )}
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="profile-join-year">入社年</Label>
+                <Select value={joinYear} onValueChange={setJoinYear}>
+                  <SelectTrigger id="profile-join-year" className="h-11 w-full">
+                    <SelectValue placeholder="入社年を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {JOIN_YEAR_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">
