@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
 import typesData from '@/data/types.json';
-import { Copy, Download, RotateCcw, Share2 } from 'lucide-react';
+import { Download, RotateCcw, Share2 } from 'lucide-react';
 import { useLayoutEffect, useMemo, useState } from 'react';
 import { useLocation, useRoute } from 'wouter';
 
@@ -139,11 +139,6 @@ export default function TypeDetail() {
       return;
     }
 
-    navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-    alert('結果をコピーしました');
-  };
-
-  const handleCopyUrl = () => {
     navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
     alert('結果をコピーしました');
   };
@@ -383,14 +378,6 @@ export default function TypeDetail() {
             >
               <Share2 className="mr-2 h-4 w-4" />
               結果をシェア
-            </Button>
-            <Button
-              onClick={handleCopyUrl}
-              variant="outline"
-              className="seal-tag h-12 flex-1 text-foreground hover:bg-muted/50"
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              URLをコピー
             </Button>
             {shouldShowScoreboard && (
               <Button
