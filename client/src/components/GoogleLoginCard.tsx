@@ -59,11 +59,11 @@ const DEPARTMENT_OPTIONS = [
   "その他",
 ] as const;
 
-const JOIN_YEAR_OPTIONS = Array.from({ length: 74 }, (_, index) => {
-  const year = ((26 + index - 1) % 100) + 1;
+const JOIN_YEAR_OPTIONS = Array.from({ length: 2026 - 1999 + 1 }, (_, index) => {
+  const year = 2026 - index;
   return {
-    value: String(year).padStart(2, "0"),
-    label: `${String(year).padStart(2, "0")}年入社`,
+    value: String(year),
+    label: `${year}年入社`,
   };
 });
 
@@ -125,7 +125,7 @@ export function GoogleLoginCard() {
     setCustomDepartment(isPresetDepartment ? "" : nextDepartment);
     setJoinYear(
       user.joinYear !== null && user.joinYear !== undefined
-        ? String(user.joinYear).padStart(2, "0")
+        ? String(user.joinYear)
         : ""
     );
   }, [user, isProfileDialogOpen]);
@@ -236,7 +236,7 @@ export function GoogleLoginCard() {
               <p className="truncate text-xs text-muted-foreground">{user.email}</p>
               {(user.joinYear != null || user.jobTitle || user.department) && (
                 <p className="mt-1 truncate text-xs text-muted-foreground">
-                  {[user.joinYear != null ? `${String(user.joinYear).padStart(2, "0")}年入社` : null, user.jobTitle, user.department]
+                  {[user.joinYear != null ? `${user.joinYear}年入社` : null, user.jobTitle, user.department]
                     .filter(Boolean)
                     .join(" / ")}
                 </p>

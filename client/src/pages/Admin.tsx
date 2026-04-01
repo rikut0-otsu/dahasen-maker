@@ -115,7 +115,7 @@ function formatJoinYear(joinYear?: number | null) {
     return "入社年未設定";
   }
 
-  return `${String(joinYear).padStart(2, "0")}年入社`;
+  return `${joinYear}年入社`;
 }
 
 function AccessBadge({ user }: { user: AdminUser }) {
@@ -552,7 +552,7 @@ export default function Admin() {
         target.name,
         target.email,
         target.isOwner ? "owner" : target.isAdmin ? "admin" : "user",
-        target.joinYear != null ? String(target.joinYear).padStart(2, "0") : "",
+        target.joinYear != null ? String(target.joinYear) : "",
         target.department || "",
         target.jobTitle || "",
         target.latestDiagnosis ? typeMetaById[target.latestDiagnosis.typeId]?.name ?? target.latestDiagnosis.typeId : "",
