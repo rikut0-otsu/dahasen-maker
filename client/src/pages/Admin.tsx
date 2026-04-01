@@ -67,6 +67,11 @@ const PIE_TABS = [
   { key: "department", label: "部署別" },
   { key: "jobTitle", label: "職種別" },
 ] as const;
+const TRAINING_PIE_TABS = [
+  { key: "era", label: "時代別" },
+  { key: "person", label: "人物別" },
+  { key: "department", label: "部署別の人物別" },
+] as const;
 const ADMIN_OUTLINE_BUTTON =
   "rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200";
 const ADMIN_ACTIVE_BUTTON =
@@ -115,7 +120,7 @@ function formatJoinYear(joinYear?: number | null) {
     return "入社年未設定";
   }
 
-  return `${String(joinYear).padStart(2, "0")}年入社`;
+  return `${joinYear}年入社`;
 }
 
 function AccessBadge({ user }: { user: AdminUser }) {
@@ -173,6 +178,78 @@ function MetricCard({
   );
 }
 
+function PieBreakdownCard({
+  title,
+  description,
+  data,
+  emptyMessage,
+}: {
+  title: string;
+  description: string;
+  data: Array<{ name: string; value: number }>;
+  emptyMessage: string;
+}) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  return (
+    <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-slate-950">{title}</CardTitle>
+        <CardDescription className="text-slate-600">{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-sm text-slate-500">{emptyMessage}</p>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-[1fr_0.95fr]">
+            <div className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={40}
+                    outerRadius={96}
+                  >
+                    {data.map((item, index) => (
+                      <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip content={<PieTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="space-y-2">
+              {data.map((item, index) => {
+                const percent = total === 0 ? 0 : Math.round((item.value / total) * 1000) / 10;
+                return (
+                  <div key={item.name} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className="h-3 w-3 shrink-0 rounded-full"
+                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+                        />
+                        <span className="truncate text-sm font-medium text-slate-900">{item.name}</span>
+                      </div>
+                      <div className="text-right text-sm">
+                        <p className="font-semibold text-slate-900">{percent}%</p>
+                        <p className="text-slate-500">{item.value} 人</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function PieTooltip({
   active,
   payload,
@@ -220,6 +297,8 @@ export default function Admin() {
   const [typePage, setTypePage] = useState(1);
   const [trendRange, setTrendRange] = useState<(typeof TREND_FILTERS)[number]["key"]>("14d");
   const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
+  const [trainingPieTab, setTrainingPieTab] = useState<(typeof TRAINING_PIE_TABS)[number]["key"]>("era");
+  const [trainingJoinYear, setTrainingJoinYear] = useState(String(new Date().getFullYear()));
   const [showPieLabels, setShowPieLabels] = useState(false);
 
   const loadAdminData = async (showRefreshing = false) => {
@@ -487,6 +566,93 @@ export default function Admin() {
 
   const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
+  const trainingYearOptions = useMemo(() => {
+    const years = new Set<number>();
+    for (const user of users) {
+      if (user.joinYear != null) {
+        years.add(user.joinYear);
+      }
+    }
+
+    years.add(new Date().getFullYear());
+
+    return Array.from(years).sort((a, b) => b - a);
+  }, [users]);
+
+  useEffect(() => {
+    if (trainingYearOptions.length === 0) {
+      return;
+    }
+
+    if (!trainingYearOptions.includes(Number(trainingJoinYear))) {
+      setTrainingJoinYear(String(trainingYearOptions[0]));
+    }
+  }, [trainingJoinYear, trainingYearOptions]);
+
+  const trainingUsers = useMemo(
+    () =>
+      users.filter(
+        (target) => target.joinYear === Number(trainingJoinYear) && target.latestDiagnosis
+      ),
+    [trainingJoinYear, users]
+  );
+
+  const trainingEraBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of trainingUsers) {
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const label = typeMetaById[typeId]?.eraLabel ?? "その他";
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja"));
+  }, [trainingUsers]);
+
+  const trainingPersonBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of trainingUsers) {
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const label = typeMetaById[typeId]?.name ?? typeId;
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja"));
+  }, [trainingUsers]);
+
+  const trainingDepartmentBreakdowns = useMemo(() => {
+    const departmentMap = new Map<string, Map<string, number>>();
+
+    for (const target of trainingUsers) {
+      const department = target.department?.trim() || "部署未設定";
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const person = typeMetaById[typeId]?.name ?? typeId;
+
+      if (!departmentMap.has(department)) {
+        departmentMap.set(department, new Map<string, number>());
+      }
+
+      const personMap = departmentMap.get(department)!;
+      personMap.set(person, (personMap.get(person) ?? 0) + 1);
+    }
+
+    return Array.from(departmentMap.entries())
+      .map(([department, personMap]) => ({
+        department,
+        total: Array.from(personMap.values()).reduce((sum, value) => sum + value, 0),
+        data: Array.from(personMap.entries())
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja")),
+      }))
+      .sort((a, b) => b.total - a.total || a.department.localeCompare(b.department, "ja"));
+  }, [trainingUsers]);
+
   const handleToggleAdmin = async (targetUser: AdminUser) => {
     if (targetUser.isOwner) {
       toast.error("オーナー権限は画面から変更できません");
@@ -552,7 +718,7 @@ export default function Admin() {
         target.name,
         target.email,
         target.isOwner ? "owner" : target.isAdmin ? "admin" : "user",
-        target.joinYear != null ? String(target.joinYear).padStart(2, "0") : "",
+        target.joinYear != null ? String(target.joinYear) : "",
         target.department || "",
         target.jobTitle || "",
         target.latestDiagnosis ? typeMetaById[target.latestDiagnosis.typeId]?.name ?? target.latestDiagnosis.typeId : "",
@@ -799,6 +965,89 @@ export default function Admin() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
+            <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <CardTitle className="text-slate-950">26新卒研修向け円グラフ集計</CardTitle>
+                <CardDescription className="text-slate-600">
+                  対象年を切り替えながら、研修対象者の時代別・人物別・部署別の人物分布を確認できます。
+                </CardDescription>
+              </div>
+              <div className="flex flex-col gap-3 md:items-end">
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                  <CalendarRange className="h-4 w-4 text-slate-500" />
+                  <select
+                    value={trainingJoinYear}
+                    onChange={(event) => setTrainingJoinYear(event.target.value)}
+                    className="h-11 bg-transparent text-sm text-slate-700 outline-none"
+                  >
+                    {trainingYearOptions.map((year) => (
+                      <option key={year} value={year}>
+                        {year}年入社
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {TRAINING_PIE_TABS.map((tab) => (
+                    <Button
+                      key={tab.key}
+                      type="button"
+                      variant="outline"
+                      className={`${ADMIN_OUTLINE_BUTTON} ${
+                        trainingPieTab === tab.key ? ADMIN_ACTIVE_BUTTON : ""
+                      }`}
+                      onClick={() => setTrainingPieTab(tab.key)}
+                    >
+                      {tab.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {trainingPieTab === "era" && (
+                <PieBreakdownCard
+                  title={`${trainingJoinYear}年入社 時代別円グラフ`}
+                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を時代別に集計しています。`}
+                  data={trainingEraBreakdown}
+                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                />
+              )}
+
+              {trainingPieTab === "person" && (
+                <PieBreakdownCard
+                  title={`${trainingJoinYear}年入社 人物別円グラフ`}
+                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を人物別に集計しています。`}
+                  data={trainingPersonBreakdown}
+                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                />
+              )}
+
+              {trainingPieTab === "department" && (
+                <>
+                  {trainingDepartmentBreakdowns.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      {trainingJoinYear}年入社で診断結果があるユーザーがまだいません。
+                    </p>
+                  ) : (
+                    <div className="grid gap-6 xl:grid-cols-2">
+                      {trainingDepartmentBreakdowns.map((department) => (
+                        <PieBreakdownCard
+                          key={department.department}
+                          title={department.department}
+                          description={`${trainingJoinYear}年入社 ${department.total}人分の最新診断結果を集計`}
+                          data={department.data}
+                          emptyMessage="集計データがありません。"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
             <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">

@@ -36,6 +36,28 @@ export async function findUserByGoogleSub(db: D1Database, googleSub: string) {
       throw error;
     }
 
+    try {
+      const userWithoutJoinYear = await db
+        .prepare(
+          "SELECT id, google_sub, email, email_verified, name, display_name, job_title, department, picture_url, is_admin FROM users WHERE google_sub = ?"
+        )
+        .bind(googleSub)
+        .first<Omit<DbUser, "join_year">>();
+
+      if (!userWithoutJoinYear) {
+        return null;
+      }
+
+      return {
+        ...userWithoutJoinYear,
+        join_year: null,
+      };
+    } catch (fallbackError) {
+      if (!isMissingColumnError(fallbackError)) {
+        throw fallbackError;
+      }
+    }
+
     const legacyUser = await db
       .prepare(
         "SELECT id, google_sub, email, email_verified, name, picture_url FROM users WHERE google_sub = ?"
@@ -198,6 +220,42 @@ export async function getUserBySessionId(db: D1Database, sessionId: string) {
       throw error;
     }
 
+    try {
+      const userWithoutJoinYear = await db
+        .prepare(
+          `SELECT
+            users.id,
+            users.google_sub,
+            users.email,
+            users.email_verified,
+            users.name,
+            users.display_name,
+            users.job_title,
+            users.department,
+            users.picture_url,
+            users.is_admin
+          FROM sessions
+          INNER JOIN users ON users.id = sessions.user_id
+          WHERE sessions.id = ?
+            AND sessions.expires_at > ?`
+        )
+        .bind(sessionId, Date.now())
+        .first<Omit<DbUser, "join_year">>();
+
+      if (!userWithoutJoinYear) {
+        return null;
+      }
+
+      return {
+        ...userWithoutJoinYear,
+        join_year: null,
+      };
+    } catch (fallbackError) {
+      if (!isMissingColumnError(fallbackError)) {
+        throw fallbackError;
+      }
+    }
+
     const legacyUser = await db
       .prepare(
         `SELECT
@@ -331,6 +389,36 @@ export async function getAllUsers(db: D1Database) {
       throw error;
     }
 
+    try {
+      const resultWithoutJoinYear = await db
+        .prepare(
+          `SELECT
+            id,
+            email,
+            name,
+            display_name,
+            job_title,
+            department,
+            picture_url,
+            google_sub,
+            is_admin,
+            created_at,
+            updated_at
+          FROM users
+          ORDER BY created_at DESC, updated_at DESC`
+        )
+        .all<Omit<AdminUserSummary, "join_year">>();
+
+      return resultWithoutJoinYear.results.map((user) => ({
+        ...user,
+        join_year: null,
+      }));
+    } catch (fallbackError) {
+      if (!isMissingColumnError(fallbackError)) {
+        throw fallbackError;
+      }
+    }
+
     const legacyResult = await db
       .prepare(
         `SELECT
@@ -450,6 +538,34 @@ export async function getDashboardUsers(db: D1Database) {
   } catch (error) {
     if (!isMissingColumnError(error)) {
       throw error;
+    }
+
+    try {
+      const resultWithoutJoinYear = await db
+        .prepare(
+          `SELECT
+            id,
+            email,
+            name,
+            display_name,
+            department,
+            job_title,
+            google_sub,
+            is_admin,
+            created_at
+          FROM users
+          ORDER BY created_at DESC`
+        )
+        .all<Omit<DashboardUserRecord, "join_year">>();
+
+      return resultWithoutJoinYear.results.map((user) => ({
+        ...user,
+        join_year: null,
+      }));
+    } catch (fallbackError) {
+      if (!isMissingColumnError(fallbackError)) {
+        throw fallbackError;
+      }
     }
 
     const legacyResult = await db

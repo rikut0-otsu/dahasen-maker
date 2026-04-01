@@ -47,9 +47,9 @@ export async function onRequestPatch(context: AppContext) {
   if (
     joinYear !== null &&
     joinYear !== undefined &&
-    (!Number.isInteger(joinYear) || joinYear < 26 || joinYear > 99)
+    (!Number.isInteger(joinYear) || joinYear < 1999 || joinYear > 2026)
   ) {
-    return errorResponse(400, "入社年は26年から99年の範囲で選択してください");
+    return errorResponse(400, "入社年は1999年から2026年の範囲で選択してください");
   }
 
   try {
