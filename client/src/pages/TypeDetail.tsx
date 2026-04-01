@@ -182,7 +182,7 @@ export default function TypeDetail() {
                   <img
                     src={typeImagePath}
                     alt={`${type.name}のメイン画像`}
-                    className="h-full w-full object-contain"
+                    className="block h-full w-full object-contain"
                     loading="lazy"
                     onError={() => setImageFailed(true)}
                   />

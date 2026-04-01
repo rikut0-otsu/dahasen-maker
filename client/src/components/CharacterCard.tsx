@@ -34,7 +34,7 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
                 <img
                   src={imagePath}
                   alt={`${name}の画像`}
-                  className="h-full w-full rounded-[1rem] object-contain"
+                  className="block h-full w-full rounded-[1rem] object-contain"
                   loading="lazy"
                   onError={() => setImageFailed(true)}
                 />
