@@ -90,7 +90,6 @@ export default function TypeDetail() {
     Boolean(type.detailWhy?.length);
   const typeImagePath = type.imagePath ?? `/type-images/${type.id}.png`;
   const hasTypeImage = !imageFailed;
-  const usesTypeImageTexture = typeImagePath.startsWith('/type-images/');
   const indicatorScores = calculateIndicatorScores();
   const axisResult = calculateResult();
   const shouldShowScoreboard = state.result?.id === type.id && state.answers.length > 0;
@@ -178,12 +177,12 @@ export default function TypeDetail() {
             </div>
             <div className="grid gap-8 lg:grid-cols-[360px_1fr] lg:items-center">
               <div className="frame-scroll mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] p-4">
-                <div className={`${usesTypeImageTexture ? 'washi-image-stage' : ''} aspect-[3/4] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white`}>
+                <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border border-border/70 bg-white">
                 {!imageFailed ? (
                   <img
                     src={typeImagePath}
                     alt={`${type.name}のメイン画像`}
-                    className={`${usesTypeImageTexture ? 'washi-image' : ''} h-full w-full object-contain`}
+                    className="h-full w-full object-contain"
                     loading="lazy"
                     onError={() => setImageFailed(true)}
                   />

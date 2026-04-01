@@ -23,7 +23,6 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
   compact = false,
 }) => {
   const [imageFailed, setImageFailed] = useState(false);
-  const usesTypeImageTexture = imagePath?.startsWith('/type-images/');
 
   if (compact) {
     const content = (
@@ -31,11 +30,11 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
         <div className="wash-paper relative z-10 p-3">
           <div className="frame-scroll mx-auto aspect-[3/4] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
             {imagePath && !imageFailed ? (
-              <div className={`${usesTypeImageTexture ? 'washi-image-stage' : ''} h-full w-full rounded-[1rem] bg-white`}>
+              <div className="h-full w-full rounded-[1rem] bg-white">
                 <img
                   src={imagePath}
                   alt={`${name}の画像`}
-                  className={`${usesTypeImageTexture ? 'washi-image' : ''} h-full w-full rounded-[1rem] object-contain`}
+                  className="h-full w-full rounded-[1rem] object-contain"
                   loading="lazy"
                   onError={() => setImageFailed(true)}
                 />
