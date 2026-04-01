@@ -198,7 +198,7 @@ export default function Home() {
             {!headerLogoFailed ? (
               <div className="flex items-center gap-2 sm:gap-3">
                 <img
-                  src="/favicon_256.png"
+                  src="/site_logo.png"
                   alt="打破宣言メーカーのロゴ"
                   className="h-10 w-10 shrink-0 object-contain md:h-12 md:w-12"
                   loading="eager"
