@@ -67,6 +67,11 @@ const PIE_TABS = [
   { key: "department", label: "部署別" },
   { key: "jobTitle", label: "職種別" },
 ] as const;
+const TRAINING_PIE_TABS = [
+  { key: "era", label: "時代別" },
+  { key: "person", label: "人物別" },
+  { key: "department", label: "部署別の人物別" },
+] as const;
 const ADMIN_OUTLINE_BUTTON =
   "rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200";
 const ADMIN_ACTIVE_BUTTON =
@@ -292,6 +297,8 @@ export default function Admin() {
   const [typePage, setTypePage] = useState(1);
   const [trendRange, setTrendRange] = useState<(typeof TREND_FILTERS)[number]["key"]>("14d");
   const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
+  const [trainingPieTab, setTrainingPieTab] = useState<(typeof TRAINING_PIE_TABS)[number]["key"]>("era");
+  const [trainingJoinYear, setTrainingJoinYear] = useState(String(new Date().getFullYear()));
   const [showPieLabels, setShowPieLabels] = useState(false);
 
   const loadAdminData = async (showRefreshing = false) => {
@@ -559,14 +566,54 @@ export default function Admin() {
 
   const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
-  const freshers2026 = useMemo(
-    () => users.filter((target) => target.joinYear === 2026 && target.latestDiagnosis),
-    [users]
+  const trainingYearOptions = useMemo(() => {
+    const years = new Set<number>();
+    for (const user of users) {
+      if (user.joinYear != null) {
+        years.add(user.joinYear);
+      }
+    }
+
+    years.add(new Date().getFullYear());
+
+    return Array.from(years).sort((a, b) => b - a);
+  }, [users]);
+
+  useEffect(() => {
+    if (trainingYearOptions.length === 0) {
+      return;
+    }
+
+    if (!trainingYearOptions.includes(Number(trainingJoinYear))) {
+      setTrainingJoinYear(String(trainingYearOptions[0]));
+    }
+  }, [trainingJoinYear, trainingYearOptions]);
+
+  const trainingUsers = useMemo(
+    () =>
+      users.filter(
+        (target) => target.joinYear === Number(trainingJoinYear) && target.latestDiagnosis
+      ),
+    [trainingJoinYear, users]
   );
 
-  const freshers2026PersonBreakdown = useMemo(() => {
+  const trainingEraBreakdown = useMemo(() => {
     const map = new Map<string, number>();
-    for (const target of freshers2026) {
+    for (const target of trainingUsers) {
+      const typeId = target.latestDiagnosis?.typeId;
+      if (!typeId) continue;
+      const label = typeMetaById[typeId]?.eraLabel ?? "その他";
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja"));
+  }, [trainingUsers]);
+
+  const trainingPersonBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const target of trainingUsers) {
       const typeId = target.latestDiagnosis?.typeId;
       if (!typeId) continue;
       const label = typeMetaById[typeId]?.name ?? typeId;
@@ -576,12 +623,12 @@ export default function Admin() {
     return Array.from(map.entries())
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja"));
-  }, [freshers2026]);
+  }, [trainingUsers]);
 
-  const freshers2026DepartmentBreakdowns = useMemo(() => {
+  const trainingDepartmentBreakdowns = useMemo(() => {
     const departmentMap = new Map<string, Map<string, number>>();
 
-    for (const target of freshers2026) {
+    for (const target of trainingUsers) {
       const department = target.department?.trim() || "部署未設定";
       const typeId = target.latestDiagnosis?.typeId;
       if (!typeId) continue;
@@ -604,7 +651,7 @@ export default function Admin() {
           .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "ja")),
       }))
       .sort((a, b) => b.total - a.total || a.department.localeCompare(b.department, "ja"));
-  }, [freshers2026]);
+  }, [trainingUsers]);
 
   const handleToggleAdmin = async (targetUser: AdminUser) => {
     if (targetUser.isOwner) {
@@ -919,42 +966,88 @@ export default function Admin() {
             </Card>
           </div>
 
-          <div className="grid gap-6">
-            <PieBreakdownCard
-              title="新卒 2026 人物別円グラフ"
-              description="2026年入社ユーザーの最新診断結果を人物別に集計しています。"
-              data={freshers2026PersonBreakdown}
-              emptyMessage="2026年入社で診断結果があるユーザーがまだいません。"
-            />
-
-            <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-slate-950">新卒 2026 部署別 人物円グラフ</CardTitle>
+          <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
+            <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <CardTitle className="text-slate-950">26新卒研修向け円グラフ集計</CardTitle>
                 <CardDescription className="text-slate-600">
-                  2026年入社ユーザーを部署ごとに分け、各部署の最新診断結果を人物別に集計しています。
+                  対象年を切り替えながら、研修対象者の時代別・人物別・部署別の人物分布を確認できます。
                 </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {freshers2026DepartmentBreakdowns.length === 0 ? (
-                  <p className="text-sm text-slate-500">
-                    2026年入社で診断結果があるユーザーがまだいません。
-                  </p>
-                ) : (
-                  <div className="grid gap-6 xl:grid-cols-2">
-                    {freshers2026DepartmentBreakdowns.map((department) => (
-                      <PieBreakdownCard
-                        key={department.department}
-                        title={department.department}
-                        description={`${department.total}人分の最新診断結果を集計`}
-                        data={department.data}
-                        emptyMessage="集計データがありません。"
-                      />
+              </div>
+              <div className="flex flex-col gap-3 md:items-end">
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+                  <CalendarRange className="h-4 w-4 text-slate-500" />
+                  <select
+                    value={trainingJoinYear}
+                    onChange={(event) => setTrainingJoinYear(event.target.value)}
+                    className="h-11 bg-transparent text-sm text-slate-700 outline-none"
+                  >
+                    {trainingYearOptions.map((year) => (
+                      <option key={year} value={year}>
+                        {year}年入社
+                      </option>
                     ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  </select>
+                </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {TRAINING_PIE_TABS.map((tab) => (
+                    <Button
+                      key={tab.key}
+                      type="button"
+                      variant="outline"
+                      className={`${ADMIN_OUTLINE_BUTTON} ${
+                        trainingPieTab === tab.key ? ADMIN_ACTIVE_BUTTON : ""
+                      }`}
+                      onClick={() => setTrainingPieTab(tab.key)}
+                    >
+                      {tab.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {trainingPieTab === "era" && (
+                <PieBreakdownCard
+                  title={`${trainingJoinYear}年入社 時代別円グラフ`}
+                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を時代別に集計しています。`}
+                  data={trainingEraBreakdown}
+                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                />
+              )}
+
+              {trainingPieTab === "person" && (
+                <PieBreakdownCard
+                  title={`${trainingJoinYear}年入社 人物別円グラフ`}
+                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を人物別に集計しています。`}
+                  data={trainingPersonBreakdown}
+                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                />
+              )}
+
+              {trainingPieTab === "department" && (
+                <>
+                  {trainingDepartmentBreakdowns.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      {trainingJoinYear}年入社で診断結果があるユーザーがまだいません。
+                    </p>
+                  ) : (
+                    <div className="grid gap-6 xl:grid-cols-2">
+                      {trainingDepartmentBreakdowns.map((department) => (
+                        <PieBreakdownCard
+                          key={department.department}
+                          title={department.department}
+                          description={`${trainingJoinYear}年入社 ${department.total}人分の最新診断結果を集計`}
+                          data={department.data}
+                          emptyMessage="集計データがありません。"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           <Card className="border-slate-200 bg-white text-slate-900 shadow-sm">
             <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
