@@ -67,8 +67,6 @@ const JOIN_YEAR_OPTIONS = Array.from({ length: 2026 - 1999 + 1 }, (_, index) => 
   };
 });
 
-const PROFILE_PROMPT_DISMISSED_KEY = "profile-prompt-dismissed";
-
 export function GoogleLoginCard() {
   const {
     user,
@@ -88,7 +86,6 @@ export function GoogleLoginCard() {
   const [customDepartment, setCustomDepartment] = useState("");
   const [joinYear, setJoinYear] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isAutoPromptActive, setIsAutoPromptActive] = useState(false);
   const latestTypeName = useMemo(() => {
     if (!user?.latestDiagnosis?.typeId) {
       return null;
@@ -138,15 +135,9 @@ export function GoogleLoginCard() {
     const needsProfileSetup =
       !user.jobTitle?.trim() || !user.department?.trim() || user.joinYear == null;
     if (!needsProfileSetup) {
-      localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
       return;
     }
 
-    if (localStorage.getItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`) === "true") {
-      return;
-    }
-
-    setIsAutoPromptActive(true);
     setIsProfileDialogOpen(true);
   }, [user, isProfileDialogOpen]);
 
@@ -155,6 +146,8 @@ export function GoogleLoginCard() {
     const resolvedDepartment =
       department === "その他" ? customDepartment.trim() : department;
     const resolvedJoinYear = joinYear ? Number(joinYear) : null;
+    const requiresProfileCompletion =
+      !user.jobTitle?.trim() || !user.department?.trim() || user.joinYear == null;
 
     const handleSaveProfile = async () => {
       const trimmedName = name.trim();
@@ -192,8 +185,6 @@ export function GoogleLoginCard() {
           joinYear: resolvedJoinYear,
         });
 
-        localStorage.removeItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`);
-        setIsAutoPromptActive(false);
         setUser(payload.user);
         setIsProfileDialogOpen(false);
         toast.success("プロフィールを更新しました");
@@ -280,28 +271,42 @@ export function GoogleLoginCard() {
         <Dialog
           open={isProfileDialogOpen}
           onOpenChange={(open) => {
-            if (!open && isAutoPromptActive) {
-              localStorage.setItem(`${PROFILE_PROMPT_DISMISSED_KEY}:${user.id}`, "true");
-              setIsAutoPromptActive(false);
+            if (!open && requiresProfileCompletion) {
+              return;
             }
             setIsProfileDialogOpen(open);
           }}
         >
-          <DialogContent className="historical-panel max-w-[calc(100%-1.5rem)] rounded-[2rem] border-border/70 p-0 sm:max-w-xl">
+          <DialogContent
+            showCloseButton={!requiresProfileCompletion}
+            className="historical-panel grid max-h-[calc(100vh-1.5rem)] max-w-[calc(100%-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[2rem] border-border/70 p-0 sm:max-w-xl"
+            onEscapeKeyDown={(event) => {
+              if (requiresProfileCompletion) {
+                event.preventDefault();
+              }
+            }}
+            onInteractOutside={(event) => {
+              if (requiresProfileCompletion) {
+                event.preventDefault();
+              }
+            }}
+          >
             <DialogHeader className="border-b border-border/70 px-6 py-5 text-left">
               <div className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-primary">
                 <Settings2 className="h-4 w-4" />
                 アカウント設定
               </div>
               <DialogTitle className="ink-title text-2xl text-foreground">
-                プロフィール編集
+                {requiresProfileCompletion ? "プロフィール登録" : "プロフィール編集"}
               </DialogTitle>
               <DialogDescription className="text-sm leading-7 text-muted-foreground">
-                名前、職種、部署を更新できます。部署は候補から選ぶか、自由入力もできます。
+                {requiresProfileCompletion
+                  ? "次に進むにはプロフィール登録が必要です。名前、入社年、職種、部署を入力してください。"
+                  : "名前、職種、部署を更新できます。部署は候補から選ぶか、自由入力もできます。"}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid gap-5 px-6 py-6">
+            <div className="grid gap-5 overflow-y-auto overscroll-contain px-6 py-6">
               <div className="rounded-2xl border border-border/70 bg-muted/40 px-4 py-4">
                 <p className="text-sm font-semibold text-foreground">最新の診断結果</p>
                 {user.latestDiagnosis ? (
@@ -322,9 +327,13 @@ export function GoogleLoginCard() {
                       variant="outline"
                       className="rounded-xl"
                       onClick={() => {
+                        if (requiresProfileCompletion) {
+                          return;
+                        }
                         setIsProfileDialogOpen(false);
                         setLocation(`/types/${user.latestDiagnosis?.typeId ?? ""}`);
                       }}
+                      disabled={requiresProfileCompletion}
                     >
                       診断結果を見る
                     </Button>
@@ -413,13 +422,15 @@ export function GoogleLoginCard() {
             </div>
 
             <DialogFooter className="border-t border-border/70 px-6 py-5">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsProfileDialogOpen(false)}
-              >
-                キャンセル
-              </Button>
+              {!requiresProfileCompletion && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsProfileDialogOpen(false)}
+                >
+                  キャンセル
+                </Button>
+              )}
               <Button type="button" onClick={() => void handleSaveProfile()} disabled={isSaving}>
                 {isSaving ? "保存中..." : "保存する"}
               </Button>
