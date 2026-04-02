@@ -148,14 +148,18 @@ export function GoogleLoginCard() {
     const resolvedJoinYear = joinYear ? Number(joinYear) : null;
     const requiresProfileCompletion =
       !user.jobTitle?.trim() || !user.department?.trim() || user.joinYear == null;
+    const trimmedName = name.trim();
+    const trimmedJobTitle =
+      resolvedJobTitle === "選択してください" ? "" : resolvedJobTitle.trim();
+    const trimmedDepartment =
+      resolvedDepartment === "選択してください" ? "" : resolvedDepartment.trim();
+    const isProfileFormComplete =
+      Boolean(trimmedName) &&
+      Boolean(trimmedJobTitle) &&
+      Boolean(trimmedDepartment) &&
+      resolvedJoinYear != null;
 
     const handleSaveProfile = async () => {
-      const trimmedName = name.trim();
-      const trimmedJobTitle =
-        resolvedJobTitle === "選択してください" ? "" : resolvedJobTitle.trim();
-      const trimmedDepartment =
-        resolvedDepartment === "選択してください" ? "" : resolvedDepartment.trim();
-
       if (!trimmedName) {
         toast.error("名前を入力してください");
         return;
@@ -422,6 +426,11 @@ export function GoogleLoginCard() {
             </div>
 
             <DialogFooter className="border-t border-border/70 px-6 py-5">
+              {!isProfileFormComplete && (
+                <p className="w-full text-sm leading-6 text-muted-foreground sm:mr-auto sm:max-w-md">
+                  名前、入社年、職種、部署をすべて入力すると保存できます。
+                </p>
+              )}
               {!requiresProfileCompletion && (
                 <Button
                   type="button"
@@ -431,7 +440,11 @@ export function GoogleLoginCard() {
                   キャンセル
                 </Button>
               )}
-              <Button type="button" onClick={() => void handleSaveProfile()} disabled={isSaving}>
+              <Button
+                type="button"
+                onClick={() => void handleSaveProfile()}
+                disabled={isSaving || !isProfileFormComplete}
+              >
                 {isSaving ? "保存中..." : "保存する"}
               </Button>
             </DialogFooter>
