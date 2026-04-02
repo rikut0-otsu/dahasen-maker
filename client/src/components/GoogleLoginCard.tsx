@@ -425,7 +425,7 @@ export function GoogleLoginCard() {
               </div>
             </div>
 
-            <DialogFooter className="border-t border-border/70 px-6 py-5">
+            <DialogFooter className="border-t border-border/70 bg-background px-6 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
               {!isProfileFormComplete && (
                 <p className="w-full text-sm leading-6 text-muted-foreground sm:mr-auto sm:max-w-md">
                   名前、入社年、職種、部署をすべて入力すると保存できます。
