@@ -524,10 +524,9 @@ export default function Home() {
 
             <Button
               onClick={handleStartDiagnosis}
-              className="slip-tag relative h-15 px-11 pl-13 text-lg font-bold text-foreground shadow-[0_22px_44px_rgba(45,140,60,0.24)] ring-2 ring-primary/25 hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.99)] hover:shadow-[0_28px_52px_rgba(45,140,60,0.3)] dark:border dark:border-[rgba(217,196,143,0.22)] dark:bg-[linear-gradient(180deg,rgba(24,38,58,0.99),rgba(13,22,36,0.99))] dark:text-[rgba(245,240,223,0.98)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.42)] dark:hover:bg-[linear-gradient(180deg,rgba(31,47,69,0.99),rgba(16,27,43,0.99))]"
+              className="h-14 rounded-full bg-primary px-10 text-lg font-bold text-primary-foreground shadow-[0_18px_40px_rgba(45,140,60,0.28)] hover:-translate-y-0.5 hover:bg-primary/92 hover:shadow-[0_24px_48px_rgba(45,140,60,0.34)]"
             >
-              <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_top,rgba(130,190,40,0.18),transparent_60%)]" aria-hidden="true" />
-              <span className="relative">診断を開始する</span>
+              <span>診断を開始する</span>
             </Button>
           </div>
         </div>
