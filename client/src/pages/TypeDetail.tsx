@@ -162,7 +162,7 @@ export default function TypeDetail() {
   return (
     <div className="min-h-screen bg-background paper-texture">
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="historical-panel max-w-[calc(100%-1.5rem)] rounded-[2rem] border-border/70 p-0 sm:max-w-2xl">
+        <DialogContent className="historical-panel grid max-h-[calc(100vh-1.5rem)] max-w-[calc(100%-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[2rem] border-border/70 p-0 sm:max-w-2xl">
           <DialogHeader className="border-b border-border/70 px-6 py-5 text-left">
             <DialogTitle className="ink-title text-2xl text-foreground">
               結果をコピーしてシェア
@@ -172,9 +172,12 @@ export default function TypeDetail() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-5 px-6 py-5">
+          <div className="space-y-5 overflow-y-auto overscroll-contain px-6 py-5">
             <div className="space-y-2">
-              <p className="text-sm font-semibold text-foreground">シェア本文</p>
+              <p className="text-sm font-semibold text-foreground">
+                シェア本文
+                <span className="ml-2 text-xs font-medium text-muted-foreground">（編集可能）</span>
+              </p>
               <Textarea
                 value={shareDraft}
                 onChange={(event) => setShareDraft(event.target.value)}
@@ -187,7 +190,7 @@ export default function TypeDetail() {
               <Textarea
                 value={shareUrl}
                 readOnly
-                className="min-h-24 resize-none rounded-2xl border-border/70 bg-white/60 px-4 py-3 text-sm leading-7 text-muted-foreground"
+                className="min-h-24 resize-none break-all rounded-2xl border-border/70 bg-white/60 px-4 py-3 text-sm leading-7 text-muted-foreground"
               />
             </div>
           </div>
@@ -204,7 +207,7 @@ export default function TypeDetail() {
               onClick={handleCopyShareText}
               className="slip-tag pl-8 text-foreground hover:bg-[rgba(255,255,255,0.96)]"
             >
-              文章とURLをコピー
+              結果をコピー
             </Button>
           </DialogFooter>
         </DialogContent>
