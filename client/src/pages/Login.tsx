@@ -85,12 +85,14 @@ export default function Login() {
                     <br />
                     自分の強みを見つけてみましょう。
                   </p>
-                  <div className="mt-5 rounded-[1.35rem] border border-border/70 bg-[rgba(255,252,244,0.82)] px-4 py-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:bg-[rgba(18,28,43,0.72)]">
-                    <p className="text-sm font-semibold leading-6 text-foreground [word-break:keep-all]">
-                      <span className="mr-1">※</span>
-                      サイバーエージェントのアカウントのみログインできます
+                  <div className="mt-5 rounded-[1.35rem] border border-border/70 bg-[rgba(255,252,244,0.82)] px-5 py-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:bg-[rgba(18,28,43,0.72)]">
+                    <p className="inline-flex max-w-full flex-wrap items-baseline gap-x-1 text-sm font-semibold leading-6 text-foreground">
+                      <span className="shrink-0">※</span>
+                      <span className="[word-break:keep-all]">
+                        サイバーエージェントのアカウントのみログインできます
+                      </span>
                     </p>
-                    <p className="mt-1 text-xs leading-6 text-muted-foreground [word-break:keep-all]">
+                    <p className="mt-1.5 text-xs leading-6 text-muted-foreground [word-break:keep-all]">
                       `@cyberagent.co.jp` のGoogleアカウントをご利用ください。
                     </p>
                   </div>
