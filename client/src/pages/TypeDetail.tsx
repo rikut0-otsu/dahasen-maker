@@ -440,7 +440,7 @@ export default function TypeDetail() {
               className="slip-tag h-12 flex-1 pl-8 text-primary hover:bg-[rgba(255,255,255,0.96)]"
             >
               <Share2 className="mr-2 h-4 w-4" />
-              結果をシェア
+              結果をコピーする
             </Button>
             {shouldShowScoreboard && (
               <Button
