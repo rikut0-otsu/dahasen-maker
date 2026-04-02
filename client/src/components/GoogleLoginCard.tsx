@@ -283,7 +283,7 @@ export function GoogleLoginCard() {
         >
           <DialogContent
             showCloseButton={!requiresProfileCompletion}
-            className="historical-panel grid max-h-[calc(100vh-1.5rem)] max-w-[calc(100%-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[2rem] border-border/70 p-0 sm:max-w-xl"
+            className="historical-panel grid max-h-[calc(100vh-1.5rem)] max-w-[calc(100%-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[2rem] border-border/70 p-0 top-[46%] translate-y-[-46%] sm:max-w-xl sm:top-[50%] sm:translate-y-[-50%]"
             onEscapeKeyDown={(event) => {
               if (requiresProfileCompletion) {
                 event.preventDefault();

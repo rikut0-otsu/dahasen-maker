@@ -8,20 +8,28 @@ import { CircleHelp } from "lucide-react";
 export default function Login() {
   const [, setLocation] = useLocation();
   const { user, isLoading, signInWithGoogle } = useAuth();
+  const params = new URLSearchParams(window.location.search);
+  const loginStatus = params.get("login");
+  const returnTo = params.get("returnTo") || "/";
 
   useEffect(() => {
     if (!isLoading && user) {
-      const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get("returnTo") || "/";
       setLocation(returnTo, { replace: true });
     }
-  }, [isLoading, user, setLocation]);
+  }, [isLoading, returnTo, user, setLocation]);
 
   const handleSignIn = () => {
-    const params = new URLSearchParams(window.location.search);
-    const returnTo = params.get("returnTo") || "/";
     signInWithGoogle(returnTo);
   };
+
+  const loginMessage =
+    loginStatus === "unauthorized"
+      ? "このアドレスはCAアカウントではないため、権限がありません。@cyberagent.co.jp のアドレスでログインしてください。"
+      : loginStatus === "expired"
+        ? "ログインの有効期限が切れました。もう一度お試しください。"
+        : loginStatus === "error"
+          ? "ログインに失敗しました。時間をおいて再度お試しください。"
+          : null;
 
   return (
     <div className="min-h-screen overflow-hidden bg-background paper-texture">
@@ -77,6 +85,22 @@ export default function Login() {
                     <br />
                     自分の強みを見つけてみましょう。
                   </p>
+                  <div className="mt-5 rounded-[1.35rem] border border-primary/20 bg-primary/5 px-4 py-3 text-left">
+                    <p className="text-sm font-semibold text-foreground">
+                      サイバーエージェントのアカウントのみログインできます
+                    </p>
+                    <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                      `@cyberagent.co.jp` のGoogleアカウントをご利用ください。
+                    </p>
+                  </div>
+                  {loginMessage && (
+                    <div className="mt-4 rounded-[1.35rem] border border-destructive/20 bg-destructive/8 px-4 py-3 text-left">
+                      <p className="text-sm font-semibold text-foreground">ログインできませんでした</p>
+                      <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                        {loginMessage}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="mt-8 flex flex-col gap-3">
                     <Button onClick={handleSignIn} className="h-12 w-full font-semibold">

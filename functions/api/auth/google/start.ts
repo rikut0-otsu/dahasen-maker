@@ -58,6 +58,7 @@ export async function onRequestGet(context: AppContext) {
   googleUrl.searchParams.set("code_challenge", codeChallenge);
   googleUrl.searchParams.set("code_challenge_method", "S256");
   googleUrl.searchParams.set("prompt", "select_account");
+  googleUrl.searchParams.set("hd", "cyberagent.co.jp");
 
   return new Response(null, {
     status: 302,
