@@ -31,10 +31,25 @@ function redirect(location: string, headers?: HeadersInit) {
   });
 }
 
-function appendLoginStatus(path: string, status: "success" | "error" | "expired") {
+function buildLoginRedirect(path: string, status: "error" | "expired" | "unauthorized") {
+  const loginUrl = new URL("/login", "https://dummy.local");
+  loginUrl.searchParams.set("returnTo", path);
+  loginUrl.searchParams.set("login", status);
+  return `${loginUrl.pathname}${loginUrl.search}${loginUrl.hash}`;
+}
+
+function appendLoginStatus(path: string, status: "success" | "error" | "expired" | "unauthorized") {
+  if (status !== "success") {
+    return buildLoginRedirect(path, status);
+  }
+
   const url = new URL(path, "https://dummy.local");
   url.searchParams.set("login", status);
   return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function isCyberAgentEmail(email: string) {
+  return email.toLowerCase().endsWith("@cyberagent.co.jp");
 }
 
 export async function onRequestGet(context: AppContext) {
@@ -78,6 +93,12 @@ export async function onRequestGet(context: AppContext) {
 
     if (!googleSub || !email || !name) {
       throw new Error("Incomplete Google profile");
+    }
+
+    if (!isCyberAgentEmail(email)) {
+      return redirect(appendLoginStatus(oauthState.return_to, "unauthorized"), {
+        "set-cookie": createExpiredOAuthStateCookie(context.request),
+      });
     }
 
     if (idPayload.sub !== googleSub) {
