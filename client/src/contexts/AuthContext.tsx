@@ -29,7 +29,7 @@ interface AuthContextValue {
   isLoading: boolean;
   signInWithGoogle: (returnTo?: string) => void;
   signOut: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<AuthUser | null>;
   setUser: (user: AuthUser | null) => void;
 }
 
@@ -45,10 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const nextUser = await getCurrentUser();
       setUser(nextUser);
+      return nextUser;
     } catch (error) {
       console.error("Failed to refresh user:", error);
       // エラーが出た場合は null で処理を続行
       setUser(null);
+      return null;
     } finally {
       setIsLoading(false);
     }
