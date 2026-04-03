@@ -85,9 +85,13 @@ export default function Login() {
                     <br />
                     自分の強みを見つけてみましょう。
                   </p>
-                  <div className="mt-5 rounded-[1.35rem] border border-border/70 bg-[rgba(255,252,244,0.82)] px-5 py-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:bg-[rgba(18,28,43,0.72)]">
+                  <div className="mt-5 hidden rounded-[1.35rem] border border-border/70 bg-[rgba(255,252,244,0.82)] px-5 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:bg-[rgba(18,28,43,0.72)] md:block">
                     <p className="text-sm font-semibold leading-7 text-foreground [text-wrap:pretty]">
-                      ※サイバーエージェントのアカウントのみログインできます
+                      <span>
+                        ※サイバーエージェントのアカウントのみ
+                        <br />
+                        ログインできます
+                      </span>
                     </p>
                     <p className="mt-1.5 text-xs leading-6 text-muted-foreground [text-wrap:pretty]">
                       `@cyberagent.co.jp` のGoogleアカウントをご利用ください。
@@ -109,6 +113,9 @@ export default function Login() {
                     <div className="pt-1 text-center text-xs text-muted-foreground">
                       <p>
                         <span className="font-semibold">※</span> ログイン後は、元のページへ遷移します。
+                      </p>
+                      <p className="mt-1 md:hidden">
+                        `@cyberagent.co.jp` のGoogleアカウントをご利用ください。
                       </p>
                       <p className="mt-2 tracking-[0.08em] text-muted-foreground/90">
                         <span className="font-medium text-foreground/80">Developed by</span>{" "}
