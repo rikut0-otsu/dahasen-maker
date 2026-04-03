@@ -41,7 +41,7 @@ const JOB_TITLE_OPTIONS = [
 
 const DEPARTMENT_OPTIONS = [
   "選択してください",
-  "内定者",
+  "内定者（27卒以降）",
   "全社",
   "インターネット広告事業本部（新規含む）",
   "CyberACE",
