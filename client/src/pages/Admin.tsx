@@ -285,6 +285,7 @@ export default function Admin() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [trends, setTrends] = useState<AdminDashboardTrend[]>([]);
   const [topTypes, setTopTypes] = useState<AdminDashboardType[]>([]);
+  const [typeCounts, setTypeCounts] = useState<AdminDashboardType[]>([]);
   const [topDepartments, setTopDepartments] = useState<AdminDashboardDepartment[]>([]);
   const [summary, setSummary] = useState({
     totalUsers: 0,
@@ -326,6 +327,7 @@ export default function Admin() {
       setSummary(dashboardPayload.summary);
       setTrends(dashboardPayload.trends);
       setTopTypes(dashboardPayload.topTypes);
+      setTypeCounts(dashboardPayload.typeCounts);
       setTopDepartments(dashboardPayload.topDepartments);
       setError(null);
     } catch (loadError) {
@@ -428,21 +430,21 @@ export default function Admin() {
 
   const eraBreakdown = useMemo(() => {
     const map = new Map<string, number>();
-    for (const item of topTypes) {
+    for (const item of typeCounts) {
       const era = typeMetaById[item.typeId]?.eraLabel ?? "その他";
       map.set(era, (map.get(era) ?? 0) + item.count);
     }
 
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
-  }, [topTypes]);
+  }, [typeCounts]);
 
   const personBreakdown = useMemo(
     () =>
-      topTypes.map((item) => ({
+      typeCounts.map((item) => ({
         name: typeMetaById[item.typeId]?.name ?? item.typeId,
         value: item.count,
       })),
-    [topTypes]
+    [typeCounts]
   );
 
   const departmentBreakdown = useMemo(() => {
@@ -483,7 +485,7 @@ export default function Admin() {
   }, [users]);
 
   const allTypeCounts = useMemo(() => {
-    const countMap = new Map(topTypes.map((item) => [item.typeId, item.count]));
+    const countMap = new Map(typeCounts.map((item) => [item.typeId, item.count]));
 
     return typesData
       .map((type) => ({
@@ -499,7 +501,7 @@ export default function Admin() {
 
         return a.typeName.localeCompare(b.typeName, "ja");
       });
-  }, [topTypes]);
+  }, [typeCounts]);
 
   const totalTypePages = Math.max(1, Math.ceil(allTypeCounts.length / TYPE_PAGE_SIZE));
   const pagedTypeCounts = allTypeCounts.slice(

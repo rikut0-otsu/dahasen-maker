@@ -164,6 +164,7 @@ export async function getAdminDashboard() {
     summary: AdminDashboardSummary;
     trends: AdminDashboardTrend[];
     topTypes: AdminDashboardType[];
+    typeCounts: AdminDashboardType[];
     topDepartments: AdminDashboardDepartment[];
   }>(response);
 }

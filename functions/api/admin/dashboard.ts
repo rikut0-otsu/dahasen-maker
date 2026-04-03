@@ -52,15 +52,16 @@ export async function onRequestGet(context: AppContext) {
       diagnoses: diagnosesByDay.get(date) ?? 0,
     }));
 
-  const topTypes = Array.from(
+  const typeCounts = Array.from(
     diagnoses.reduce((map, diagnosis) => {
       map.set(diagnosis.type_id, (map.get(diagnosis.type_id) ?? 0) + 1);
       return map;
     }, new Map<string, number>())
   )
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
     .map(([typeId, count]) => ({ typeId, count }));
+
+  const topTypes = typeCounts.slice(0, 8);
 
   const topDepartments = Array.from(
     users.reduce((map, user) => {
@@ -84,6 +85,7 @@ export async function onRequestGet(context: AppContext) {
     },
     trends,
     topTypes,
+    typeCounts,
     topDepartments,
   });
 }
