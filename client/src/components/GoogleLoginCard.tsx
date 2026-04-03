@@ -54,7 +54,7 @@ const DEPARTMENT_OPTIONS = [
   "アニメ＆IP事業本部",
   "ライフスタイル管轄",
   "FANTECH本部",
-  "IU",
+  "IU（シロク・タップル・CAM・新規含む）",
   "SGE",
   "採用人事",
   "その他",
