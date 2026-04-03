@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateCurrentUserProfile } from "@/lib/api";
 import typesData from "@/data/types.json";
+import { getMaxJoinYear, MIN_JOIN_YEAR } from "@shared/const";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -59,8 +60,9 @@ const DEPARTMENT_OPTIONS = [
   "その他",
 ] as const;
 
-const JOIN_YEAR_OPTIONS = Array.from({ length: 2026 - 1999 + 1 }, (_, index) => {
-  const year = 2026 - index;
+const MAX_JOIN_YEAR = getMaxJoinYear();
+const JOIN_YEAR_OPTIONS = Array.from({ length: MAX_JOIN_YEAR - MIN_JOIN_YEAR + 1 }, (_, index) => {
+  const year = MAX_JOIN_YEAR - index;
   return {
     value: String(year),
     label: `${year}年入社`,

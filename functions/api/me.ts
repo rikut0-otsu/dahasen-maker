@@ -2,6 +2,7 @@ import type { AppContext } from "../_lib/cloudflare";
 import { readAuthenticatedUser, requireAuthenticatedUser } from "../_lib/auth";
 import { updateUserProfile } from "../_lib/db";
 import { errorResponse, json, readJson } from "../_lib/http";
+import { getMaxJoinYear, MIN_JOIN_YEAR } from "../../shared/const";
 
 export async function onRequestGet(context: AppContext) {
   const auth = await readAuthenticatedUser(context);
@@ -36,20 +37,37 @@ export async function onRequestPatch(context: AppContext) {
     return errorResponse(400, "名前は50文字以内で入力してください");
   }
 
+  if (!jobTitle) {
+    return errorResponse(400, "職種を入力してください");
+  }
+
   if (jobTitle.length > 50) {
     return errorResponse(400, "職種は50文字以内で入力してください");
+  }
+
+  if (!department) {
+    return errorResponse(400, "部署を入力してください");
   }
 
   if (department.length > 50) {
     return errorResponse(400, "部署は50文字以内で入力してください");
   }
 
+  const maxJoinYear = getMaxJoinYear();
+
+  if (joinYear === null || joinYear === undefined) {
+    return errorResponse(400, "入社年を選択してください");
+  }
+
   if (
-    joinYear !== null &&
-    joinYear !== undefined &&
-    (!Number.isInteger(joinYear) || joinYear < 1999 || joinYear > 2026)
+    !Number.isInteger(joinYear) ||
+    joinYear < MIN_JOIN_YEAR ||
+    joinYear > maxJoinYear
   ) {
-    return errorResponse(400, "入社年は1999年から2026年の範囲で選択してください");
+    return errorResponse(
+      400,
+      `入社年は${MIN_JOIN_YEAR}年から${maxJoinYear}年の範囲で選択してください`
+    );
   }
 
   try {
