@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation } from 'wouter';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { QuestionCard } from '@/components/QuestionCard';
@@ -11,7 +12,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Diagnosis() {
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, isLoading, refreshUser } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     state,
     getQuestionsForPage,
@@ -46,20 +48,36 @@ export default function Diagnosis() {
     state.answers.some((a) => a.questionId === q.id)
   );
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     if (isLastPage && canProceed) {
       const resultType = submitDiagnosis();
       if (resultType) {
-        if (user) {
-          void saveDiagnosisResult({
-            typeId: resultType.id,
-            answers: state.answers,
-            indicatorScores: calculateIndicatorScores(),
-            axisResult: calculateResult(),
-          }).catch((error: unknown) => {
+        const resolvedUser = user ?? (isLoading ? await refreshUser() : null);
+
+        if (resolvedUser) {
+          setIsSubmitting(true);
+
+          try {
+            await saveDiagnosisResult({
+              typeId: resultType.id,
+              answers: state.answers,
+              indicatorScores: calculateIndicatorScores(),
+              axisResult: calculateResult(),
+            });
+            await refreshUser();
+          } catch (error: unknown) {
             console.error('Failed to save diagnosis result', error);
-          });
+            toast.error('診断結果の保存に失敗しました。通信状況を確認して、もう一度お試しください。');
+            return;
+          } finally {
+            setIsSubmitting(false);
+          }
         }
+
         setLocation(`/types/${resultType.id}`);
       }
     } else if (canProceed) {
@@ -118,10 +136,10 @@ export default function Diagnosis() {
             </Button>
             <Button
               onClick={handleNext}
-              disabled={!canProceed}
+              disabled={!canProceed || isSubmitting}
               className="h-12 flex-1 bg-primary text-white font-semibold shadow-[0_12px_24px_rgba(45,140,60,0.22)] hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLastPage ? '結果を見る' : '次へ'}
+              {isSubmitting ? '保存中...' : isLastPage ? '結果を見る' : '次へ'}
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
