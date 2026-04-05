@@ -7,7 +7,7 @@ import { QuestionCard } from '@/components/QuestionCard';
 import { ProgressBar } from '@/components/ProgressBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiagnosisContext } from '@/contexts/DiagnosisContext';
-import { saveDiagnosisResult } from '@/lib/api';
+import { persistDiagnosisResult } from '@/lib/diagnosisPersistence';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Diagnosis() {
@@ -56,26 +56,26 @@ export default function Diagnosis() {
     if (isLastPage && canProceed) {
       const resultType = submitDiagnosis();
       if (resultType) {
-        const resolvedUser = user ?? (isLoading ? await refreshUser() : null);
+        setIsSubmitting(true);
 
-        if (resolvedUser) {
-          setIsSubmitting(true);
-
-          try {
-            await saveDiagnosisResult({
-              typeId: resultType.id,
-              answers: state.answers,
-              indicatorScores: calculateIndicatorScores(),
-              axisResult: calculateResult(),
-            });
-            await refreshUser();
-          } catch (error: unknown) {
-            console.error('Failed to save diagnosis result', error);
-            toast.error('診断結果の保存に失敗しました。通信状況を確認して、もう一度お試しください。');
-            return;
-          } finally {
-            setIsSubmitting(false);
+        try {
+          const resolvedUser = user ?? (isLoading ? await refreshUser() : null);
+          if (!resolvedUser) {
+            throw new Error('AUTH_USER_MISSING');
           }
+
+          await persistDiagnosisResult({
+            typeId: resultType.id,
+            answers: state.answers,
+            indicatorScores: calculateIndicatorScores(),
+            axisResult: calculateResult(),
+          });
+          await refreshUser();
+        } catch (error: unknown) {
+          console.error('Failed to save diagnosis result', error);
+          toast.error('診断結果を端末に退避しました。再ログイン後または通信回復後に自動で保存します。');
+        } finally {
+          setIsSubmitting(false);
         }
 
         setLocation(`/types/${resultType.id}`);

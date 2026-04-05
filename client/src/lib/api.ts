@@ -1,13 +1,23 @@
 import type { Answer, AxisResult, IndicatorScores } from "@/hooks/useDiagnosis";
 import type { AuthUser } from "@/contexts/AuthContext";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 async function readJson<T>(response: Response) {
   const payload = (await response.json().catch(() => null)) as
     | { error?: string }
     | null;
 
   if (!response.ok) {
-    throw new Error(payload?.error ?? "Request failed");
+    throw new ApiError(payload?.error ?? "Request failed", response.status);
   }
 
   return payload as T;
@@ -58,6 +68,7 @@ export async function updateCurrentUserProfile(input: {
 }
 
 export async function saveDiagnosisResult(input: {
+  resultId?: string;
   typeId: string;
   answers: Answer[];
   indicatorScores: IndicatorScores;

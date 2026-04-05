@@ -514,6 +514,10 @@ export interface LatestDiagnosisRecord {
   created_at: number;
 }
 
+export interface DiagnosisResultRecord extends LatestDiagnosisRecord {
+  id: string;
+}
+
 export async function getDashboardUsers(db: D1Database) {
   try {
     const result = await db
@@ -659,6 +663,25 @@ export async function getLatestDiagnosesForUsers(
   return latestByUserId;
 }
 
+export async function getDiagnosisResultById(
+  db: D1Database,
+  resultId: string
+) {
+  return db
+    .prepare(
+      `SELECT
+        id,
+        user_id,
+        type_id,
+        created_at
+      FROM diagnosis_results
+      WHERE id = ?
+      LIMIT 1`
+    )
+    .bind(resultId)
+    .first<DiagnosisResultRecord>();
+}
+
 export async function insertDiagnosisResult(
   db: D1Database,
   input: {
@@ -673,7 +696,7 @@ export async function insertDiagnosisResult(
 ) {
   await db
     .prepare(
-      `INSERT INTO diagnosis_results (
+      `INSERT OR IGNORE INTO diagnosis_results (
         id,
         user_id,
         type_id,

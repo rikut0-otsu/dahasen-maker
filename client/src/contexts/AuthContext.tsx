@@ -2,10 +2,12 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
-import { getCurrentUser, logout, startGoogleLogin } from "@/lib/api";
+import { ApiError, getCurrentUser, logout, startGoogleLogin } from "@/lib/api";
+import { flushPendingDiagnosisResults } from "@/lib/diagnosisPersistence";
 
 export interface AuthUser {
   id: string;
@@ -38,19 +40,30 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const userRef = useRef<AuthUser | null>(null);
   const googleAuthEnabled =
     (import.meta.env.VITE_GOOGLE_AUTH_ENABLED ?? "true") !== "false";
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const refreshUser = async () => {
     try {
       const nextUser = await getCurrentUser();
       setUser(nextUser);
+      if (nextUser) {
+        void flushPendingDiagnosisResults();
+      }
       return nextUser;
     } catch (error) {
       console.error("Failed to refresh user:", error);
-      // エラーが出た場合は null で処理を続行
-      setUser(null);
-      return null;
+      if (error instanceof ApiError && error.status === 401) {
+        setUser(null);
+        return null;
+      }
+
+      return userRef.current;
     } finally {
       setIsLoading(false);
     }
