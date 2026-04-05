@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -7,6 +7,8 @@ import {
   Briefcase,
   Building2,
   CalendarRange,
+  ChevronDown,
+  ChevronUp,
   Crown,
   Download,
   Filter,
@@ -327,6 +329,28 @@ function PieTooltip({
   );
 }
 
+function DiagnosisHistoryList({ history }: { history: Array<{ typeId: string; createdAt: number }> }) {
+  if (history.length <= 1) {
+    return <p className="text-xs text-slate-500">過去の診断履歴はありません。</p>;
+  }
+
+  return (
+    <div className="space-y-2">
+      {history.slice(1).map((item, index) => (
+        <div
+          key={`${item.typeId}-${item.createdAt}-${index}`}
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2"
+        >
+          <p className="text-sm font-medium text-slate-900">
+            {typeMetaById[item.typeId]?.name ?? item.typeId}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">{formatDateTime(item.createdAt)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
@@ -359,6 +383,15 @@ export default function Admin() {
   const [trainingJoinYear, setTrainingJoinYear] = useState("all");
   const [trainingDepartment, setTrainingDepartment] = useState("");
   const [showPieLabels, setShowPieLabels] = useState(false);
+  const [expandedUserIds, setExpandedUserIds] = useState<string[]>([]);
+
+  const toggleUserHistory = (userId: string) => {
+    setExpandedUserIds((current) =>
+      current.includes(userId)
+        ? current.filter((id) => id !== userId)
+        : [...current, userId]
+    );
+  };
 
   const loadAdminData = async (showRefreshing = false) => {
     if (showRefreshing) {
@@ -475,6 +508,12 @@ export default function Admin() {
       setPage(totalPages);
     }
   }, [page, totalPages]);
+
+  useEffect(() => {
+    setExpandedUserIds((current) =>
+      current.filter((id) => filteredUsers.some((user) => user.id === id))
+    );
+  }, [filteredUsers]);
 
   const eraBreakdown = useMemo(() => {
     const map = new Map<string, number>();
@@ -1354,6 +1393,30 @@ export default function Admin() {
                             <p className="mt-1 text-xs text-slate-500">
                               {formatDateTime(listedUser.latestDiagnosis.createdAt)}
                             </p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="mt-2 h-auto px-0 text-xs font-medium text-slate-600 hover:bg-transparent hover:text-slate-900"
+                              onClick={() => toggleUserHistory(listedUser.id)}
+                            >
+                              {expandedUserIds.includes(listedUser.id) ? (
+                                <>
+                                  履歴を閉じる
+                                  <ChevronUp className="h-4 w-4" />
+                                </>
+                              ) : (
+                                <>
+                                  過去の履歴を見る
+                                  <ChevronDown className="h-4 w-4" />
+                                </>
+                              )}
+                            </Button>
+                            {expandedUserIds.includes(listedUser.id) && (
+                              <div className="mt-3 border-t border-slate-200 pt-3">
+                                <DiagnosisHistoryList history={listedUser.diagnosisHistory} />
+                              </div>
+                            )}
                           </>
                         ) : (
                           <p className="mt-1 text-xs text-slate-500">診断履歴はまだありません</p>
@@ -1403,70 +1466,105 @@ export default function Admin() {
                   </TableHeader>
                   <TableBody>
                     {pagedUsers.map((listedUser) => (
-                      <TableRow key={listedUser.id}>
-                        <TableCell className="py-4 whitespace-normal">
-                          <p className="font-semibold text-slate-950">{listedUser.name}</p>
-                          <p className="mt-1 break-all text-xs text-slate-500">{listedUser.email}</p>
-                        </TableCell>
-                        <TableCell className="py-4 whitespace-normal">
-                          <div className="space-y-1 text-sm text-slate-600">
-                            <p>{formatJoinYear(listedUser.joinYear)}</p>
-                            <p>{listedUser.department || "部署未設定"}</p>
-                            <p>{listedUser.jobTitle || "職種未設定"}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4 whitespace-normal">
-                          {listedUser.latestDiagnosis ? (
+                      <Fragment key={listedUser.id}>
+                        <TableRow key={listedUser.id}>
+                          <TableCell className="py-4 whitespace-normal">
+                            <p className="font-semibold text-slate-950">{listedUser.name}</p>
+                            <p className="mt-1 break-all text-xs text-slate-500">{listedUser.email}</p>
+                          </TableCell>
+                          <TableCell className="py-4 whitespace-normal">
                             <div className="space-y-1 text-sm text-slate-600">
-                              <p className="font-medium text-slate-900">
-                                {typeMetaById[listedUser.latestDiagnosis.typeId]?.name ?? listedUser.latestDiagnosis.typeId}
-                              </p>
-                              <p>{formatDateTime(listedUser.latestDiagnosis.createdAt)}</p>
+                              <p>{formatJoinYear(listedUser.joinYear)}</p>
+                              <p>{listedUser.department || "部署未設定"}</p>
+                              <p>{listedUser.jobTitle || "職種未設定"}</p>
                             </div>
-                          ) : (
-                            <p className="text-sm text-slate-400">未診断</p>
-                          )}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <AccessBadge user={listedUser} />
-                            {listedUser.isEnvAdmin && (
-                              <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">
-                                Env
-                              </span>
+                          </TableCell>
+                          <TableCell className="py-4 whitespace-normal">
+                            {listedUser.latestDiagnosis ? (
+                              <div className="space-y-1 text-sm text-slate-600">
+                                <p className="font-medium text-slate-900">
+                                  {typeMetaById[listedUser.latestDiagnosis.typeId]?.name ?? listedUser.latestDiagnosis.typeId}
+                                </p>
+                                <p>{formatDateTime(listedUser.latestDiagnosis.createdAt)}</p>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto px-0 text-xs font-medium text-slate-600 hover:bg-transparent hover:text-slate-900"
+                                  onClick={() => toggleUserHistory(listedUser.id)}
+                                >
+                                  {expandedUserIds.includes(listedUser.id) ? (
+                                    <>
+                                      履歴を閉じる
+                                      <ChevronUp className="h-4 w-4" />
+                                    </>
+                                  ) : (
+                                    <>
+                                      過去の履歴を見る
+                                      <ChevronDown className="h-4 w-4" />
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-slate-400">未診断</p>
                             )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4 text-sm text-slate-600">
-                          {new Date(listedUser.createdAt).toLocaleDateString("ja-JP")}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className={ADMIN_OUTLINE_BUTTON}
-                              disabled={savingUserId === listedUser.id || listedUser.isOwner}
-                              onClick={() => void handleToggleAdmin(listedUser)}
-                            >
-                              {listedUser.isOwner
-                                ? "変更不可"
-                                : listedUser.isAdmin
-                                  ? "解除"
-                                  : "付与"}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="rounded-xl border-rose-200 text-rose-700 hover:bg-rose-50"
-                              disabled={savingUserId === listedUser.id || listedUser.isOwner}
-                              onClick={() => void handleDeleteUser(listedUser)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <AccessBadge user={listedUser} />
+                              {listedUser.isEnvAdmin && (
+                                <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">
+                                  Env
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4 text-sm text-slate-600">
+                            {new Date(listedUser.createdAt).toLocaleDateString("ja-JP")}
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className={ADMIN_OUTLINE_BUTTON}
+                                disabled={savingUserId === listedUser.id || listedUser.isOwner}
+                                onClick={() => void handleToggleAdmin(listedUser)}
+                              >
+                                {listedUser.isOwner
+                                  ? "変更不可"
+                                  : listedUser.isAdmin
+                                    ? "解除"
+                                    : "付与"}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="rounded-xl border-rose-200 text-rose-700 hover:bg-rose-50"
+                                disabled={savingUserId === listedUser.id || listedUser.isOwner}
+                                onClick={() => void handleDeleteUser(listedUser)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                        {listedUser.latestDiagnosis && expandedUserIds.includes(listedUser.id) && (
+                          <TableRow key={`${listedUser.id}-history`} className="bg-slate-50/70">
+                            <TableCell colSpan={6} className="py-4">
+                              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                                  過去の診断履歴
+                                </p>
+                                <div className="mt-3">
+                                  <DiagnosisHistoryList history={listedUser.diagnosisHistory} />
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </Fragment>
                     ))}
                   </TableBody>
                 </Table>
