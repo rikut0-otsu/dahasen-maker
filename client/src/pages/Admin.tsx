@@ -123,6 +123,48 @@ function formatJoinYear(joinYear?: number | null) {
   return `${joinYear}年入社`;
 }
 
+function renderOuterPieLabel(
+  showLabels: boolean,
+  {
+    cx,
+    cy,
+    midAngle,
+    outerRadius,
+    percent,
+    name,
+  }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    outerRadius: number;
+    percent: number;
+    name: string;
+  }
+) {
+  if (!showLabels || percent <= 0) {
+    return null;
+  }
+
+  const radius = outerRadius + 26;
+  const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
+  const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);
+  const anchor = x > cx ? "start" : "end";
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#0f172a"
+      textAnchor={anchor}
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight={600}
+    >
+      {`${name} ${Math.round(percent * 1000) / 10}%`}
+    </text>
+  );
+}
+
 function AccessBadge({ user }: { user: AdminUser }) {
   if (user.isOwner) {
     return (
@@ -184,12 +226,16 @@ function PieBreakdownCard({
   data,
   emptyMessage,
   embedded = false,
+  showLabels = false,
+  valueUnit = "人",
 }: {
   title: string;
   description: string;
   data: Array<{ name: string; value: number }>;
   emptyMessage: string;
   embedded?: boolean;
+  showLabels?: boolean;
+  valueUnit?: string;
 }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   const content = (
@@ -211,6 +257,8 @@ function PieBreakdownCard({
                   nameKey="name"
                   innerRadius={40}
                   outerRadius={96}
+                  labelLine={showLabels}
+                  label={(props) => renderOuterPieLabel(showLabels, props)}
                 >
                   {data.map((item, index) => (
                     <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -236,7 +284,7 @@ function PieBreakdownCard({
                     </div>
                     <div className="text-right text-sm">
                       <p className="font-semibold text-slate-900">{percent}%</p>
-                      <p className="text-slate-500">{item.value} 人</p>
+                      <p className="text-slate-500">{item.value} {valueUnit}</p>
                     </div>
                   </div>
                 </div>
@@ -308,7 +356,7 @@ export default function Admin() {
   const [trendRange, setTrendRange] = useState<(typeof TREND_FILTERS)[number]["key"]>("14d");
   const [pieTab, setPieTab] = useState<(typeof PIE_TABS)[number]["key"]>("era");
   const [trainingPieTab, setTrainingPieTab] = useState<(typeof TRAINING_PIE_TABS)[number]["key"]>("era");
-  const [trainingJoinYear, setTrainingJoinYear] = useState(String(new Date().getFullYear()));
+  const [trainingJoinYear, setTrainingJoinYear] = useState("all");
   const [trainingDepartment, setTrainingDepartment] = useState("");
   const [showPieLabels, setShowPieLabels] = useState(false);
 
@@ -537,45 +585,6 @@ export default function Admin() {
     [pieData]
   );
 
-  const renderPieLabel = ({
-    cx,
-    cy,
-    midAngle,
-    outerRadius,
-    percent,
-    name,
-  }: {
-    cx: number;
-    cy: number;
-    midAngle: number;
-    outerRadius: number;
-    percent: number;
-    name: string;
-  }) => {
-    if (!showPieLabels || percent <= 0) {
-      return null;
-    }
-
-    const radius = outerRadius + 26;
-    const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
-    const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);
-    const anchor = x > cx ? "start" : "end";
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="#0f172a"
-        textAnchor={anchor}
-        dominantBaseline="central"
-        fontSize={12}
-        fontWeight={600}
-      >
-        {`${name} ${Math.round(percent * 1000) / 10}%`}
-      </text>
-    );
-  };
-
   const ownerUsers = useMemo(() => users.filter((target) => target.isOwner), [users]);
 
   const trainingYearOptions = useMemo(() => {
@@ -588,7 +597,7 @@ export default function Admin() {
 
     years.add(new Date().getFullYear());
 
-    return Array.from(years).sort((a, b) => b - a);
+    return ["all", ...Array.from(years).sort((a, b) => b - a).map(String)];
   }, [users]);
 
   useEffect(() => {
@@ -596,18 +605,23 @@ export default function Admin() {
       return;
     }
 
-    if (!trainingYearOptions.includes(Number(trainingJoinYear))) {
-      setTrainingJoinYear(String(trainingYearOptions[0]));
+    if (!trainingYearOptions.includes(trainingJoinYear)) {
+      setTrainingJoinYear(trainingYearOptions[0]);
     }
   }, [trainingJoinYear, trainingYearOptions]);
 
   const trainingUsers = useMemo(
     () =>
       users.filter(
-        (target) => target.joinYear === Number(trainingJoinYear) && target.latestDiagnosis
+        (target) =>
+          target.latestDiagnosis &&
+          (trainingJoinYear === "all" || target.joinYear === Number(trainingJoinYear))
       ),
     [trainingJoinYear, users]
   );
+
+  const trainingJoinYearLabel =
+    trainingJoinYear === "all" ? "全年度" : `${trainingJoinYear}年入社`;
 
   const trainingEraBreakdown = useMemo(() => {
     const map = new Map<string, number>();
@@ -991,7 +1005,7 @@ export default function Admin() {
                           innerRadius={48}
                           outerRadius={110}
                           labelLine={showPieLabels}
-                          label={renderPieLabel}
+                          label={(props) => renderOuterPieLabel(showPieLabels, props)}
                         >
                           {pieData.map((item, index) => (
                             <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -1076,31 +1090,41 @@ export default function Admin() {
                     >
                       {trainingYearOptions.map((year) => (
                         <option key={year} value={year}>
-                          {year}年入社
+                          {year === "all" ? "全年度" : `${year}年入社`}
                         </option>
                       ))}
                     </select>
                   </div>
+                  <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    <Switch
+                      checked={showPieLabels}
+                      onCheckedChange={setShowPieLabels}
+                      className="data-[state=unchecked]:border-slate-300 data-[state=unchecked]:bg-slate-300 data-[state=checked]:bg-slate-900 [&_[data-slot=switch-thumb]]:bg-white dark:data-[state=unchecked]:bg-slate-300 dark:data-[state=checked]:bg-slate-900"
+                    />
+                    <span>円グラフ上に項目名と割合を表示</span>
+                  </label>
                 </div>
               </div>
 
               {trainingPieTab === "era" && (
                 <PieBreakdownCard
-                  title={`${trainingJoinYear}年入社 時代別円グラフ`}
-                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を時代別に集計しています。`}
+                  title={`${trainingJoinYearLabel} 時代別円グラフ`}
+                  description={`${trainingJoinYearLabel}ユーザーの最新診断結果を時代別に集計しています。`}
                   data={trainingEraBreakdown}
-                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                  emptyMessage={`${trainingJoinYearLabel}で診断結果があるユーザーがまだいません。`}
                   embedded
+                  showLabels={showPieLabels}
                 />
               )}
 
               {trainingPieTab === "person" && (
                 <PieBreakdownCard
-                  title={`${trainingJoinYear}年入社 人物別円グラフ`}
-                  description={`${trainingJoinYear}年入社ユーザーの最新診断結果を人物別に集計しています。`}
+                  title={`${trainingJoinYearLabel} 人物別円グラフ`}
+                  description={`${trainingJoinYearLabel}ユーザーの最新診断結果を人物別に集計しています。`}
                   data={trainingPersonBreakdown}
-                  emptyMessage={`${trainingJoinYear}年入社で診断結果があるユーザーがまだいません。`}
+                  emptyMessage={`${trainingJoinYearLabel}で診断結果があるユーザーがまだいません。`}
                   embedded
+                  showLabels={showPieLabels}
                 />
               )}
 
@@ -1108,7 +1132,7 @@ export default function Admin() {
                 <>
                   {trainingDepartmentBreakdowns.length === 0 ? (
                     <p className="text-sm text-slate-500">
-                      {trainingJoinYear}年入社で診断結果があるユーザーがまだいません。
+                      {trainingJoinYearLabel}で診断結果があるユーザーがまだいません。
                     </p>
                   ) : (
                     <div className="space-y-4">
@@ -1129,10 +1153,11 @@ export default function Admin() {
                       {selectedTrainingDepartmentBreakdown && (
                         <PieBreakdownCard
                           title={`${selectedTrainingDepartmentBreakdown.department} 人物別円グラフ`}
-                          description={`${trainingJoinYear}年入社 ${selectedTrainingDepartmentBreakdown.total}人分の最新診断結果を集計`}
+                          description={`${trainingJoinYearLabel} ${selectedTrainingDepartmentBreakdown.total}人分の最新診断結果を集計`}
                           data={selectedTrainingDepartmentBreakdown.data}
                           emptyMessage="集計データがありません。"
                           embedded
+                          showLabels={showPieLabels}
                         />
                       )}
                     </div>
