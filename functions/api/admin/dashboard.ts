@@ -1,7 +1,11 @@
 import type { AppContext } from "../../_lib/cloudflare";
 import { resolveAdminStatus } from "../../_lib/admin";
 import { requireAdminUser } from "../../_lib/auth";
-import { getDashboardDiagnoses, getDashboardUsers } from "../../_lib/db";
+import {
+  getDashboardDiagnoses,
+  getDashboardUsers,
+  getLatestDiagnosesForUsers,
+} from "../../_lib/db";
 import { json } from "../../_lib/http";
 
 function dayKey(timestamp: number) {
@@ -18,6 +22,10 @@ export async function onRequestGet(context: AppContext) {
     getDashboardUsers(context.env.DB),
     getDashboardDiagnoses(context.env.DB),
   ]);
+  const latestDiagnoses = await getLatestDiagnosesForUsers(
+    context.env.DB,
+    users.map((user) => user.id)
+  );
 
   const totalUsers = users.length;
   const totalDiagnoses = diagnoses.length;
@@ -53,7 +61,7 @@ export async function onRequestGet(context: AppContext) {
     }));
 
   const typeCounts = Array.from(
-    diagnoses.reduce((map, diagnosis) => {
+    Array.from(latestDiagnoses.values()).reduce((map, diagnosis) => {
       map.set(diagnosis.type_id, (map.get(diagnosis.type_id) ?? 0) + 1);
       return map;
     }, new Map<string, number>())

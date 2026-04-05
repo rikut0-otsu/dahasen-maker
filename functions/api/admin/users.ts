@@ -3,10 +3,65 @@ import { resolveAccessLevel, resolveAdminStatus } from "../../_lib/admin";
 import { requireAdminUser } from "../../_lib/auth";
 import {
   getAllUsers,
+  getDiagnosisHistoryForUsers,
   getLatestDiagnosesForUsers,
   updateUserAdminStatus,
 } from "../../_lib/db";
 import { errorResponse, json, readJson } from "../../_lib/http";
+
+function buildAdminUserPayload(
+  user: Awaited<ReturnType<typeof getAllUsers>>[number],
+  context: AppContext,
+  latestDiagnoses: Map<string, { type_id: string; created_at: number }>,
+  diagnosisHistory: Map<string, Array<{ type_id: string; created_at: number }>>
+) {
+  const latestDiagnosis = latestDiagnoses.get(user.id);
+  const history = diagnosisHistory.get(user.id) ?? [];
+
+  return {
+    accessLevel: resolveAccessLevel(context.env, {
+      googleSub: user.google_sub,
+      email: user.email,
+      persistedIsAdmin: user.is_admin,
+    }),
+    id: user.id,
+    email: user.email,
+    name: user.display_name ?? user.name,
+    rawName: user.name,
+    googleSub: user.google_sub,
+    jobTitle: user.job_title,
+    department: user.department,
+    joinYear: user.join_year,
+    picture: user.picture_url,
+    isOwner:
+      resolveAccessLevel(context.env, {
+        googleSub: user.google_sub,
+        email: user.email,
+        persistedIsAdmin: user.is_admin,
+      }) === "owner",
+    isEnvAdmin: resolveAdminStatus(context.env, {
+      googleSub: user.google_sub,
+      email: user.email,
+    }),
+    isAdmin: resolveAdminStatus(context.env, {
+      googleSub: user.google_sub,
+      email: user.email,
+      persistedIsAdmin: user.is_admin,
+    }),
+    latestDiagnosis: latestDiagnosis
+      ? {
+          typeId: latestDiagnosis.type_id,
+          createdAt: latestDiagnosis.created_at,
+        }
+      : null,
+    diagnosisHistory: history.map((item) => ({
+      typeId: item.type_id,
+      createdAt: item.created_at,
+    })),
+    createdAt: user.created_at,
+    updatedAt: user.updated_at,
+  };
+}
 
 export async function onRequestGet(context: AppContext) {
   const auth = await requireAdminUser(context);
@@ -15,51 +70,16 @@ export async function onRequestGet(context: AppContext) {
   }
 
   const users = await getAllUsers(context.env.DB);
-  const latestDiagnoses = await getLatestDiagnosesForUsers(
-    context.env.DB,
-    users.map((user) => user.id)
-  );
+  const userIds = users.map((user) => user.id);
+  const [latestDiagnoses, diagnosisHistory] = await Promise.all([
+    getLatestDiagnosesForUsers(context.env.DB, userIds),
+    getDiagnosisHistoryForUsers(context.env.DB, userIds),
+  ]);
 
   return json({
-    users: users.map((user) => ({
-      accessLevel: resolveAccessLevel(context.env, {
-        googleSub: user.google_sub,
-        email: user.email,
-        persistedIsAdmin: user.is_admin,
-      }),
-      id: user.id,
-      email: user.email,
-      name: user.display_name ?? user.name,
-      rawName: user.name,
-      googleSub: user.google_sub,
-      jobTitle: user.job_title,
-      department: user.department,
-      joinYear: user.join_year,
-      picture: user.picture_url,
-      isOwner:
-        resolveAccessLevel(context.env, {
-          googleSub: user.google_sub,
-          email: user.email,
-          persistedIsAdmin: user.is_admin,
-        }) === "owner",
-      isEnvAdmin: resolveAdminStatus(context.env, {
-        googleSub: user.google_sub,
-        email: user.email,
-      }),
-      isAdmin: resolveAdminStatus(context.env, {
-        googleSub: user.google_sub,
-        email: user.email,
-        persistedIsAdmin: user.is_admin,
-      }),
-      latestDiagnosis: latestDiagnoses.has(user.id)
-        ? {
-            typeId: latestDiagnoses.get(user.id)!.type_id,
-            createdAt: latestDiagnoses.get(user.id)!.created_at,
-          }
-        : null,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at,
-    })),
+    users: users.map((user) =>
+      buildAdminUserPayload(user, context, latestDiagnoses, diagnosisHistory)
+    ),
   });
 }
 
@@ -122,48 +142,12 @@ export async function onRequestPatch(context: AppContext) {
   if (!updatedUser) {
     return errorResponse(404, "対象ユーザーが見つかりません");
   }
-  const latestDiagnoses = await getLatestDiagnosesForUsers(context.env.DB, [body.userId]);
-  const latestDiagnosis = latestDiagnoses.get(body.userId);
+  const [latestDiagnoses, diagnosisHistory] = await Promise.all([
+    getLatestDiagnosesForUsers(context.env.DB, [body.userId]),
+    getDiagnosisHistoryForUsers(context.env.DB, [body.userId]),
+  ]);
 
   return json({
-    user: {
-      accessLevel: resolveAccessLevel(context.env, {
-        googleSub: updatedUser.google_sub,
-        email: updatedUser.email,
-        persistedIsAdmin: updatedUser.is_admin,
-      }),
-      id: updatedUser.id,
-      email: updatedUser.email,
-      name: updatedUser.display_name ?? updatedUser.name,
-      rawName: updatedUser.name,
-      googleSub: updatedUser.google_sub,
-      jobTitle: updatedUser.job_title,
-      department: updatedUser.department,
-      joinYear: updatedUser.join_year,
-      picture: updatedUser.picture_url,
-      isOwner:
-        resolveAccessLevel(context.env, {
-          googleSub: updatedUser.google_sub,
-          email: updatedUser.email,
-          persistedIsAdmin: updatedUser.is_admin,
-        }) === "owner",
-      isEnvAdmin: resolveAdminStatus(context.env, {
-        googleSub: updatedUser.google_sub,
-        email: updatedUser.email,
-      }),
-      isAdmin: resolveAdminStatus(context.env, {
-        googleSub: updatedUser.google_sub,
-        email: updatedUser.email,
-        persistedIsAdmin: updatedUser.is_admin,
-      }),
-      latestDiagnosis: latestDiagnosis
-        ? {
-            typeId: latestDiagnosis.type_id,
-            createdAt: latestDiagnosis.created_at,
-          }
-        : null,
-      createdAt: updatedUser.created_at,
-      updatedAt: updatedUser.updated_at,
-    },
+    user: buildAdminUserPayload(updatedUser, context, latestDiagnoses, diagnosisHistory),
   });
 }

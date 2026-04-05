@@ -104,6 +104,10 @@ export interface AdminUser {
     typeId: string;
     createdAt: number;
   } | null;
+  diagnosisHistory: Array<{
+    typeId: string;
+    createdAt: number;
+  }>;
   createdAt: number;
   updatedAt: number;
 }

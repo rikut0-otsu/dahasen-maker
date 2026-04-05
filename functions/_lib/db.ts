@@ -663,6 +663,38 @@ export async function getLatestDiagnosesForUsers(
   return latestByUserId;
 }
 
+export async function getDiagnosisHistoryForUsers(
+  db: D1Database,
+  userIds: string[]
+) {
+  if (userIds.length === 0) {
+    return new Map<string, LatestDiagnosisRecord[]>();
+  }
+
+  const placeholders = userIds.map(() => "?").join(", ");
+  const result = await db
+    .prepare(
+      `SELECT
+        user_id,
+        type_id,
+        created_at
+      FROM diagnosis_results
+      WHERE user_id IN (${placeholders})
+      ORDER BY created_at DESC`
+    )
+    .bind(...userIds)
+    .all<LatestDiagnosisRecord>();
+
+  const historyByUserId = new Map<string, LatestDiagnosisRecord[]>();
+  for (const row of result.results) {
+    const current = historyByUserId.get(row.user_id) ?? [];
+    current.push(row);
+    historyByUserId.set(row.user_id, current);
+  }
+
+  return historyByUserId;
+}
+
 export async function getDiagnosisResultById(
   db: D1Database,
   resultId: string
