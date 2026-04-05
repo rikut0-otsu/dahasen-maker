@@ -141,13 +141,14 @@ function renderOuterPieLabel(
     outerRadius: number;
     percent: number;
     name: string;
-  }
+  },
+  distanceFromPie = 26
 ) {
   if (!showLabels || percent <= 0) {
     return null;
   }
 
-  const radius = outerRadius + 26;
+  const radius = outerRadius + distanceFromPie;
   const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
   const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);
   const anchor = x > cx ? "start" : "end";
@@ -230,6 +231,7 @@ function PieBreakdownCard({
   embedded = false,
   showLabels = false,
   valueUnit = "人",
+  labelDistance = 18,
 }: {
   title: string;
   description: string;
@@ -238,6 +240,7 @@ function PieBreakdownCard({
   embedded?: boolean;
   showLabels?: boolean;
   valueUnit?: string;
+  labelDistance?: number;
 }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   const content = (
@@ -249,8 +252,8 @@ function PieBreakdownCard({
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(280px,0.9fr)_minmax(320px,1.1fr)]">
-          <div className="mx-auto h-[260px] w-full max-w-[320px]">
+        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(320px,1.08fr)_minmax(260px,0.92fr)]">
+          <div className="mx-auto h-[260px] w-full max-w-[360px] pr-4">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -260,7 +263,7 @@ function PieBreakdownCard({
                   innerRadius={40}
                   outerRadius={96}
                   labelLine={showLabels}
-                  label={(props) => renderOuterPieLabel(showLabels, props)}
+                  label={(props) => renderOuterPieLabel(showLabels, props, labelDistance)}
                 >
                   {data.map((item, index) => (
                     <Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
