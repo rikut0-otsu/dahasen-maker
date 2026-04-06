@@ -3,6 +3,7 @@ import { ApiError, saveDiagnosisResult } from "@/lib/api";
 
 const PENDING_DIAGNOSIS_RESULTS_KEY = "pending_diagnosis_results_v1";
 const SAVE_RETRY_DELAYS_MS = [0, 500, 1500];
+let pendingFlushPromise: Promise<number> | null = null;
 
 export interface DiagnosisPersistenceInput {
   resultId?: string;
@@ -38,6 +39,10 @@ function readPendingDiagnosisResults() {
     console.error("Failed to read pending diagnosis results:", error);
     return [];
   }
+}
+
+export function getPendingDiagnosisResultCount() {
+  return readPendingDiagnosisResults().length;
 }
 
 function writePendingDiagnosisResults(items: PendingDiagnosisResult[]) {
@@ -119,22 +124,34 @@ export async function persistDiagnosisResult(input: DiagnosisPersistenceInput) {
 }
 
 export async function flushPendingDiagnosisResults() {
-  const items = readPendingDiagnosisResults().sort((a, b) => a.queuedAt - b.queuedAt);
-  let flushedCount = 0;
-
-  for (const item of items) {
-    try {
-      await sendDiagnosisResult(item);
-      removePendingDiagnosisResult(item.resultId);
-      flushedCount += 1;
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        break;
-      }
-
-      console.error("Failed to flush pending diagnosis result:", error);
-    }
+  if (pendingFlushPromise) {
+    return pendingFlushPromise;
   }
 
-  return flushedCount;
+  pendingFlushPromise = (async () => {
+    const items = readPendingDiagnosisResults().sort((a, b) => a.queuedAt - b.queuedAt);
+    let flushedCount = 0;
+
+    for (const item of items) {
+      try {
+        await sendDiagnosisResult(item);
+        removePendingDiagnosisResult(item.resultId);
+        flushedCount += 1;
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 401) {
+          break;
+        }
+
+        console.error("Failed to flush pending diagnosis result:", error);
+      }
+    }
+
+    return flushedCount;
+  })();
+
+  try {
+    return await pendingFlushPromise;
+  } finally {
+    pendingFlushPromise = null;
+  }
 }
