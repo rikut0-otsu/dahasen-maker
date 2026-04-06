@@ -518,6 +518,16 @@ export interface DiagnosisResultRecord extends LatestDiagnosisRecord {
   id: string;
 }
 
+const USER_ID_QUERY_BATCH_SIZE = 100;
+
+function chunkValues<T>(values: T[], size: number) {
+  const chunks: T[][] = [];
+  for (let index = 0; index < values.length; index += size) {
+    chunks.push(values.slice(index, index + size));
+  }
+  return chunks;
+}
+
 export async function getDashboardUsers(db: D1Database) {
   try {
     const result = await db
@@ -639,24 +649,26 @@ export async function getLatestDiagnosesForUsers(
     return new Map<string, LatestDiagnosisRecord>();
   }
 
-  const placeholders = userIds.map(() => "?").join(", ");
-  const result = await db
-    .prepare(
-      `SELECT
-        user_id,
-        type_id,
-        created_at
-      FROM diagnosis_results
-      WHERE user_id IN (${placeholders})
-      ORDER BY created_at DESC`
-    )
-    .bind(...userIds)
-    .all<LatestDiagnosisRecord>();
-
   const latestByUserId = new Map<string, LatestDiagnosisRecord>();
-  for (const row of result.results) {
-    if (!latestByUserId.has(row.user_id)) {
-      latestByUserId.set(row.user_id, row);
+  for (const userIdBatch of chunkValues(userIds, USER_ID_QUERY_BATCH_SIZE)) {
+    const placeholders = userIdBatch.map(() => "?").join(", ");
+    const result = await db
+      .prepare(
+        `SELECT
+          user_id,
+          type_id,
+          created_at
+        FROM diagnosis_results
+        WHERE user_id IN (${placeholders})
+        ORDER BY created_at DESC`
+      )
+      .bind(...userIdBatch)
+      .all<LatestDiagnosisRecord>();
+
+    for (const row of result.results) {
+      if (!latestByUserId.has(row.user_id)) {
+        latestByUserId.set(row.user_id, row);
+      }
     }
   }
 
@@ -671,25 +683,27 @@ export async function getDiagnosisHistoryForUsers(
     return new Map<string, LatestDiagnosisRecord[]>();
   }
 
-  const placeholders = userIds.map(() => "?").join(", ");
-  const result = await db
-    .prepare(
-      `SELECT
-        user_id,
-        type_id,
-        created_at
-      FROM diagnosis_results
-      WHERE user_id IN (${placeholders})
-      ORDER BY created_at DESC`
-    )
-    .bind(...userIds)
-    .all<LatestDiagnosisRecord>();
-
   const historyByUserId = new Map<string, LatestDiagnosisRecord[]>();
-  for (const row of result.results) {
-    const current = historyByUserId.get(row.user_id) ?? [];
-    current.push(row);
-    historyByUserId.set(row.user_id, current);
+  for (const userIdBatch of chunkValues(userIds, USER_ID_QUERY_BATCH_SIZE)) {
+    const placeholders = userIdBatch.map(() => "?").join(", ");
+    const result = await db
+      .prepare(
+        `SELECT
+          user_id,
+          type_id,
+          created_at
+        FROM diagnosis_results
+        WHERE user_id IN (${placeholders})
+        ORDER BY created_at DESC`
+      )
+      .bind(...userIdBatch)
+      .all<LatestDiagnosisRecord>();
+
+    for (const row of result.results) {
+      const current = historyByUserId.get(row.user_id) ?? [];
+      current.push(row);
+      historyByUserId.set(row.user_id, current);
+    }
   }
 
   return historyByUserId;
