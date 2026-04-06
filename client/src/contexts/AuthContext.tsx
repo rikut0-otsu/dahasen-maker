@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -7,7 +8,10 @@ import {
   type ReactNode,
 } from "react";
 import { ApiError, getCurrentUser, logout, startGoogleLogin } from "@/lib/api";
-import { flushPendingDiagnosisResults } from "@/lib/diagnosisPersistence";
+import {
+  flushPendingDiagnosisResults,
+  getPendingDiagnosisResultCount,
+} from "@/lib/diagnosisPersistence";
 
 export interface AuthUser {
   id: string;
@@ -41,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const userRef = useRef<AuthUser | null>(null);
+  const isFlushingPendingRef = useRef(false);
   const googleAuthEnabled =
     (import.meta.env.VITE_GOOGLE_AUTH_ENABLED ?? "true") !== "false";
 
@@ -48,12 +53,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userRef.current = user;
   }, [user]);
 
-  const refreshUser = async () => {
+  const flushPendingSafely = useCallback(async () => {
+    if (!userRef.current || isFlushingPendingRef.current) {
+      return 0;
+    }
+
+    if (getPendingDiagnosisResultCount() === 0) {
+      return 0;
+    }
+
+    isFlushingPendingRef.current = true;
+    try {
+      return await flushPendingDiagnosisResults();
+    } finally {
+      isFlushingPendingRef.current = false;
+    }
+  }, []);
+
+  const refreshUser = useCallback(async () => {
     try {
       const nextUser = await getCurrentUser();
       setUser(nextUser);
       if (nextUser) {
-        void flushPendingDiagnosisResults();
+        userRef.current = nextUser;
+        void flushPendingSafely();
       }
       return nextUser;
     } catch (error) {
@@ -67,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [flushPendingSafely]);
 
   useEffect(() => {
     void refreshUser();
@@ -91,7 +114,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("focus", handleWindowFocus);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [refreshUser]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const handleOnline = () => {
+      void flushPendingSafely();
+    };
+
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, [flushPendingSafely, user]);
 
   const value: AuthContextValue = {
     user,
