@@ -151,6 +151,7 @@ export interface AdminDashboardSummary {
   totalDiagnoses: number;
   activeUsers: number;
   adminCount: number;
+  uniqueDepartmentCount: number;
   avgDiagnosesPerUser: number;
 }
 

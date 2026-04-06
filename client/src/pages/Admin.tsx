@@ -367,6 +367,7 @@ export default function Admin() {
     totalDiagnoses: 0,
     activeUsers: 0,
     adminCount: 0,
+    uniqueDepartmentCount: 0,
     avgDiagnosesPerUser: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -940,7 +941,7 @@ export default function Admin() {
           <MetricCard title="Users" value={summary.totalUsers} description="登録ユーザー数" icon={Users} />
           <MetricCard title="Diagnoses" value={summary.totalDiagnoses} description="保存済み診断結果数" icon={Activity} />
           <MetricCard title="Admins" value={summary.adminCount} description="オーナーを含む管理権限ユーザー数" icon={ShieldCheck} />
-          <MetricCard title="Departments" value={topDepartments.length} description="現在登録されている主要部署数" icon={Building2} />
+          <MetricCard title="Departments" value={summary.uniqueDepartmentCount} description="現在登録されている登録部署数" icon={Building2} />
         </section>
 
         <section className="mt-6 space-y-6">

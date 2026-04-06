@@ -71,13 +71,15 @@ export async function onRequestGet(context: AppContext) {
 
   const topTypes = typeCounts.slice(0, 8);
 
-  const topDepartments = Array.from(
+  const departmentCounts = Array.from(
     users.reduce((map, user) => {
       const department = user.department?.trim() || "未設定";
       map.set(department, (map.get(department) ?? 0) + 1);
       return map;
     }, new Map<string, number>())
-  )
+  );
+
+  const topDepartments = departmentCounts
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([department, count]) => ({ department, count }));
@@ -88,6 +90,7 @@ export async function onRequestGet(context: AppContext) {
       totalDiagnoses,
       activeUsers,
       adminCount,
+      uniqueDepartmentCount: departmentCounts.length,
       avgDiagnosesPerUser:
         totalUsers === 0 ? 0 : Number((totalDiagnoses / totalUsers).toFixed(2)),
     },
