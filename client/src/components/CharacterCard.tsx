@@ -30,11 +30,11 @@ const CharacterCardComponent: React.FC<CharacterCardProps> = ({
         <div className="wash-paper relative z-10 p-3">
           <div className="frame-scroll mx-auto aspect-[13/16] w-full max-w-[190px] overflow-hidden rounded-[1.3rem] p-2">
             {imagePath && !imageFailed ? (
-              <div className="h-full w-full rounded-[1rem] bg-white">
+              <div className="h-full w-full overflow-hidden rounded-[1rem] bg-white">
                 <img
                   src={imagePath}
                   alt={`${name}の画像`}
-                  className="block h-full w-full -translate-y-[2.5%] scale-x-[1.01] scale-y-[1.06] rounded-[1rem] object-contain md:-translate-y-0 md:scale-y-[1.04]"
+                  className="block h-full w-full -translate-y-[2.5%] scale-x-[1.01] scale-y-[1.06] rounded-[1rem] object-cover object-center md:-translate-y-0 md:scale-y-[1.04]"
                   loading="lazy"
                   onError={() => setImageFailed(true)}
                 />
