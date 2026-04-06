@@ -425,9 +425,6 @@ export async function getAllUsers(db: D1Database) {
           id,
           email,
           name,
-          display_name,
-          job_title,
-          department,
           picture_url,
           google_sub,
           created_at,
@@ -439,6 +436,9 @@ export async function getAllUsers(db: D1Database) {
 
     return legacyResult.results.map((user) => ({
       ...user,
+      display_name: null,
+      job_title: null,
+      department: null,
       join_year: null,
       is_admin: 0,
     }));
@@ -578,9 +578,6 @@ export async function getDashboardUsers(db: D1Database) {
           id,
           email,
           name,
-          display_name,
-          department,
-          job_title,
           google_sub,
           created_at
         FROM users
@@ -590,6 +587,9 @@ export async function getDashboardUsers(db: D1Database) {
 
     return legacyResult.results.map((user) => ({
       ...user,
+      display_name: null,
+      department: null,
+      job_title: null,
       join_year: null,
       is_admin: 0,
     }));
