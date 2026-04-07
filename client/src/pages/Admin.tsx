@@ -252,10 +252,10 @@ function PieBreakdownCard({
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(320px,1.08fr)_minmax(260px,0.92fr)]">
-          <div className="mx-auto h-[260px] w-full max-w-[360px] pr-4">
+        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(360px,1.18fr)_minmax(280px,0.82fr)]">
+          <div className="mx-auto h-[280px] w-full max-w-[440px] px-4 sm:px-6 lg:px-2">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 12, right: 72, bottom: 12, left: 40 }}>
                 <Pie
                   data={data}
                   dataKey="value"
