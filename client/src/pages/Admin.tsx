@@ -134,6 +134,7 @@ function renderOuterPieLabel(
     outerRadius,
     percent,
     name,
+    viewBox,
   }: {
     cx: number;
     cy: number;
@@ -141,6 +142,7 @@ function renderOuterPieLabel(
     outerRadius: number;
     percent: number;
     name: string;
+    viewBox?: { x?: number; y?: number; width?: number; height?: number };
   },
   distanceFromPie = 26
 ) {
@@ -149,8 +151,13 @@ function renderOuterPieLabel(
   }
 
   const radius = outerRadius + distanceFromPie;
-  const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
+  const rawX = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
   const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);
+  const chartLeft = viewBox?.x ?? 0;
+  const chartWidth = viewBox?.width ?? cx * 2;
+  const minX = chartLeft + 12;
+  const maxX = chartLeft + chartWidth - 12;
+  const x = Math.max(minX, Math.min(maxX, rawX));
   const anchor = x > cx ? "start" : "end";
 
   return (
@@ -160,7 +167,7 @@ function renderOuterPieLabel(
       fill="#0f172a"
       textAnchor={anchor}
       dominantBaseline="central"
-      fontSize={12}
+      fontSize={11}
       fontWeight={600}
     >
       {`${name} ${Math.round(percent * 1000) / 10}%`}
@@ -252,16 +259,16 @@ function PieBreakdownCard({
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(360px,1.18fr)_minmax(280px,0.82fr)]">
-          <div className="mx-auto h-[280px] w-full max-w-[440px] px-4 sm:px-6 lg:px-2">
+        <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(420px,1.3fr)_minmax(280px,0.7fr)]">
+          <div className="mx-auto h-[300px] w-full max-w-[520px] px-3 sm:px-6 lg:px-2 [&_.recharts-surface]:overflow-visible">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 12, right: 72, bottom: 12, left: 40 }}>
+              <PieChart margin={{ top: 20, right: 96, bottom: 20, left: 96 }}>
                 <Pie
                   data={data}
                   dataKey="value"
                   nameKey="name"
                   innerRadius={40}
-                  outerRadius={96}
+                  outerRadius={88}
                   labelLine={showLabels}
                   label={(props) => renderOuterPieLabel(showLabels, props, labelDistance)}
                 >
