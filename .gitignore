@@ -104,8 +104,11 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
 
 # Local tooling artifacts
+.wrangler/
 .webdev/
 dev-server.log
 .local-logs/

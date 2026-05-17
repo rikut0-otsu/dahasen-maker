@@ -101,6 +101,12 @@ export async function onRequestGet(context: AppContext) {
       });
     }
 
+    if (!profile.email_verified) {
+      return redirect(appendLoginStatus(oauthState.return_to, "unauthorized"), {
+        "set-cookie": createExpiredOAuthStateCookie(context.request),
+      });
+    }
+
     if (idPayload.sub !== googleSub) {
       throw new Error("Google subject mismatch");
     }
